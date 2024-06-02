@@ -42,7 +42,7 @@ class Crew(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class CrewOpening(models.Model):
+class CrewRecruitment(models.Model):
     crew = models.OneToOneField(
         Crew,
         on_delete=models.CASCADE,
