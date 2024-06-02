@@ -65,18 +65,32 @@ class CrewMemeber(models.Model):
             '유저를 입력해주세요.'
         ),
     )
-    is_approved = models.BooleanField(
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CrewMemberRequest(models.Model):
+    crew = models.ForeignKey(
+        Crew,
+        on_delete=models.CASCADE,
+        related_name='requests',
         help_text=(
-            '가입 승인 여부를 입력해주세요.'
+            '크루를 입력해주세요.'
         ),
-        default=False,
     )
-    approved_at = models.DateTimeField(
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='crew_requests',
         help_text=(
-            '가입 승인 일자를 입력해주세요.'
+            '유저를 입력해주세요.'
+        ),
+    )
+    message = models.TextField(
+        help_text=(
+            '가입 메시지를 입력해주세요.'
         ),
         null=True,
-        default=None,
+        blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
