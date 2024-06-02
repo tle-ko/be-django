@@ -87,3 +87,47 @@ class CrewActivityProblemSubmission(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class CrewActivityProblemSubmissionComment(models.Model):
+    submission = models.ForeignKey(
+        CrewActivityProblemSubmission,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        help_text=(
+            '제출을 입력해주세요.'
+        ),
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        help_text=(
+            '유저를 입력해주세요.'
+        ),
+    )
+    content = models.TextField(
+        help_text=(
+            '댓글을 입력해주세요.'
+        ),
+    )
+    line_number_start = models.IntegerField(
+        help_text=(
+            '댓글 시작 라인을 입력해주세요.'
+        ),
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
+    line_number_end = models.IntegerField(
+        help_text=(
+            '댓글 종료 라인을 입력해주세요.'
+        ),
+        validators=[
+            MinValueValidator(1),
+            # TODO: 시작 라인보다 작지 않도록 검사
+            # TODO: 코드 라인 수보다 크지 않도록 검사
+        ],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
