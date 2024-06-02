@@ -63,3 +63,34 @@ class Problem(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class ProblemMeta(models.Model):
+    problem = models.OneToOneField(
+        Problem,
+        on_delete=models.CASCADE,
+        related_name='meta',
+        help_text=(
+            '문제를 입력해주세요.'
+        ),
+    )
+    difficulty = models.IntegerField(
+        help_text=(
+            '문제 난이도를 입력해주세요.'
+        ),
+        choices=ProblemDifficulty.choices,
+    )
+    time_complexity = models.CharField(
+        max_length=100,
+        help_text=(
+            '문제 시간 복잡도를 입력해주세요. ',
+            '예) O(1), O(n), O(n^2), O(V \log E) 등',
+        ),
+        validators=[
+            # TODO: 시간 복잡도 검증 로직 추가
+        ],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    # TODO: tags 필드 추가
+    # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
+    # TODO: 변경 이력을 저장하는 필드 추가
