@@ -61,11 +61,11 @@ class Problem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class ProblemMeta(models.Model):
+class ProblemAnalysis(models.Model):
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
-        related_name='meta',
+        related_name='analysis',
         help_text=(
             '문제를 입력해주세요.'
         ),
