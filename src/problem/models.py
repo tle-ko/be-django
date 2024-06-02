@@ -1,12 +1,8 @@
 from django.db import models
 
+from core.models import Difficulty
+from core.models import DSA
 from user.models import User
-
-
-class ProblemDifficulty(models.IntegerChoices):
-    EASY = 1, '쉬움'
-    NORMAL = 2, '보통'
-    HARD = 3, '어려움'
 
 
 class Problem(models.Model):
@@ -78,7 +74,14 @@ class ProblemMeta(models.Model):
         help_text=(
             '문제 난이도를 입력해주세요.'
         ),
-        choices=ProblemDifficulty.choices,
+        choices=Difficulty.choices,
+    )
+    dsa_tags = models.ManyToManyField(
+        DSA,
+        related_name='problems',
+        help_text=(
+            '문제의 DSA 태그를 입력해주세요.'
+        ),
     )
     time_complexity = models.CharField(
         max_length=100,
@@ -91,6 +94,5 @@ class ProblemMeta(models.Model):
         ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    # TODO: tags 필드 추가
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
     # TODO: 변경 이력을 저장하는 필드 추가

@@ -1,8 +1,9 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from user.models import User
 from boj.models import BOJLevel
+from core.models import Language
+from user.models import User
 
 
 class Crew(models.Model):
@@ -36,6 +37,13 @@ class Crew(models.Model):
         null=True,
         blank=True,
     )
+    languages = models.ManyToManyField(
+        Language,
+        related_name='crews',
+        help_text=(
+            '유저가 사용 가능한 언어를 입력해주세요.'
+        ),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -57,7 +65,6 @@ class CrewMemeber(models.Model):
             '유저를 입력해주세요.'
         ),
     )
-    # TODO: 크루 멤버가 선택 가능한 언어 목록 제한
     is_approved = models.BooleanField(
         help_text=(
             '가입 승인 여부를 입력해주세요.'
@@ -99,16 +106,6 @@ class CrewRecruitment(models.Model):
         ),
         validators=[
             # TODO: 태그 형식 검사
-        ],
-    )
-    allowed_languages = models.JSONField(
-        # TODO: 언어 목록 제한을 리크루팅에만 적용할지, 크루에도 적용할지 결정
-        help_text=(
-            '허용 언어를 입력해주세요. ',
-            '언어의 아이디를 입력해주세요.'
-        ),
-        validators=[
-            # TODO: 언어 아이디 검사
         ],
     )
     is_boj_user_only = models.BooleanField(

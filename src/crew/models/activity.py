@@ -1,9 +1,10 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from user.models import User
-from problem.models import Problem
+from core.models import Language
 from crew.models.crew import Crew
+from problem.models import Problem
+from user.models import User
 
 
 class CrewActivity(models.Model):
@@ -78,12 +79,13 @@ class CrewActivityProblemSubmission(models.Model):
             '유저의 코드를 입력해주세요.'
         ),
     )
-    language = models.CharField(
-        max_length=20,
+    language = models.ForeignKey(
+        Language,
+        on_delete=models.PROTECT,
+        related_name='submissions',
         help_text=(
             '유저의 코드 언어를 입력해주세요.'
         ),
-        # TODO: 언어 목록 선택지 추가
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
