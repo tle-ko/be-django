@@ -62,7 +62,7 @@ class Problem(models.Model):
 
 
 class ProblemAnalysis(models.Model):
-    problem = models.OneToOneField(
+    problem = models.ForeignKey(
         Problem,
         on_delete=models.CASCADE,
         related_name='analysis',
@@ -95,4 +95,3 @@ class ProblemAnalysis(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
-    # TODO: 변경 이력을 저장하는 필드 추가
