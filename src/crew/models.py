@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from user.models import User
+from problem.models import Problem
 
 
 class Crew(models.Model):
@@ -158,4 +159,32 @@ class CrewActivity(models.Model):
             '활동 종료 일자를 입력해주세요.'
         ),
     )
-    # TODO: Problem 모델 추가
+
+
+class CrewActivityProblem(models.Model):
+    activity = models.ForeignKey(
+        CrewActivity,
+        on_delete=models.CASCADE,
+        related_name='problems',
+        help_text=(
+            '활동을 입력해주세요.'
+        ),
+    )
+    problem = models.ForeignKey(
+        Problem,
+        on_delete=models.PROTECT,
+        related_name='activities',
+        help_text=(
+            '문제를 입력해주세요.'
+        ),
+    )
+    order = models.IntegerField(
+        help_text=(
+            '문제 순서를 입력해주세요.'
+        ),
+        validators=[
+            MinValueValidator(1),
+            # TODO: 다른 문제 순서와 겹치지 않도록 검사
+        ],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
