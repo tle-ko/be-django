@@ -18,11 +18,3 @@ class User(auth.models.User):
         upload_to='user_images/',
         null=True
     )
-    boj_id = models.CharField(
-        max_length=100, # TODO: 추후 조사 필요
-        unique=True,
-        help_text=(
-            '백준 아이디를 입력해주세요.'
-        ),
-        null=True,
-    )
