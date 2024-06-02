@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from user.models import User
 from problem.models import Problem
 from crew.models.crew import Crew
 
@@ -53,3 +54,35 @@ class CrewActivityProblem(models.Model):
         ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CrewActivityProblemSubmission(models.Model):
+    activity_problem = models.ForeignKey(
+        CrewActivityProblem,
+        on_delete=models.CASCADE,
+        related_name='submissions',
+        help_text=(
+            '활동 문제를 입력해주세요.'
+        ),
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='submissions',
+        help_text=(
+            '유저를 입력해주세요.'
+        ),
+    )
+    code = models.TextField(
+        help_text=(
+            '유저의 코드를 입력해주세요.'
+        ),
+    )
+    language = models.CharField(
+        max_length=20,
+        help_text=(
+            '유저의 코드 언어를 입력해주세요.'
+        ),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
