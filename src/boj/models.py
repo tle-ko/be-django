@@ -1,5 +1,7 @@
 from django.db import models
 
+from user.models import User
+
 
 class BOJLevel(models.IntegerChoices):
     U = 0, 'Unrated'
@@ -33,3 +35,40 @@ class BOJLevel(models.IntegerChoices):
     R3 = 28, '루비 3'
     R2 = 29, '루비 2'
     R1 = 30, '루비 1'
+
+
+class BOJUser(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='boj_user',
+        help_text=(
+            '이 사용자와 연결된 사용자를 입력해주세요.'
+        ),
+    )
+    boj_id = models.CharField(
+        max_length=100, # TODO: 추후 최대 아이디 길이 조사 필요
+        help_text=(
+            '백준 아이디를 입력해주세요.'
+        ),
+        unique=True,
+    )
+    is_verified = models.BooleanField(
+        default=False,
+        help_text=(
+            '이 사용자가 백준 사용자임을 확인했는지 여부를 입력해주세요.'
+        ),
+    )
+    level = models.IntegerField(
+        help_text=(
+            '백준 레벨을 입력해주세요.'
+        ),
+        choices=BOJLevel.choices,
+        default=BOJLevel.U,
+    )
+    updated_at = models.DateTimeField(
+        help_text=(
+            '이 사용자의 정보가 최근에 업데이트된 시간을 입력해주세요.'
+        ),
+        auto_now=True,
+    )
