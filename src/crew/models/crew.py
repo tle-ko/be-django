@@ -57,6 +57,7 @@ class CrewMemeber(models.Model):
             '유저를 입력해주세요.'
         ),
     )
+    # TODO: 크루 멤버가 선택 가능한 언어 목록 제한
     is_approved = models.BooleanField(
         help_text=(
             '가입 승인 여부를 입력해주세요.'
@@ -101,6 +102,7 @@ class CrewRecruitment(models.Model):
         ],
     )
     allowed_languages = models.JSONField(
+        # TODO: 언어 목록 제한을 리크루팅에만 적용할지, 크루에도 적용할지 결정
         help_text=(
             '허용 언어를 입력해주세요. ',
             '언어의 아이디를 입력해주세요.'

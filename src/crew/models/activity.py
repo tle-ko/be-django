@@ -83,6 +83,7 @@ class CrewActivityProblemSubmission(models.Model):
         help_text=(
             '유저의 코드 언어를 입력해주세요.'
         ),
+        # TODO: 언어 목록 선택지 추가
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
