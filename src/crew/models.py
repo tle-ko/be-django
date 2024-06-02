@@ -4,6 +4,7 @@ from django.db import models
 
 from user.models import User
 from problem.models import Problem
+from boj.models import BOJLevel
 
 
 class Crew(models.Model):
@@ -88,11 +89,8 @@ class CrewOpening(models.Model):
             '최소 백준 레벨을 입력해주세요. ',
             '0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I'
         ),
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(30),
-        ],
-        default=0,
+        choices=BOJLevel.choices,
+        default=BOJLevel.U,
     )
     max_boj_tier = models.IntegerField(
         help_text=(
@@ -100,10 +98,10 @@ class CrewOpening(models.Model):
             '0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I'
         ),
         validators=[
-            MinValueValidator(0),
-            MaxValueValidator(30),
+            # TODO: 최대 레벨이 최소 레벨보다 높은지 검사
         ],
-        default=30,
+        choices=BOJLevel.choices,
+        default=BOJLevel.R1,
     )
 
 
