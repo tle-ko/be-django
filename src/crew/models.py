@@ -29,13 +29,6 @@ class Crew(models.Model):
             '크루장을 입력해주세요.'
         ),
     )
-    members = models.ManyToManyField(
-        User,
-        related_name='crews',
-        help_text=(
-            '크루에 속한 유저들을 입력해주세요.'
-        ),
-    )
     notice = models.TextField(
         help_text=(
             '크루 공지를 입력해주세요.'
@@ -111,3 +104,36 @@ class CrewOpening(models.Model):
         ],
         default=30,
     )
+
+
+class CrewMemeber(models.Model):
+    crew = models.ForeignKey(
+        Crew,
+        on_delete=models.CASCADE,
+        related_name='members',
+        help_text=(
+            '크루를 입력해주세요.'
+        ),
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='crews',
+        help_text=(
+            '유저를 입력해주세요.'
+        ),
+    )
+    is_approved = models.BooleanField(
+        help_text=(
+            '가입 승인 여부를 입력해주세요.'
+        ),
+        default=False,
+    )
+    approved_at = models.DateTimeField(
+        help_text=(
+            '가입 승인 일자를 입력해주세요.'
+        ),
+        null=True,
+        default=None,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
