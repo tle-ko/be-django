@@ -137,3 +137,25 @@ class CrewMemeber(models.Model):
         default=None,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CrewActivity(models.Model):
+    crew = models.ForeignKey(
+        Crew,
+        on_delete=models.CASCADE,
+        related_name='activities',
+        help_text=(
+            '크루를 입력해주세요.'
+        ),
+    )
+    start_at = models.DateTimeField(
+        help_text=(
+            '활동 시작 일자를 입력해주세요.'
+        ),
+    )
+    end_at = models.DateTimeField(
+        help_text=(
+            '활동 종료 일자를 입력해주세요.'
+        ),
+    )
+    # TODO: Problem 모델 추가
