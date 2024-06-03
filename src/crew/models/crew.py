@@ -93,6 +93,7 @@ class Crew(models.Model):
             # TODO: 태그 형식 검사
         ],
         blank=True,
+        default=list,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
