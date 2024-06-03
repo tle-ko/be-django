@@ -10,7 +10,8 @@ class User(DjangoUser):
     ]
     image = models.ImageField(
         upload_to='user_images/',
-        null=True
+        null=True,
+        blank=True,
     )
 
 
