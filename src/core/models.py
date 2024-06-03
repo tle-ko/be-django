@@ -41,6 +41,12 @@ class Tag(models.Model):
         ),
     )
 
+    def __repr__(self) -> str:
+        return f'[#{self.key}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()} ({self.name_ko})'
+
 
 class Language(models.Model):
     key = models.CharField(
@@ -63,3 +69,9 @@ class Language(models.Model):
             '언어 확장자를 입력해주세요. (최대 20자)'
         ),
     )
+
+    def __repr__(self) -> str:
+        return f'[#{self.key}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()} ({self.name})'

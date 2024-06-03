@@ -60,6 +60,12 @@ class Problem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __repr__(self) -> str:
+        return f'[{self.title}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()} ← {self.user.__repr__()}'
+
 
 class ProblemAnalysis(models.Model):
     problem = models.ForeignKey(
@@ -95,3 +101,8 @@ class ProblemAnalysis(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
+
+    def __str__(self) -> str:
+        difficulty = Difficulty(self.difficulty).label
+        tags = ' '.join([f'#{tag.key}' for tag in self.dsa_tags.all()])
+        return f'{self.pk} : {self.problem.__repr__()} ← [{difficulty} / {self.time_complexity} / {tags}]'

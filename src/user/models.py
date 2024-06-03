@@ -10,8 +10,16 @@ class User(DjangoUser):
     ]
     image = models.ImageField(
         upload_to='user_images/',
-        null=True
+        null=True,
+        blank=True,
     )
+
+    def __repr__(self) -> str:
+        return f'[@{self.username}]'
+
+    def __str__(self) -> str:
+        staff = '(관리자)' if self.is_staff else ''
+        return f'{self.pk} : {self.__repr__()} {staff}'
 
 
 User._meta.get_field('email')._unique = True

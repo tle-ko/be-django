@@ -27,6 +27,12 @@ class CrewActivity(models.Model):
         ),
     )
 
+    def __repr__(self) -> str:
+        return f'{self.crew.__repr__()} ← [{self.start_at.date()} ~ {self.end_at.date()}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
+
 
 class CrewActivityProblem(models.Model):
     activity = models.ForeignKey(
@@ -55,6 +61,12 @@ class CrewActivityProblem(models.Model):
         ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __repr__(self) -> str:
+        return f'{self.activity.__repr__()} ← #{self.order} {self.problem.__repr__()}'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
 
 
 class CrewActivityProblemSubmission(models.Model):
@@ -89,6 +101,12 @@ class CrewActivityProblemSubmission(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self) -> str:
+        return f'{self.activity_problem.__repr__()} ← {self.user.__repr__()} ({self.language.name})'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
 
 
 class CrewActivityProblemSubmissionComment(models.Model):
@@ -133,3 +151,10 @@ class CrewActivityProblemSubmissionComment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self) -> str:
+        line_range = f'L{self.line_number_start}:L{self.line_number_end}'
+        return f'{self.submission.__repr__()} ← {self.user.__repr__()} {line_range} "{self.content}"'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'

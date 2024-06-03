@@ -15,10 +15,13 @@ class Crew(models.Model):
         ),
     )
     emoji = models.CharField(
-        max_length=1,
+        max_length=2,
         help_text=(
             '크루 아이콘을 입력해주세요. (이모지)'
         ),
+        validators=[
+            # TODO: 이모지 형식 검사
+        ],
         null=True,
         blank=True,
     )
@@ -80,11 +83,27 @@ class Crew(models.Model):
         null=True,
         default=None,
     )
+    tags = models.JSONField(
+        help_text=(
+            '태그를 입력해주세요.'
+        ),
+        validators=[
+            # TODO: 태그 형식 검사
+        ],
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __repr__(self) -> str:
+        return f'[{self.emoji} {self.name}]'
 
-class CrewMemeber(models.Model):
+    def __str__(self) -> str:
+        member_count = f'({self.members.count()}/{self.max_member})'
+        return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
+
+
+
+class CrewMember(models.Model):
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
@@ -102,6 +121,12 @@ class CrewMemeber(models.Model):
         ),
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __repr__(self) -> str:
+        return f'[{self.crew.emoji} {self.crew.name}] ← [@{self.user.username}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
 
 
 class CrewMemberRequest(models.Model):
@@ -128,12 +153,10 @@ class CrewMemberRequest(models.Model):
         null=True,
         blank=True,
     )
-    tags = models.JSONField(
-        help_text=(
-            '태그를 입력해주세요.'
-        ),
-        validators=[
-            # TODO: 태그 형식 검사
-        ],
-    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __repr__(self) -> str:
+        return f'{self.crew.__repr__()} ← {self.user.__repr__()} : "{self.message}"'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
