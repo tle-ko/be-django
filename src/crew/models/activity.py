@@ -70,6 +70,7 @@ class CrewActivityProblem(models.Model):
 
 
 class CrewActivityProblemSubmission(models.Model):
+    # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     activity_problem = models.ForeignKey(
         CrewActivityProblem,
         on_delete=models.CASCADE,
