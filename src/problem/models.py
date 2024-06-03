@@ -82,7 +82,7 @@ class ProblemAnalysis(models.Model):
         ),
         choices=Difficulty.choices,
     )
-    dsa_tags = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         related_name='problems',
         help_text=(
@@ -104,5 +104,5 @@ class ProblemAnalysis(models.Model):
 
     def __str__(self) -> str:
         difficulty = Difficulty(self.difficulty).label
-        tags = ' '.join([f'#{tag.key}' for tag in self.dsa_tags.all()])
+        tags = ' '.join([f'#{tag.key}' for tag in self.tags.all()])
         return f'{self.pk} : {self.problem.__repr__()} ← [{difficulty} / {self.time_complexity} / {tags}]'
