@@ -94,6 +94,14 @@ class Crew(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __repr__(self) -> str:
+        return f'[{self.emoji} {self.name}]'
+
+    def __str__(self) -> str:
+        member_count = f'({self.members.count()}/{self.max_member})'
+        return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
+
+
 
 class CrewMember(models.Model):
     crew = models.ForeignKey(
@@ -113,6 +121,12 @@ class CrewMember(models.Model):
         ),
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __repr__(self) -> str:
+        return f'[{self.crew.emoji} {self.crew.name}] ← [@{self.user.username}]'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'
 
 
 class CrewMemberRequest(models.Model):
@@ -140,3 +154,9 @@ class CrewMemberRequest(models.Model):
         blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __repr__(self) -> str:
+        return f'{self.crew.__repr__()} ← {self.user.__repr__()} : "{self.message}"'
+
+    def __str__(self) -> str:
+        return f'{self.pk} : {self.__repr__()}'

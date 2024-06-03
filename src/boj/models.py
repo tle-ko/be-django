@@ -74,6 +74,13 @@ class BOJUser(models.Model):
         auto_now=True,
     )
 
+    def __repr__(self) -> str:
+        return f'[@{self.boj_id} | *{BOJLevel(self.level).label}]'
+
+    def __str__(self) -> str:
+        verified = 'verified' if self.is_verified else 'not-verified'
+        return f'{self.pk} : {self.__repr__()} ({verified}) ← {self.user.__repr__()}'
+
 
 class BOJTag(models.Model):
     tag = models.OneToOneField(
@@ -92,3 +99,6 @@ class BOJTag(models.Model):
         null=True,
         default=None,
     )
+
+    def __str__(self) -> str:
+        return f'{self.boj_id} : {self.tag.__repr__()}'
