@@ -10,35 +10,35 @@ from typing import List
 
 
 @dataclasses.dataclass
-class DisplayName:
+class DisplayNameJSON:
     language: str
     name: str
     short: str
 
 
 @dataclasses.dataclass
-class Alias:
+class AliasJSON:
     alias: str
 
 
 @dataclasses.dataclass
-class Tag:
+class TagJSON:
     key: str
     isMeta: bool
     bojTagId: int
     problemCount: int
-    displayNames: List[DisplayName]
-    aliases: List[Alias]
+    displayNames: List[DisplayNameJSON]
+    aliases: List[AliasJSON]
 
 
-def load_tags(file='tools/tags.json') -> List[Tag]:
+def load_tags(file='../tools/tags.json') -> List[TagJSON]:
     with open(file) as f:
         raw_tags = json.load(f)
     tags = []
     for item in raw_tags['items']:
-        tag = Tag(**item)
-        tag.displayNames = [DisplayName(**display_name) for display_name in item["displayNames"]]
-        tag.aliases = [Alias(**alias) for alias in item["aliases"]]
+        tag = TagJSON(**item)
+        tag.displayNames = [DisplayNameJSON(**display_name) for display_name in item["displayNames"]]
+        tag.aliases = [AliasJSON(**alias) for alias in item["aliases"]]
         tags.append(tag)
     return tags
 
@@ -49,13 +49,18 @@ from boj.models import BOJTag
 from core.models import Tag
 
 
+tag_data_list = load_tags()
+
 with atomic():
-    for tag_data in load_tags():
+    for tag_data in tag_data_list:
         tag = Tag.objects.get_or_create(key=tag_data.key)[0]
         tag.name_ko = next(filter(lambda x: x.language == 'ko', tag_data.displayNames)).name
         tag.name_en = next(filter(lambda x: x.language == 'en', tag_data.displayNames)).name
+        tag.full_clean()
         tag.save()
-
-        boj_tag = BOJTag.objects.get_or_create(boj_id=tag_data.bojTagId)[0]
-        boj_tag.tag = tag
+        boj_tag = BOJTag.objects.get_or_create(
+            boj_id=tag_data.bojTagId,
+            tag=tag,
+        )[0]
+        boj_tag.full_clean()
         boj_tag.save()
