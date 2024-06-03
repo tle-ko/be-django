@@ -31,6 +31,14 @@ class TagJSON:
     aliases: List[AliasJSON]
 
 
+@dataclasses.dataclass
+class LanguageJSON:
+    key: str
+    bojId: int
+    displayName: str
+    extension: str
+
+
 def load_tags(file='../tools/tags.json') -> List[TagJSON]:
     with open(file) as f:
         raw_tags = json.load(f)
@@ -43,16 +51,24 @@ def load_tags(file='../tools/tags.json') -> List[TagJSON]:
     return tags
 
 
+def load_languages(file='../tools/languages.json') -> List[str]:
+    with open(file) as f:
+        raw_languages = json.load(f)
+    languages = []
+    for item in raw_languages['items']:
+        languages.append(LanguageJSON(**item))
+    return languages
+
+
 from django.db.transaction import atomic
 
 from boj.models import BOJTag
+from core.models import Language
 from core.models import Tag
 
 
-tag_data_list = load_tags()
-
 with atomic():
-    for tag_data in tag_data_list:
+    for tag_data in load_tags():
         tag = Tag.objects.get_or_create(key=tag_data.key)[0]
         tag.name_ko = next(filter(lambda x: x.language == 'ko', tag_data.displayNames)).name
         tag.name_en = next(filter(lambda x: x.language == 'en', tag_data.displayNames)).name
@@ -64,3 +80,15 @@ with atomic():
         )[0]
         boj_tag.full_clean()
         boj_tag.save()
+
+
+with atomic():
+    for lang_data in load_languages():
+        lang = Language.objects.get_or_create(
+            pk=lang_data.bojId,
+            key=lang_data.key
+        )[0]
+        lang.name = lang_data.displayName
+        lang.extension = lang_data.extension
+        lang.full_clean()
+        lang.save()
