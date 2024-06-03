@@ -43,6 +43,13 @@ class Tag(models.Model):
 
 
 class Language(models.Model):
+    key = models.CharField(
+        max_length=20,
+        unique=True,
+        help_text=(
+            '언어 키를 입력해주세요. (최대 20자)'
+        ),
+    )
     name = models.CharField(
         max_length=20,
         unique=True,
