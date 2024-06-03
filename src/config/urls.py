@@ -24,4 +24,11 @@ API_VERSION_PREFIX = "api/v1"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+# Static files
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Media files
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# TODO: Remove above line in production (미디어 파일은 S3 같은 외부 의존성으로 변경하기)
