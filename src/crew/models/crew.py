@@ -15,10 +15,13 @@ class Crew(models.Model):
         ),
     )
     emoji = models.CharField(
-        max_length=1,
+        max_length=2,
         help_text=(
             '크루 아이콘을 입력해주세요. (이모지)'
         ),
+        validators=[
+            # TODO: 이모지 형식 검사
+        ],
         null=True,
         blank=True,
     )
