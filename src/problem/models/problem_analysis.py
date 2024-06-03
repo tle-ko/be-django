@@ -39,7 +39,9 @@ class ProblemAnalysis(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
 
+    def __repr__(self) -> str:
+        tags = ' '.join(f'#{tag.key}' for tag in self.tags.all())
+        return f'[{Difficulty(self.difficulty).label} / {self.time_complexity} / {tags}]'
+
     def __str__(self) -> str:
-        difficulty = Difficulty(self.difficulty).label
-        tags = ' '.join([f'#{tag.key}' for tag in self.tags.all()])
-        return f'{self.pk} : {self.problem.__repr__()} ← [{difficulty} / {self.time_complexity} / {tags}]'
+        return f'{self.pk} : {self.problem.__repr__()} ← {self.__repr__()}'
