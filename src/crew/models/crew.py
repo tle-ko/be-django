@@ -83,6 +83,14 @@ class Crew(models.Model):
         null=True,
         default=None,
     )
+    tags = models.JSONField(
+        help_text=(
+            '태그를 입력해주세요.'
+        ),
+        validators=[
+            # TODO: 태그 형식 검사
+        ],
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -130,13 +138,5 @@ class CrewMemberRequest(models.Model):
         ),
         null=True,
         blank=True,
-    )
-    tags = models.JSONField(
-        help_text=(
-            '태그를 입력해주세요.'
-        ),
-        validators=[
-            # TODO: 태그 형식 검사
-        ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
