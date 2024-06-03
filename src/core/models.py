@@ -7,7 +7,7 @@ class Difficulty(models.IntegerChoices):
     HARD = 3, '어려움'
 
 
-class DSA(models.Model):
+class Tag(models.Model):
     """Data Structure & Algorithm"""
     parent = models.ForeignKey(
         'self',

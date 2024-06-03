@@ -1,6 +1,6 @@
 from django.db import models
 
-from core.models import DSA
+from core.models import Tag
 from user.models import User
 
 
@@ -77,7 +77,7 @@ class BOJUser(models.Model):
 
 class BOJTag(models.Model):
     tag = models.OneToOneField(
-        DSA,
+        Tag,
         on_delete=models.CASCADE,
         related_name='boj_tag',
         help_text=(

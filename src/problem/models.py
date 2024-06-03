@@ -1,7 +1,7 @@
 from django.db import models
 
 from core.models import Difficulty
-from core.models import DSA
+from core.models import Tag
 from user.models import User
 
 
@@ -77,7 +77,7 @@ class ProblemAnalysis(models.Model):
         choices=Difficulty.choices,
     )
     dsa_tags = models.ManyToManyField(
-        DSA,
+        Tag,
         related_name='problems',
         help_text=(
             '문제의 DSA 태그를 입력해주세요.'

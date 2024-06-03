@@ -31,7 +31,6 @@ class Tag:
     aliases: List[Alias]
 
 
-
 def load_tags(file='tools/tags.json') -> List[Tag]:
     with open(file) as f:
         raw_tags = json.load(f)
@@ -47,16 +46,16 @@ def load_tags(file='tools/tags.json') -> List[Tag]:
 from django.db.transaction import atomic
 
 from boj.models import BOJTag
-from core.models import DSA
+from core.models import Tag
 
 
 with atomic():
-    for tag in load_tags():
-        dsa = DSA.objects.get_or_create(key=tag.key)[0]
-        dsa.name_ko = next(filter(lambda x: x.language == 'ko', tag.displayNames)).name
-        dsa.name_en = next(filter(lambda x: x.language == 'en', tag.displayNames)).name
-        dsa.save()
+    for tag_data in load_tags():
+        tag = Tag.objects.get_or_create(key=tag_data.key)[0]
+        tag.name_ko = next(filter(lambda x: x.language == 'ko', tag_data.displayNames)).name
+        tag.name_en = next(filter(lambda x: x.language == 'en', tag_data.displayNames)).name
+        tag.save()
 
-        boj_tag = BOJTag.objects.get_or_create(boj_id=tag.bojTagId)[0]
-        boj_tag.tag = dsa
+        boj_tag = BOJTag.objects.get_or_create(boj_id=tag_data.bojTagId)[0]
+        boj_tag.tag = tag
         boj_tag.save()
