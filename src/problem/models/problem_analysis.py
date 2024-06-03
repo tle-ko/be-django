@@ -1,0 +1,45 @@
+from django.db import models
+
+from core.models import *
+from problem.models.problem import Problem
+
+
+class ProblemAnalysis(models.Model):
+    problem = models.ForeignKey(
+        Problem,
+        on_delete=models.CASCADE,
+        related_name='analysis',
+        help_text=(
+            '문제를 입력해주세요.'
+        ),
+    )
+    difficulty = models.IntegerField(
+        help_text=(
+            '문제 난이도를 입력해주세요.'
+        ),
+        choices=Difficulty.choices,
+    )
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='problems',
+        help_text=(
+            '문제의 DSA 태그를 입력해주세요.'
+        ),
+    )
+    time_complexity = models.CharField(
+        max_length=100,
+        help_text=(
+            '문제 시간 복잡도를 입력해주세요. ',
+            '예) O(1), O(n), O(n^2), O(V \log E) 등',
+        ),
+        validators=[
+            # TODO: 시간 복잡도 검증 로직 추가
+        ],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
+
+    def __str__(self) -> str:
+        difficulty = Difficulty(self.difficulty).label
+        tags = ' '.join([f'#{tag.key}' for tag in self.tags.all()])
+        return f'{self.pk} : {self.problem.__repr__()} ← [{difficulty} / {self.time_complexity} / {tags}]'
