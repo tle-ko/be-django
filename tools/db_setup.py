@@ -45,13 +45,18 @@ def load_tags(file='tools/tags.json') -> List[Tag]:
 
 
 from django.db.transaction import atomic
+
+from boj.models import BOJTag
 from core.models import DSA
 
 
 with atomic():
     for tag in load_tags():
         dsa = DSA.objects.get_or_create(key=tag.key)[0]
-        dsa.boj_tag_id = tag.bojTagId
         dsa.name_ko = next(filter(lambda x: x.language == 'ko', tag.displayNames)).name
         dsa.name_en = next(filter(lambda x: x.language == 'en', tag.displayNames)).name
         dsa.save()
+
+        boj_tag = BOJTag.objects.get_or_create(boj_id=tag.bojTagId)[0]
+        boj_tag.tag = dsa
+        boj_tag.save()

@@ -1,5 +1,6 @@
 from django.db import models
 
+from core.models import DSA
 from user.models import User
 
 
@@ -71,4 +72,23 @@ class BOJUser(models.Model):
             '이 사용자의 정보가 최근에 업데이트된 시간을 입력해주세요.'
         ),
         auto_now=True,
+    )
+
+
+class BOJTag(models.Model):
+    tag = models.OneToOneField(
+        DSA,
+        on_delete=models.CASCADE,
+        related_name='boj_tag',
+        help_text=(
+            '이 태그와 연결된 알고리즘 태그를 입력해주세요.'
+        ),
+    )
+    boj_id = models.IntegerField(
+        unique=True,
+        help_text=(
+            '백준 태그 ID를 입력해주세요.'
+        ),
+        null=True,
+        default=None,
     )

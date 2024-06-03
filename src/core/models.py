@@ -9,13 +9,14 @@ class Difficulty(models.IntegerChoices):
 
 class DSA(models.Model):
     """Data Structure & Algorithm"""
-    boj_id = models.IntegerField(
-        unique=True,
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='children',
         help_text=(
-            '백준 태그 ID를 입력해주세요.'
+            '부모 알고리즘 태그를 입력해주세요.'
         ),
         null=True,
-        default=None,
     )
     key = models.CharField(
         max_length=20,
@@ -36,21 +37,6 @@ class DSA(models.Model):
         unique=True,
         help_text=(
             '알고리즘 태그 이름(영문)을 입력해주세요. (최대 20자)'
-        ),
-    )
-    parent = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        related_name='children',
-        help_text=(
-            '부모 알고리즘 태그를 입력해주세요.'
-        ),
-        null=True,
-    )
-    is_group = models.BooleanField(
-        default=False,
-        help_text=(
-            '그룹인지 여부를 입력해주세요.'
         ),
     )
 
