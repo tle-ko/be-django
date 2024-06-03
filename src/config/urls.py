@@ -22,8 +22,8 @@ from django.urls import (
     path,
 )
 
-
 from core.views import *
+from crew.views import *
 from problem.views import *
 from user.views import *
 
@@ -41,7 +41,7 @@ urlpatterns = [
                 path("signout", UserAPIView.SignOut.as_view()), # 로그아웃 기능 구현
             ])),
             path("user/", include([
-                path("", VIEW_PLACE_HOLDER), # TODO: 사용자 목록 조회 기능 구현 (관리자용)
+                path("", UserAPIView.List.as_view()), # 사용자 목록 조회 기능 구현 (관리자용)
                 path("<int:id>/", include([
                     path("", VIEW_PLACE_HOLDER), # TODO: 사용자 상세 조회+수정 기능 구현 (관리자용)
                 ])),
@@ -55,7 +55,7 @@ urlpatterns = [
                 ])),
             ])),
             path("crew/", include([
-                path("", VIEW_PLACE_HOLDER), # TODO: 전체 크루 목록 조회(관리자용) + 생성 기능 구현
+                path("", CrewAPIView.ListCreate.as_view()), # 전체 크루 목록 조회(관리자용) + 생성
                 path("my", VIEW_PLACE_HOLDER), # TODO: 내가 속한 크루 목록 조회 기능 구현
                 path("recruiting", VIEW_PLACE_HOLDER), # TODO: 크루원을 모집 중인 크루 목록 조회 기능 구현
                 path("<int:id>/", include([
@@ -84,10 +84,10 @@ urlpatterns = [
                 ])),
             ])),
             path("tag/", include([
-                path("", TagAPIView.ListCreate.as_view()), # 전체 태그 목록 조회(관리자용) + 생성 기능 구현
+                path("", TagAPIView.ListCreate.as_view()), # 전체 태그 목록 조회(관리자용) + 생성 기능
             ])),
             path("language/", include([
-                path("", LanguageAPIView.ListCreate.as_view()), # 전체 언어 목록 조회(관리자용) + 생성 기능 구현
+                path("", LanguageAPIView.ListCreate.as_view()), # 전체 언어 목록 조회(관리자용) + 생성 기능
             ])),
         ])),
     ])),
