@@ -84,7 +84,7 @@ class Crew(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class CrewMemeber(models.Model):
+class CrewMember(models.Model):
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
