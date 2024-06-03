@@ -57,3 +57,9 @@ class Language(models.Model):
             '언어 이름을 입력해주세요. (최대 20자)'
         ),
     )
+    extension = models.CharField(
+        max_length=20,
+        help_text=(
+            '언어 확장자를 입력해주세요. (최대 20자)'
+        ),
+    )
