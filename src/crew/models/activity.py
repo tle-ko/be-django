@@ -99,6 +99,17 @@ class CrewActivityProblemSubmission(models.Model):
             '유저의 코드 언어를 입력해주세요.'
         ),
     )
+    is_correct = models.BooleanField(
+        help_text=(
+            '유저의 코드가 정답인지 여부를 입력해주세요.'
+        ),
+    )
+    is_help_needed = models.BooleanField(
+        help_text=(
+            '유저의 코드에 도움이 필요한지 여부를 입력해주세요.'
+        ),
+        default=False,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
