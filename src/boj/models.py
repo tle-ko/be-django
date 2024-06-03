@@ -79,7 +79,7 @@ class BOJUser(models.Model):
 
     def __str__(self) -> str:
         verified = 'verified' if self.is_verified else 'not-verified'
-        return f'{self.pk} : {self.__repr__()} ({verified}) ← {self.user.__repr__()}'
+        return f'{self.pk} : {self.user.__repr__()} ← {self.__repr__()} ({verified})'
 
 
 class BOJTag(models.Model):

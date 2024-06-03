@@ -12,6 +12,10 @@ class User(DjangoUser):
         upload_to='user_images/',
         null=True,
         blank=True,
+        validators=[
+            # TODO: 이미지 크기 제한
+            # TODO: 이미지 확장자 제한
+        ]
     )
 
     def __repr__(self) -> str:

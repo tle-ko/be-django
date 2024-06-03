@@ -68,6 +68,7 @@ class Crew(models.Model):
             '0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I'
         ),
         choices=BOJLevel.choices,
+        blank=True,
         null=True,
         default=None,
     )
@@ -80,6 +81,7 @@ class Crew(models.Model):
             # TODO: 최대 레벨이 최소 레벨보다 높은지 검사
         ],
         choices=BOJLevel.choices,
+        blank=True,
         null=True,
         default=None,
     )
@@ -90,6 +92,8 @@ class Crew(models.Model):
         validators=[
             # TODO: 태그 형식 검사
         ],
+        blank=True,
+        default=list,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
