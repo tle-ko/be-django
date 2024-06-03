@@ -25,7 +25,7 @@ class Crew(models.Model):
     captain = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        related_name='crews',
+        related_name='crews_as_captain',
         help_text=(
             '크루장을 입력해주세요.'
         ),
