@@ -108,6 +108,7 @@ class Crew(models.Model):
 
 
 class CrewMember(models.Model):
+    # TODO: 같은 크루에 여러 번 가입하는 것을 막기 위한 로직 추가
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
@@ -134,6 +135,7 @@ class CrewMember(models.Model):
 
 
 class CrewMemberRequest(models.Model):
+    # TODO: 같은 크루에 여러 번 가입하는 것을 막기 위한 로직 추가
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
