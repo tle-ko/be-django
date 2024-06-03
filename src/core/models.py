@@ -9,6 +9,14 @@ class Difficulty(models.IntegerChoices):
 
 class DSA(models.Model):
     """Data Structure & Algorithm"""
+    boj_tag_id = models.IntegerField(
+        unique=True,
+        help_text=(
+            '백준 태그 ID를 입력해주세요.'
+        ),
+        null=True,
+        default=None,
+    )
     key = models.CharField(
         max_length=20,
         unique=True,
