@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import *
@@ -30,3 +30,9 @@ class UserAPIView:
                 login(request, user)
                 return Response(UserSerializer(user).data)
             return Response(status=HTTPStatus.UNAUTHORIZED)
+
+
+    class Logout(GenericAPIView):
+        def get(self, request: Request):
+            logout(request)
+            return Response(status=HTTPStatus.OK)
