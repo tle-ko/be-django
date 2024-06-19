@@ -34,12 +34,22 @@ class UserAPIView:
         permission_classes = [AllowAny]
 
         def post(self, request: Request):
-            username = request.data.get('username')
-            password = request.data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
+            try:
+                username = User.objects.get(email=email).username
+                user = authenticate(request, username=username, password=password)
+                assert user is not None
                 login(request, user)
                 return Response(UserSerializer(user).data)
+            except User.DoesNotExist:
+                # TODO: add logger
+                pass
+            except AssertionError:
+                # TODO: add logger
+                pass
             return Response(status=HTTPStatus.UNAUTHORIZED)
 
 
