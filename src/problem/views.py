@@ -16,3 +16,11 @@ class ProblemAPIView:
         serializer_class = ProblemSerializer
         permission_classes = [IsAuthenticatedOrReadOnly] # TODO: 본인만 수정 가능하게 수정
         lookup_url_kwarg = 'id'
+
+
+class ProblemAnalysisAPIView:
+    class Retrieve(RetrieveAPIView):
+        queryset = ProblemAnalysis.objects.all()
+        serializer_class = ProblemAnalysisSerializer
+        lookup_url_kwarg = 'id'
+        lookup_field = 'problem__id'
