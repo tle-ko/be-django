@@ -67,7 +67,7 @@ class Problem(models.Model):
 
 
 class ProblemAnalysis(models.Model):
-    problem = models.ForeignKey(
+    problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
         related_name='analysis',
