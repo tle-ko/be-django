@@ -11,10 +11,16 @@ class ProblemAnalysisSerializer(ModelSerializer):
 
     class Meta:
         model = ProblemAnalysis
-        fields = '__all__'
+        fields = [
+            'id',
+            'problem',
+            'difficulty',
+            'tags',
+            'time_complexity',
+            'created_at',
+        ]
         extra_kwargs = {
             'created_at': {'read_only': True},
-            'problem': {'write_only': True},
         }
 
 
