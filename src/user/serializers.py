@@ -36,3 +36,23 @@ class UserSignInSerializer(ModelSerializer):
             'email': {'write_only': True},
             'password': {'write_only': True},
         }
+
+
+class UserSignUpSerializer(ModelSerializer):
+    boj_id = CharField(max_length=40, required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'boj_id',
+            'image',
+            'username',
+            'email',
+            'password',
+        ]
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'boj_id': {'write_only': True},
+            'password': {'write_only': True},
+        }
