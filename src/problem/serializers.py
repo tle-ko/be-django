@@ -7,7 +7,7 @@ from .models import *
 
 
 class ProblemAnalysisSerializer(ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = ProblemAnalysis
@@ -20,6 +20,8 @@ class ProblemAnalysisSerializer(ModelSerializer):
             'created_at',
         ]
         extra_kwargs = {
+            'id': {'read_only': True},
+            'problem': {'read_only': True},
             'created_at': {'read_only': True},
         }
 
