@@ -45,9 +45,9 @@ class Problem(models.Model):
         ),
         blank=True,
     )
-    memory_limit = models.IntegerField(
+    memory_limit = models.FloatField(
         help_text=(
-            '문제 메모리 제한을 입력해주세요. (바이트 단위)'
+            '문제 메모리 제한을 입력해주세요. (MB 단위)'
         ),
     )
     time_limit = models.IntegerField(
