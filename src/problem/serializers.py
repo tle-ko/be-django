@@ -28,7 +28,7 @@ class ProblemAnalysisSerializer(ModelSerializer):
 
 class ProblemSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
-    analysis = ProblemAnalysisSerializer(many=True, read_only=True)
+    analysis = ProblemAnalysisSerializer(read_only=True)
 
     class Meta:
         model = Problem
