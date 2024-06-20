@@ -32,7 +32,7 @@ class UserAPIView:
 
     class SignIn(GenericAPIView):
         queryset = User.objects.all()
-        serializer_class = UserSerializer
+        serializer_class = UserSignInSerializer
         permission_classes = [AllowAny]
 
         def post(self, request: Request):
@@ -49,7 +49,8 @@ class UserAPIView:
 
             login(request, user)
 
-            return Response(UserSerializer(user).data)
+            serializer.instance = user
+            return Response(serializer.data)
 
         def _get_username(self, serializer):
             try:
