@@ -5,11 +5,14 @@ from django.contrib.auth import (
     login,
     logout,
 )
+from django.db.transaction import atomic
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import *
 from rest_framework.permissions import *
+
+from boj.models import BOJUser
 
 from .models import *
 from .serializers import *
@@ -27,7 +30,18 @@ class UserAPIView:
         permission_classes = [AllowAny]
 
         def perform_create(self, serializer):
-            serializer.instance = User.objects.create_user(**serializer.validated_data)
+            boj_id = None
+            if 'boj_id' in serializer.validated_data:
+                boj_id = serializer.validated_data.pop('boj_id')
+            with atomic():
+                user = User.objects.create_user(**serializer.validated_data)
+                user.save()
+                if boj_id is not None:
+                    boj_user = BOJUser.objects.create(user=user, boj_id=boj_id)
+                    boj_user.save()
+                    user.boj_user = boj_user
+                    user.save()
+            serializer.instance = user
 
 
     class SignIn(GenericAPIView):
