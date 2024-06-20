@@ -43,7 +43,7 @@ class UserAPIView:
             return Response(status=HTTPStatus.UNAUTHORIZED)
 
 
-    class Logout(GenericAPIView):
+    class SignOut(GenericAPIView):
         def get(self, request: Request):
             logout(request)
             return Response(status=HTTPStatus.OK)
