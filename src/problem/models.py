@@ -50,11 +50,11 @@ class Problem(models.Model):
             '문제 메모리 제한을 입력해주세요. (MB 단위)'
         ),
     )
-    time_limit = models.IntegerField(
+    time_limit = models.FloatField(
         help_text=(
-            '문제 시간 제한을 입력해주세요. (밀리 초 단위)'
+            '문제 시간 제한을 입력해주세요. (초 단위)'
         ),
-        default=1000,
+        default=1.0,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
