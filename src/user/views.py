@@ -28,7 +28,7 @@ class UserAPIView:
             return Response(UserSerializer(user).data)
 
 
-    class Login(GenericAPIView):
+    class SignIn(GenericAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
         permission_classes = [AllowAny]
