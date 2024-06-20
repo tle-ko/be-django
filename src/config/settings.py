@@ -27,6 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'tle-kr.com',
+    'timelimitexceeded.kr',
     'localhost',
 ]
 
