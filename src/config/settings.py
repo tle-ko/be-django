@@ -144,3 +144,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEFAULT_EXCEPTION_REPORTER = "config.views.NACLExceptionReporter"
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+}
