@@ -28,7 +28,7 @@ class ProblemAPIView:
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Problem.objects.all()
         serializer_class = ProblemSerializer
-        permission_classes = [IsAuthenticatedOrReadOnly] # TODO: 본인만 수정 가능하게 수정
+        permission_classes = [IsAdminUser or IsProblemCreator]
         lookup_url_kwarg = 'id'
 
 
