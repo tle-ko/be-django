@@ -41,6 +41,9 @@ class Tag(models.Model):
         ),
     )
 
+    class Meta:
+        ordering = ['key']
+
     def __repr__(self) -> str:
         return f'[#{self.key}]'
 

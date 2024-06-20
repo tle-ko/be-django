@@ -1,7 +1,6 @@
 from django.db import models
 
-from core.models import Difficulty
-from core.models import Tag
+from core.models import *
 from user.models import User
 
 
@@ -46,16 +45,16 @@ class Problem(models.Model):
         ),
         blank=True,
     )
-    memory_limit = models.IntegerField(
+    memory_limit = models.FloatField(
         help_text=(
-            '문제 메모리 제한을 입력해주세요. (바이트 단위)'
+            '문제 메모리 제한을 입력해주세요. (MB 단위)'
         ),
     )
-    time_limit = models.IntegerField(
+    time_limit = models.FloatField(
         help_text=(
-            '문제 시간 제한을 입력해주세요. (밀리 초 단위)'
+            '문제 시간 제한을 입력해주세요. (초 단위)'
         ),
-        default=1000,
+        default=1.0,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -68,7 +67,7 @@ class Problem(models.Model):
 
 
 class ProblemAnalysis(models.Model):
-    problem = models.ForeignKey(
+    problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
         related_name='analysis',
@@ -82,7 +81,7 @@ class ProblemAnalysis(models.Model):
         ),
         choices=Difficulty.choices,
     )
-    dsa_tags = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         related_name='problems',
         help_text=(
@@ -102,7 +101,9 @@ class ProblemAnalysis(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
 
+    def __repr__(self) -> str:
+        tags = ' '.join(f'#{tag.key}' for tag in self.tags.all())
+        return f'[{Difficulty(self.difficulty).label} / {self.time_complexity} / {tags}]'
+
     def __str__(self) -> str:
-        difficulty = Difficulty(self.difficulty).label
-        tags = ' '.join([f'#{tag.key}' for tag in self.dsa_tags.all()])
-        return f'{self.pk} : {self.problem.__repr__()} ← [{difficulty} / {self.time_complexity} / {tags}]'
+        return f'{self.pk} : {self.problem.__repr__()} ← {self.__repr__()}'
