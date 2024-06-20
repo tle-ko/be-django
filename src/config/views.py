@@ -11,7 +11,7 @@ class NACLExceptionReporter(debug.ExceptionReporter):
     def get_traceback_data(self) -> dict:
         """Return a dictionary containing traceback information."""
         if self._get_domain() in settings.ALLOWED_HOSTS:
-            return super().get_traceback_frames()
+            return super().get_traceback_data()
         return {}
 
 
