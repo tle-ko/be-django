@@ -11,10 +11,21 @@ from .serializers import *
 
 
 class UserAPIView:
-    class ListCreate(ListCreateAPIView):
+    class List(ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
         permission_classes = [IsAdminUser]
+
+
+    class SignUp(GenericAPIView):
+        serializer_class = UserSignUpSerializer
+        permission_classes = [AllowAny]
+
+        def post(self, request: Request):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = User.objects.create_user(**serializer.validated_data)
+            return Response(UserSerializer(user).data)
 
 
     class Login(GenericAPIView):
