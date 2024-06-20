@@ -18,9 +18,12 @@ class IsProblemCreator(BasePermission):
 
 class ProblemAPIView:
     class ListCreate(ListCreateAPIView):
-        queryset = Problem.objects.all()
         serializer_class = ProblemSerializer
         permission_classes = [IsAuthenticated]
+
+        def get_queryset(self):
+            return Problem.objects.filter(user=self.request.user)
+
 
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Problem.objects.all()
