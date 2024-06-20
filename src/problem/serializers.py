@@ -22,6 +22,7 @@ class ProblemSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     analysis = ProblemAnalysisSerializer(many=True, read_only=True)
     time_limit = SerializerMethodField()
+    memory_limit = SerializerMethodField()
 
     class Meta:
         model = Problem
@@ -33,3 +34,6 @@ class ProblemSerializer(ModelSerializer):
 
     def get_time_limit(self, obj: Problem) -> float:
         return obj.time_limit/1000
+
+    def get_memory_limit(self, obj: Problem) -> int:
+        return round(obj.memory_limit/1024/1024)
