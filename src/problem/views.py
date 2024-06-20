@@ -1,6 +1,8 @@
 from rest_framework.generics import *
 from rest_framework.permissions import *
 
+from config.permissions import ReadOnly
+
 from .models import *
 from .serializers import *
 
@@ -30,6 +32,7 @@ class ProblemAPIView:
 class ProblemAnalysisAPIView:
     class Retrieve(RetrieveAPIView):
         queryset = ProblemAnalysis.objects.all()
+        permission_classes = [IsAdminUser or (IsProblemCreator and ReadOnly)]
         serializer_class = ProblemAnalysisSerializer
         lookup_url_kwarg = 'id'
         lookup_field = 'problem__id'
