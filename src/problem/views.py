@@ -5,6 +5,15 @@ from .models import *
 from .serializers import *
 
 
+class IsProblemCreator(BasePermission):
+    def has_object_permission(self, request, view, obj: Problem) -> bool:
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            obj.user == request.user
+        )
+
+
 class ProblemAPIView:
     class ListCreate(ListCreateAPIView):
         queryset = Problem.objects.all()
