@@ -16,3 +16,14 @@ class BOJUserSerializer(ModelSerializer):
             'level': {'read_only': True},
             'is_verified': {'read_only': True},
         }
+
+
+class BOJTagSerializer(ModelSerializer):
+    class Meta:
+        model = BOJTag
+        fields =  [
+            'boj_id',
+        ]
+        extra_kwargs = {
+            'boj_id': {'read_only': True},
+        }
