@@ -28,14 +28,14 @@ class ProblemAPIView:
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Problem.objects.all()
         serializer_class = ProblemSerializer
-        permission_classes = [IsAdminUser or IsProblemCreator]
+        permission_classes = [IsAdminUser | IsProblemCreator]
         lookup_url_kwarg = 'id'
 
 
 class ProblemAnalysisAPIView:
     class Retrieve(RetrieveAPIView):
         queryset = ProblemAnalysis.objects.all()
-        permission_classes = [IsAdminUser or (IsProblemCreator and ReadOnly)]
+        permission_classes = [IsAdminUser | (IsProblemCreator & ReadOnly)]
         serializer_class = ProblemAnalysisSerializer
         lookup_url_kwarg = 'id'
         lookup_field = 'problem__id'
