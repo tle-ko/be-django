@@ -18,15 +18,12 @@ class UserAPIView:
         permission_classes = [IsAdminUser]
 
 
-    class SignUp(GenericAPIView):
+    class SignUp(CreateAPIView):
         serializer_class = UserSignUpSerializer
         permission_classes = [AllowAny]
 
-        def post(self, request: Request):
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            user = User.objects.create_user(**serializer.validated_data)
-            return Response(UserSerializer(user).data)
+        def perform_create(self, serializer):
+            serializer.instance = User.objects.create_user(**serializer.validated_data)
 
 
     class SignIn(GenericAPIView):
