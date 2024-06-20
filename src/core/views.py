@@ -12,3 +12,10 @@ class TagAPIView:
         queryset = Tag.objects.all()
         serializer_class = TagSerializer
         permission_classes = [IsAdminUser|ReadOnly]
+
+
+class LanguageAPIView:
+    class ListCreate(ListCreateAPIView):
+        queryset = Language.objects.all()
+        serializer_class = LanguageSerializer
+        permission_classes = [IsAdminUser|ReadOnly]
