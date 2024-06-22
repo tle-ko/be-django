@@ -37,6 +37,16 @@ class ProblemAPIView:
             return Problem.objects.filter(user=user)
 
 
+    class MyList(ListAPIView):
+        """내가 만든 문제 목록 조회"""
+        serializer_class = ProblemSerializer
+        pagination_class = _PageNumberPagination
+        permission_classes = [IsAuthenticated]
+
+        def get_queryset(self):
+            return Problem.objects.filter(user=self.request.user)
+
+
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Problem.objects.all()
         serializer_class = ProblemSerializer
