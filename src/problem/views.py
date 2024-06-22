@@ -1,10 +1,17 @@
 from rest_framework.generics import *
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import *
 
 from config.permissions import ReadOnly
 
 from .models import *
 from .serializers import *
+
+
+class _PageNumberPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class IsProblemCreator(BasePermission):
@@ -19,6 +26,7 @@ class IsProblemCreator(BasePermission):
 class ProblemAPIView:
     class ListCreate(ListCreateAPIView):
         serializer_class = ProblemSerializer
+        pagination_class = _PageNumberPagination
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
