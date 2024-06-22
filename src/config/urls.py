@@ -24,6 +24,7 @@ from django.urls import (
 
 
 from core.views import *
+from user.views import *
 
 
 VIEW_PLACE_HOLDER = lambda request: NotImplemented
@@ -34,9 +35,9 @@ urlpatterns = [
     path("api/", include([
         path("v1/", include([
             path("account/", include([
-                path("signup", VIEW_PLACE_HOLDER), # TODO: 회원가입 기능 구현
-                path("signin", VIEW_PLACE_HOLDER), # TODO: 로그인 기능 구현
-                path("signout", VIEW_PLACE_HOLDER), # TODO: 로그아웃 기능 구현
+                path("signup", UserAPIView.SignUp.as_view()), # 회원가입 기능 구현
+                path("signin", UserAPIView.SignIn.as_view()), # 로그인 기능 구현
+                path("signout", UserAPIView.SignOut.as_view()), # 로그아웃 기능 구현
             ])),
             path("user/", include([
                 path("", VIEW_PLACE_HOLDER), # TODO: 사용자 목록 조회 기능 구현 (관리자용)
