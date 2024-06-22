@@ -23,6 +23,9 @@ from django.urls import (
 )
 
 
+from core.views import *
+
+
 VIEW_PLACE_HOLDER = lambda request: NotImplemented
 
 
@@ -79,10 +82,10 @@ urlpatterns = [
                 ])),
             ])),
             path("tag/", include([
-                path("", VIEW_PLACE_HOLDER), # TODO: 전체 태그 목록 조회(관리자용) + 생성 기능 구현
+                path("", TagAPIView.ListCreate.as_view()), # 전체 태그 목록 조회(관리자용) + 생성 기능 구현
             ])),
             path("language/", include([
-                path("", VIEW_PLACE_HOLDER), # TODO: 전체 언어 목록 조회(관리자용) + 생성 기능 구현
+                path("", LanguageAPIView.ListCreate.as_view()), # 전체 언어 목록 조회(관리자용) + 생성 기능 구현
             ])),
         ])),
     ])),
