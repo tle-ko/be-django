@@ -30,7 +30,11 @@ class ProblemAPIView:
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
-            return Problem.objects.filter(user=self.request.user)
+            user = self.request.user
+            if user.is_staff:
+                return Problem.objects.all()
+            # TODO: 공개된 문제도 보여주기
+            return Problem.objects.filter(user=user)
 
 
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
