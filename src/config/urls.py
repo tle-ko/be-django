@@ -24,6 +24,7 @@ from django.urls import (
 
 
 from core.views import *
+from problem.views import *
 from user.views import *
 
 
@@ -46,11 +47,11 @@ urlpatterns = [
                 ])),
             ])),
             path("problem/", include([
-                path("", VIEW_PLACE_HOLDER), # TODO: 전체 문제 목록 조회(관리자용) + 생성 기능 구현
-                path("my", VIEW_PLACE_HOLDER), # TODO: 내가 만든 문제 목록 조회 기능 구현
+                path("", ProblemAPIView.ListCreate.as_view()), # 전체 문제 목록 조회(관리자용) + 생성 기능
+                path("my", ProblemAPIView.MyList.as_view()), # 내가 만든 문제 목록 조회 기능 구현
                 path("<int:id>/", include([
-                    path("", VIEW_PLACE_HOLDER), # TODO: 문제 상세 조회 기능 구현
-                    path("analysis", VIEW_PLACE_HOLDER), # TODO: 문제 분석 조회 기능 구현
+                    path("", ProblemAPIView.RetrieveUpdateDestroy.as_view()), # 문제 상세 조회 기능 구현
+                    path("analysis", ProblemAnalysisAPIView.Retrieve.as_view()), # 문제 분석 조회 기능 구현
                 ])),
             ])),
             path("crew/", include([
