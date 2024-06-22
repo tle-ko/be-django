@@ -25,16 +25,20 @@ class IsProblemCreator(BasePermission):
 
 class ProblemAPIView:
     class ListCreate(ListCreateAPIView):
+        """전체 문제 목록 조회 + 생성 기능
+
+        - 관리자는 전체 문제 목록을 조회할 수 있습니다.
+        - 관리자가 아닌 일반 사용자는 자신이 만든 문제만 조회할 수 있습니다.
+        """
         serializer_class = ProblemSerializer
         pagination_class = _PageNumberPagination
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
-            user = self.request.user
-            if user.is_staff:
+            if self.request.user.is_staff:
                 return Problem.objects.all()
-            # TODO: 공개된 문제도 보여주기
-            return Problem.objects.filter(user=user)
+            # TODO: 공개된 문제도 보여주도록 기능 추가
+            return Problem.objects.filter(user=self.request.user)
 
 
     class MyList(ListAPIView):
