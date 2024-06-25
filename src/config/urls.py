@@ -56,7 +56,7 @@ urlpatterns = [
             ])),
             path("crew/", include([
                 path("", CrewAPIView.ListCreate.as_view()), # 전체 크루 목록 조회(관리자용) + 생성
-                path("my", VIEW_PLACE_HOLDER), # TODO: 내가 속한 크루 목록 조회 기능 구현
+                path("my", CrewAPIView.MyList.as_view()), # TODO: 내가 속한 크루 목록 조회 기능 구현
                 path("recruiting", VIEW_PLACE_HOLDER), # TODO: 크루원을 모집 중인 크루 목록 조회 기능 구현
                 path("<int:id>/", include([
                     path("", VIEW_PLACE_HOLDER), # TODO: 크루 상세 조회(공지사항, 크루원 목록, 해결한 문제들의 태그 분포, 이번 주 현황, 모집 시작/종료/옵션, ...)+수정 기능 구현
