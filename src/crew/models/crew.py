@@ -56,6 +56,12 @@ class Crew(models.Model):
             # TODO: 최대 인원 제한
         ],
     )
+    is_recruiting = models.BooleanField(
+        help_text=(
+            '모집 중 여부를 입력해주세요.'
+        ),
+        default=True,
+    )
     is_boj_user_only = models.BooleanField(
         help_text=(
             '백준 아이디 필요 여부를 입력해주세요.'
