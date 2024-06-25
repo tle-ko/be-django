@@ -34,3 +34,10 @@ class CrewAPIView:
 
         def perform_create(self, serializer):
             serializer.save(captain=_get_user(self))
+
+    class MyList(ListAPIView):
+        serializer_class = CrewSerializer
+        permission_classes = [IsAuthenticated]
+
+        def get_queryset(self):
+            return _get_user(self).crews.all()
