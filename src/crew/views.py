@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework.generics import *
 from rest_framework.permissions import *
 
@@ -7,6 +9,23 @@ from .models import *
 from .serializers import *
 
 
+logger = logging.getLogger(__name__)
+
+
+def _get_user(view: GenericAPIView) -> User:
+    user = view.request.user
+    try:
+        return User.objects.get(pk=user.pk)
+    except User.DoesNotExist:
+        logger.error(f'User not found. {user.pk}')
+        logger.error(
+            f'checking user model... '
+            f'expected: {User.__class__} '
+            f'actual: {user.__class__}'
+        )
+        return None
+
+
 class CrewAPIView:
     class ListCreate(ListCreateAPIView):
         queryset = Crew.objects.all()
@@ -14,7 +33,4 @@ class CrewAPIView:
         permission_classes = [IsAuthenticated]
 
         def perform_create(self, serializer):
-            serializer.save(captain=self._get_user())
-
-        def _get_user(self) -> User:
-            return User.objects.get(pk=self.request.user.pk)
+            serializer.save(captain=_get_user(self))
