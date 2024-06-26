@@ -48,3 +48,9 @@ class CrewAPIView:
 
         def get_queryset(self):
             return Crew.objects.filter(is_recruiting=True)
+
+    class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
+        queryset = Crew.objects.all()
+        serializer_class = CrewSerializer
+        permission_classes = [IsAuthenticated]
+        lookup_url_kwarg = 'id'
