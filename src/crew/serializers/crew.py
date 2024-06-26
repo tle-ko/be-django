@@ -8,6 +8,7 @@ from crew.serializers.crew_member import CrewMemberSerializer
 
 
 class CrewSerializer(ModelSerializer):
+    members = CrewMemberSerializer(many=True, read_only=True)
     languages = LanguageSerializer(many=True, read_only=True)
 
     class Meta:
