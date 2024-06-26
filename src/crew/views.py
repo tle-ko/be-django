@@ -41,3 +41,10 @@ class CrewAPIView:
 
         def get_queryset(self):
             return _get_user(self).crews.all()
+
+    class RecruitingList(ListAPIView):
+        serializer_class = CrewSerializer
+        permission_classes = [IsAuthenticated]
+
+        def get_queryset(self):
+            return Crew.objects.filter(is_recruiting=True)
