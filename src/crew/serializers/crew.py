@@ -1,13 +1,13 @@
-from rest_framework.serializers import *
+from rest_framework.serializers import (
+    ModelSerializer,
+)
 
 from core.serializers import LanguageSerializer
-from user.serializers import UserSerializer
-
-from .models import *
+from crew.models import Crew
+from crew.serializers.crew_member import CrewMemberSerializer
 
 
 class CrewSerializer(ModelSerializer):
-    captain = UserSerializer(read_only=True)
     languages = LanguageSerializer(many=True, read_only=True)
 
     class Meta:
