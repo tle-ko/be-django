@@ -59,7 +59,7 @@ urlpatterns = [
                 path("my", CrewAPIView.MyList.as_view()), # TODO: 내가 속한 크루 목록 조회 기능 구현
                 path("recruiting", CrewAPIView.RecruitingList.as_view()), # 크루원을 모집 중인 크루 목록 조회 기능 구현
                 path("<int:id>/", include([
-                    path("", VIEW_PLACE_HOLDER), # TODO: 크루 상세 조회(공지사항, 크루원 목록, 해결한 문제들의 태그 분포, 이번 주 현황, 모집 시작/종료/옵션, ...)+수정 기능 구현
+                    path("", CrewAPIView.RetrieveUpdateDestroy.as_view()), # 크루 상세 조회(공지사항, 크루원 목록, 해결한 문제들의 태그 분포, 이번 주 현황, 모집 시작/종료/옵션, ...)+수정 기능 구현
                     path("activities", VIEW_PLACE_HOLDER), # TODO: 크루의 활동 회차 목록 조회 기능 구현
                     path("problems", VIEW_PLACE_HOLDER), # TODO: 크루에 속한 문제 목록 조회 기능 구현
                     path("pending", VIEW_PLACE_HOLDER), # TODO: 크루 가입 대기자 목록 조회 기능 구현
