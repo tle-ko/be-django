@@ -4,9 +4,11 @@ from rest_framework.serializers import (
 )
 
 from crew.models import CrewMember
+from user.serializers import UserSerializer
 
 
 class CrewMemberSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
     is_host = SerializerMethodField()
 
     class Meta:
