@@ -1,16 +1,68 @@
 from rest_framework.serializers import (
     ModelSerializer,
+    SerializerMethodField,
 )
 
+from boj.models import BOJLevel
+from core.models import Language
 from core.serializers import LanguageSerializer
 from crew.models import Crew
 from crew.serializers.crew_member import CrewMemberSerializer
 
 
 class CrewSerializer(ModelSerializer):
-    members = CrewMemberSerializer(many=True, read_only=True)
-    languages = LanguageSerializer(many=True, read_only=True)
+    """크루 둘러보기에서 보여줄 정보
+
+    크루 참여자가 아니어도 볼 수 있습니다.
+    """
+
+    members = SerializerMethodField()
+    tags = SerializerMethodField()
 
     class Meta:
         model = Crew
-        fields = '__all__'
+        fields = [
+            'name',
+            'emoji',
+            'members',
+            'tags',
+            'is_recruiting',
+        ]
+
+    def get_members(self, obj: Crew):
+        return {
+            'count': obj.members.count(),
+            'max_count': obj.max_member,
+        }
+
+    def get_tags(self, obj: Crew):
+        tags = []
+        # Language tags
+        for language in obj.languages.all():
+            language: Language
+            tags.append({
+                'key': language.key,
+                'name': language.name,
+            })
+        if obj.min_boj_tier is not None:
+            tags.append({
+                'key': None,
+                'name': f'{BOJLevel(obj.min_boj_tier).label} 이상',
+            })
+        if obj.max_boj_tier is not None:
+            tags.append({
+                'key': None,
+                'name': f'{BOJLevel(obj.max_boj_tier).label} 이하',
+            })
+        if obj.min_boj_tier is None and obj.max_boj_tier is None:
+            tags.append({
+                'key': None,
+                'name': '티어 무관',
+            })
+        # Custom tags
+        for tag in obj.tags:
+            tags.append({
+                'key': None,
+                'name': tag,
+            })
+        return tags
