@@ -47,6 +47,7 @@ class CrewAPIView:
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
+            # TODO: 언어, 티어 조건에 따라 필터링
             return Crew.objects.filter(is_recruiting=True)
 
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
