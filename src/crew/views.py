@@ -29,21 +29,21 @@ def _get_user(view: GenericAPIView) -> User:
 class CrewAPIView:
     class ListCreate(ListCreateAPIView):
         queryset = Crew.objects.all()
-        serializer_class = CrewSerializer
+        serializer_class = RecruitingCrewSerializer
         permission_classes = [IsAuthenticated]
 
         def perform_create(self, serializer):
             serializer.save(captain=_get_user(self))
 
     class MyList(ListAPIView):
-        serializer_class = CrewSerializer
+        serializer_class = RecruitingCrewSerializer
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
             return _get_user(self).crews.all()
 
     class RecruitingList(ListAPIView):
-        serializer_class = CrewSerializer
+        serializer_class = RecruitingCrewSerializer
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
@@ -52,6 +52,6 @@ class CrewAPIView:
 
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Crew.objects.all()
-        serializer_class = CrewSerializer
+        serializer_class = RecruitingCrewSerializer
         permission_classes = [IsAuthenticated]
         lookup_url_kwarg = 'id'

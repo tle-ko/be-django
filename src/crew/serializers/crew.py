@@ -10,8 +10,8 @@ from crew.models import Crew
 from crew.serializers.crew_member import CrewMemberSerializer
 
 
-class CrewSerializer(ModelSerializer):
-    """크루 둘러보기에서 보여줄 정보
+class RecruitingCrewSerializer(ModelSerializer):
+    """<크루 둘러보기> 참가자를 모집 중인 크루 정보
 
     크루 참여자가 아니어도 볼 수 있습니다.
     """
