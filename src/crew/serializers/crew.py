@@ -20,6 +20,13 @@ class MembersMixin:
     def get_members_list(self, obj: Crew):
         return CrewMemberSerializer(obj.members.all(), many=True).data
 
+    def get_members(self, obj: Crew):
+        return {
+            'count': self.get_member_count(obj),
+            'max_count': self.get_member_max_count(obj),
+            'items': self.get_members_list(obj),
+        }
+
 
 class TagsMixin:
     def get_tags(self, obj: Crew):
