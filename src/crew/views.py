@@ -43,6 +43,7 @@ class CrewAPIView:
             return _get_user(self).crews.all()
 
     class RecruitingList(ListAPIView):
+        """현재 참가자를 모집 중인 크루의 목록을 반환합니다."""
         serializer_class = RecruitingCrewSerializer
         permission_classes = [IsAuthenticated]
 
