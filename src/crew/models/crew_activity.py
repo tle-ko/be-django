@@ -12,6 +12,11 @@ class CrewActivity(models.Model):
             '크루를 입력해주세요.'
         ),
     )
+    name = models.TextField(
+        help_text=(
+            '활동 이름을 입력해주세요. (예: "1회차")'
+        ),
+    )
     start_at = models.DateTimeField(
         help_text=(
             '활동 시작 일자를 입력해주세요.'
