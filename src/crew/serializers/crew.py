@@ -5,7 +5,6 @@ from rest_framework.serializers import (
 
 from boj.models import BOJLevel
 from core.models import Language
-from core.serializers import LanguageSerializer
 from crew.models import Crew
 from crew.serializers.crew_member import CrewMemberSerializer
 
@@ -71,8 +70,8 @@ class CrewSerializer(ModelSerializer, MembersMixin, TagsMixin):
     class Meta:
         model = Crew
         fields = [
-            'name',
             'emoji',
+            'name',
             'members',
             'tags',
             'is_recruiting',
