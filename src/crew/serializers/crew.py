@@ -10,6 +10,17 @@ from crew.models import Crew
 from crew.serializers.crew_member import CrewMemberSerializer
 
 
+class MembersMixin:
+    def get_member_count(self, obj: Crew):
+        return obj.members.count()
+
+    def get_member_max_count(self, obj: Crew):
+        return obj.max_member
+
+    def get_members_list(self, obj: Crew):
+        return CrewMemberSerializer(obj.members.all(), many=True).data
+
+
 class RecruitingCrewSerializer(ModelSerializer):
     """<크루 둘러보기> 참가자를 모집 중인 크루 정보
 
