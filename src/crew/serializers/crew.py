@@ -21,6 +21,40 @@ class MembersMixin:
         return CrewMemberSerializer(obj.members.all(), many=True).data
 
 
+class TagsMixin:
+    def get_tags(self, obj: Crew):
+        tags = []
+        # Language tags
+        for language in obj.languages.all():
+            language: Language
+            tags.append({
+                'key': language.key,
+                'name': language.name,
+            })
+        if obj.min_boj_tier is not None:
+            tags.append({
+                'key': None,
+                'name': f'{BOJLevel(obj.min_boj_tier).label} 이상',
+            })
+        if obj.max_boj_tier is not None:
+            tags.append({
+                'key': None,
+                'name': f'{BOJLevel(obj.max_boj_tier).label} 이하',
+            })
+        if obj.min_boj_tier is None and obj.max_boj_tier is None:
+            tags.append({
+                'key': None,
+                'name': '티어 무관',
+            })
+        # Custom tags
+        for tag in obj.tags:
+            tags.append({
+                'key': None,
+                'name': tag,
+            })
+        return tags
+
+
 class RecruitingCrewSerializer(ModelSerializer):
     """<크루 둘러보기> 참가자를 모집 중인 크루 정보
 
