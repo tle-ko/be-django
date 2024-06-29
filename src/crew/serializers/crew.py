@@ -58,7 +58,10 @@ class TagsMixin:
                 'key': None,
                 'name': tag,
             })
-        return tags
+        return {
+            'count': len(tags),
+            'items': tags,
+        }
 
 
 class CrewSerializer(ModelSerializer, MembersMixin, TagsMixin):
