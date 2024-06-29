@@ -1,3 +1,7 @@
+from typing import (
+    Iterable,
+)
+
 from boj.models import BOJLevel
 from core.models import Language
 from crew.models import Crew
@@ -5,33 +9,41 @@ from crew.serializers.crew_member import CrewMemberSerializer
 
 
 class MembersMixin:
-    def get_member_count(self, obj: Crew):
-        return obj.members.count()
-
-    def get_member_max_count(self, obj: Crew):
-        return obj.max_member
-
-    def get_members_list(self, obj: Crew):
-        return CrewMemberSerializer(obj.members.all(), many=True).data
-
     def get_members(self, obj: Crew):
         return {
-            'count': self.get_member_count(obj),
-            'max_count': self.get_member_max_count(obj),
-            'items': self.get_members_list(obj),
+            'count': self._get_member_count(obj),
+            'max_count': self._get_member_max_count(obj),
+            'items': self._get_members_list(obj),
         }
+
+    def _get_member_count(self, obj: Crew):
+        return obj.members.count()
+
+    def _get_member_max_count(self, obj: Crew):
+        return obj.max_member
+
+    def _get_members_list(self, obj: Crew):
+        return CrewMemberSerializer(obj.members.all(), many=True).data
 
 
 class TagsMixin:
     def get_tags(self, obj: Crew):
+        tags = [
+            *self._get_language_tags(obj),
+            *self._get_tier_tags(obj),
+            *self._get_custom_tags(obj),
+        ]
+        return {
+            'count': len(tags),
+            'items': tags,
+        }
+
+    def _get_language_tags(self, obj: Crew):
+        languages: Iterable[Language] = obj.languages.all()
+        return [{'key': lang.key, 'name': lang.name} for lang in languages]
+
+    def _get_tier_tags(self, obj: Crew):
         tags = []
-        # Language tags
-        for language in obj.languages.all():
-            language: Language
-            tags.append({
-                'key': language.key,
-                'name': language.name,
-            })
         if obj.min_boj_tier is not None:
             tags.append({
                 'key': None,
@@ -47,13 +59,7 @@ class TagsMixin:
                 'key': None,
                 'name': '티어 무관',
             })
-        # Custom tags
-        for tag in obj.tags:
-            tags.append({
-                'key': None,
-                'name': tag,
-            })
-        return {
-            'count': len(tags),
-            'items': tags,
-        }
+        return tags
+
+    def _get_custom_tags(self, obj: Crew):
+        return [{'key': None, 'name': tag} for tag in obj.tags]
