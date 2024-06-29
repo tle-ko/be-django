@@ -29,14 +29,15 @@ def _get_user(view: GenericAPIView) -> User:
 class CrewAPIView:
     class ListCreate(ListCreateAPIView):
         queryset = Crew.objects.all()
-        serializer_class = RecruitingCrewSerializer
+        serializer_class = CrewSerializer
         permission_classes = [IsAuthenticated]
 
         def perform_create(self, serializer):
             serializer.save(captain=_get_user(self))
 
     class MyList(ListAPIView):
-        serializer_class = RecruitingCrewSerializer
+        """내가 속한 크루의 목록을 반환합니다."""
+        serializer_class = CrewSerializer
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
@@ -44,7 +45,7 @@ class CrewAPIView:
 
     class RecruitingList(ListAPIView):
         """현재 참가자를 모집 중인 크루의 목록을 반환합니다."""
-        serializer_class = RecruitingCrewSerializer
+        serializer_class = CrewSerializer
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
@@ -53,6 +54,6 @@ class CrewAPIView:
 
     class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         queryset = Crew.objects.all()
-        serializer_class = RecruitingCrewSerializer
+        serializer_class = CrewSerializer
         permission_classes = [IsAuthenticated]
         lookup_url_kwarg = 'id'

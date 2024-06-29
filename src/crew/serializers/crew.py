@@ -62,11 +62,8 @@ class TagsMixin:
         return tags
 
 
-class RecruitingCrewSerializer(ModelSerializer, MembersMixin, TagsMixin):
-    """<크루 둘러보기> 참가자를 모집 중인 크루 정보
-
-    크루 참여자가 아니어도 볼 수 있습니다.
-    """
+class CrewSerializer(ModelSerializer, MembersMixin, TagsMixin):
+    """크루에 대한 공개된 데이터를 다룬다."""
 
     members = SerializerMethodField()
     tags = SerializerMethodField()
