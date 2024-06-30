@@ -1,29 +1,9 @@
-from rest_framework.serializers import *
+from rest_framework.serializers import ModelSerializer
 
-from core.serializers import TagSerializer
 from user.serializers import UserSerializer
 
-from .models import *
-
-
-class ProblemAnalysisSerializer(ModelSerializer):
-    tags = TagSerializer(many=True)
-
-    class Meta:
-        model = ProblemAnalysis
-        fields = [
-            'id',
-            'problem',
-            'difficulty',
-            'tags',
-            'time_complexity',
-            'created_at',
-        ]
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'problem': {'read_only': True},
-            'created_at': {'read_only': True},
-        }
+from ..models import Problem
+from ..serializers.problem_analysis import ProblemAnalysisSerializer
 
 
 class ProblemSerializer(ModelSerializer):

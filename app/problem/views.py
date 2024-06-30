@@ -1,67 +1,49 @@
-from rest_framework.generics import *
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import *
-
-from app.permissions import ReadOnly
+from rest_framework import viewsets
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
+from .permissions import *
 
 
-class _PageNumberPagination(PageNumberPagination):
-    page_size = 20
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+__all__ = (
+    'TagViewSet',
+    'LanguageViewSet',
+    'ProblemViewSet',
+)
 
 
-class IsProblemCreator(BasePermission):
-    def has_object_permission(self, request, view, obj: Problem) -> bool:
-        return bool(
-            request.user and
-            request.user.is_authenticated and
-            obj.user == request.user
-        )
+class TagViewSet(viewsets.ModelViewSet):
+    """문제 태그 목록 조회 + 생성 기능"""
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [IsAdminUser | IsReadOnly]
 
 
-class ProblemAPIView:
-    class ListCreate(ListCreateAPIView):
-        """전체 문제 목록 조회 + 생성 기능
-
-        - 관리자는 전체 문제 목록을 조회할 수 있습니다.
-        - 관리자가 아닌 일반 사용자는 자신이 만든 문제만 조회할 수 있습니다.
-        """
-        serializer_class = ProblemSerializer
-        pagination_class = _PageNumberPagination
-        permission_classes = [IsAuthenticated]
-
-        def get_queryset(self):
-            if self.request.user.is_staff:
-                return Problem.objects.all()
-            # TODO: 공개된 문제도 보여주도록 기능 추가
-            return Problem.objects.filter(user=self.request.user)
+class LanguageViewSet(viewsets.ModelViewSet):
+    """프로그래밍 언어 목록 조회 + 생성 기능"""
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+    permission_classes = [IsAdminUser | IsReadOnly]
 
 
-    class MyList(ListAPIView):
+class ProblemViewSet(viewsets.ModelViewSet):
+    """문제 목록 조회 + 생성 기능
+
+    - 관리자는 전체 문제 목록을 조회할 수 있습니다.
+    - 관리자가 아닌 일반 사용자는 자신이 만든 문제만 조회할 수 있습니다.
+    """
+    serializer_class = ProblemSerializer
+    permission_classes = [IsAdminUser | IsProblemCreator | IsReadOnly | (IsAuthenticated & IsCreateOnly)]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Problem.objects.all()
+        return Problem.objects.filter(user=self.request.user)
+
+    def my_list(self, request: Request):
         """내가 만든 문제 목록 조회"""
-        serializer_class = ProblemSerializer
-        pagination_class = _PageNumberPagination
-        permission_classes = [IsAuthenticated]
-
-        def get_queryset(self):
-            return Problem.objects.filter(user=self.request.user)
-
-
-    class RetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
-        queryset = Problem.objects.all()
-        serializer_class = ProblemSerializer
-        permission_classes = [IsAdminUser | IsProblemCreator]
-        lookup_url_kwarg = 'id'
-
-
-class ProblemAnalysisAPIView:
-    class Retrieve(RetrieveAPIView):
-        queryset = ProblemAnalysis.objects.all()
-        permission_classes = [IsAdminUser | (IsProblemCreator & ReadOnly)]
-        serializer_class = ProblemAnalysisSerializer
-        lookup_url_kwarg = 'id'
-        lookup_field = 'problem__id'
+        queryset = Problem.objects.filter(user=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
