@@ -37,11 +37,12 @@ class CrewAPIView:
 
     class MyList(ListAPIView):
         """내가 속한 크루의 목록을 반환합니다."""
-        serializer_class = CrewSerializer
+        serializer_class = CrewDetailSerializer
         permission_classes = [IsAuthenticated]
 
         def get_queryset(self):
-            return _get_user(self).crews.all()
+            user = _get_user(self)
+            return Crew.objects.filter(members__user=user)
 
     class RecruitingList(ListAPIView):
         """현재 참가자를 모집 중인 크루의 목록을 반환합니다."""
