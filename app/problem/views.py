@@ -11,6 +11,7 @@ __all__ = (
     'TagViewSet',
     'LanguageViewSet',
     'ProblemViewSet',
+    'AnalysisViewSet',
 )
 
 
@@ -47,3 +48,12 @@ class ProblemViewSet(viewsets.ModelViewSet):
         queryset = Problem.objects.filter(user=request.user)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class AnalysisViewSet(viewsets.ModelViewSet):
+    """문제 태그 목록 조회 + 생성 기능"""
+    queryset = Analysis.objects.all()
+    serializer_class = AnalysisSerializer
+    permission_classes = [IsAdminUser | IsReadOnly]
+    lookup_field = 'problem__id'
+    lookup_url_kwarg = 'pk'

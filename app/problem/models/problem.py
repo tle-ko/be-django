@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from django.db import models
 
 from account.models import User
@@ -63,3 +66,13 @@ class Problem(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()} ← {self.user.__repr__()}'
+
+
+@dataclass
+class ProblemDTO:
+    title: str
+    description: str
+    input_description: str
+    output_description: str
+    memory_limit: float
+    time_limit: float

@@ -17,6 +17,9 @@ urlpatterns = [
             "put": "update",
             "delete": "destroy",
         })),
+        path("analysis", AnalysisViewSet.as_view({
+            "get": "retrieve",
+        })),
     ])),
     path("language/", include([
         path("", LanguageViewSet.as_view({

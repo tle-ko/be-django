@@ -1,14 +1,14 @@
 from rest_framework.serializers import ModelSerializer
 
-from ..models import ProblemAnalysis
-from ..serializers.tag import TagSerializer
+from ..models import Analysis
+from ..serializers import TagSerializer
 
 
-class ProblemAnalysisSerializer(ModelSerializer):
+class AnalysisSerializer(ModelSerializer):
     tags = TagSerializer(many=True)
 
     class Meta:
-        model = ProblemAnalysis
+        model = Analysis
         fields = [
             'id',
             'problem',

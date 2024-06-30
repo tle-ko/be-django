@@ -1,5 +1,5 @@
-from .problem import Problem
-from .problem_analysis import ProblemAnalysis
+from .analysis import Analysis, AnalysisDTO
+from .problem import Problem, ProblemDTO
 from .difficulty import Difficulty
 from .language import Language
 from .tag import Tag

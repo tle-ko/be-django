@@ -1,11 +1,14 @@
+from dataclasses import dataclass
+from typing import List
+
 from django.db import models
 
-from .difficulty import Difficulty
-from .problem import Problem
-from .tag import Tag
+from problem.models.difficulty import Difficulty
+from problem.models.problem import Problem
+from problem.models.tag import Tag
 
 
-class ProblemAnalysis(models.Model):
+class Analysis(models.Model):
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
@@ -37,6 +40,16 @@ class ProblemAnalysis(models.Model):
             # TODO: 시간 복잡도 검증 로직 추가
         ],
     )
+    hint = models.JSONField(
+        help_text=(
+            '문제 힌트를 입력해주세요. Step-by-step 으로 입력해주세요.'
+        ),
+        validators=[
+            # TODO: 힌트 검증 로직 추가
+        ],
+        blank=False,
+        default=list,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     # TODO: 사용자가 추가한 정보인지 확인하는 필드 추가
 
@@ -46,3 +59,11 @@ class ProblemAnalysis(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.problem.__repr__()} ← {self.__repr__()}'
+
+
+@dataclass
+class AnalysisDTO:
+    time_complexity: str
+    difficulty: str
+    tags: List[str]
+    hint: List[str]

@@ -13,11 +13,11 @@ class ProblemAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ProblemAnalysis)
-class ProblemAnalysisAdmin(admin.ModelAdmin):
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+@admin.register(Analysis)
+class AnalysisAdmin(admin.ModelAdmin):
     pass
