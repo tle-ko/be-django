@@ -1,4 +1,4 @@
-from config.settings import *
+from app.settings import *
 
 
 ALLOWED_HOSTS = ALLOWED_HOSTS + [
