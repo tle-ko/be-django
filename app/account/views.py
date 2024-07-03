@@ -72,6 +72,10 @@ class UserViewSet(viewsets.GenericViewSet):
         logout(request)
         return Response(status=HTTPStatus.OK)
 
+    # TODO: 이메일 인증
+
+    # TODO: 비밀번호 찾기
+
 
 def authenticate(request: Request, email: str, password: str) -> User:
     # TODO: User Manager 를 이용해서 authenticate 하도록 모델을 수정한 후, 이 프록시 메소드를 제거할 것.
