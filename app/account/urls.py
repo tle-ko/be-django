@@ -4,6 +4,9 @@ from .views import UserViewSet
 
 
 urlpatterns = [
+    path("current", UserViewSet.as_view({
+        "get": "current",
+    })),
     path("signin", UserViewSet.as_view({
         "post": "sign_in",
     })),

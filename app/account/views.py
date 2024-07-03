@@ -19,7 +19,14 @@ from .serializers import (
 )
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.GenericViewSet):
+    """사용자 계정과 관련된 API
+
+    current: 현재 로그인한 사용자 정보
+    signup: 사용자 등록(회원가입)
+    signin: 사용자 로그인
+    signout: 사용자 로그아웃
+    """
     queryset = User.objects.all()
     permission_classes = [AllowAny]
 
@@ -29,6 +36,10 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'sign_in':
             return UserSignInSerializer(*args, **kwargs)
         return UserSerializer(*args, **kwargs)
+
+    def current(self, request: Request):
+        serializer = self.get_serializer(instance=request.user)
+        return Response(serializer.data)
 
     def sign_up(self, request: Request):
         serializer = UserSignUpSerializer(data=request.data)
