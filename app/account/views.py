@@ -1,80 +1,72 @@
 from http import HTTPStatus
 
 from django.contrib.auth import (
-    authenticate,
+    authenticate as django_authenticate,
     login,
     logout,
 )
-from django.db.transaction import atomic
+from rest_framework import viewsets
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.generics import *
-from rest_framework.permissions import *
+from rest_framework.permissions import AllowAny
 
-from boj.models import BOJUser
-
-from .models import *
-from .serializers import *
-
-
-class UserAPIView:
-    class List(ListAPIView):
-        queryset = User.objects.all()
-        serializer_class = UserSerializer
-        permission_classes = [IsAdminUser]
+from .models import User
+from .serializers import (
+    UserSerializer,
+    UserSignInSerializer,
+    UserSignUpSerializer,
+)
 
 
-    class SignUp(CreateAPIView):
-        serializer_class = UserSignUpSerializer
-        permission_classes = [AllowAny]
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [AllowAny]
 
-        def perform_create(self, serializer):
-            boj_id = None
-            if 'boj_id' in serializer.validated_data:
-                boj_id = serializer.validated_data.pop('boj_id')
-            with atomic():
-                user = User.objects.create_user(**serializer.validated_data)
-                user.save()
-                if boj_id is not None:
-                    boj_user = BOJUser.objects.create(user=user, boj_id=boj_id)
-                    boj_user.save()
-                    user.boj_user = boj_user
-                    user.save()
-            serializer.instance = user
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'sign_up':
+            return UserSignUpSerializer(*args, **kwargs)
+        if self.action == 'sign_in':
+            return UserSignInSerializer(*args, **kwargs)
+        return UserSerializer(*args, **kwargs)
 
+    def sign_up(self, request: Request):
+        serializer = UserSignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    class SignIn(GenericAPIView):
-        queryset = User.objects.all()
-        serializer_class = UserSignInSerializer
-        permission_classes = [AllowAny]
+        user = User.objects.create_user(**serializer.validated_data)
+        # TODO: User already exists error handling
 
-        def post(self, request: Request):
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+        serializer.instance = user
+        return Response(serializer.data)
 
-            # TODO: authenticate()만 이용하여 email, password로 인증하는 기능 리팩토링
-            username = self._get_username(serializer)
-            password = serializer.validated_data['password']
+    def sign_in(self, request: Request):
+        serializer = UserSignInSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            user = authenticate(request, username=username, password=password)
-            if user is None:
-                return Response(status=HTTPStatus.UNAUTHORIZED)
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
 
-            login(request, user)
+        print(email, password)
+        user = authenticate(request, email=email, password=password)
+        if user is None:
+            raise AuthenticationFailed('Invalid email or password')
 
-            serializer.instance = user
-            return Response(serializer.data)
+        login(request, user)
 
-        def _get_username(self, serializer):
-            try:
-                user = User.objects.get(email=serializer.validated_data['email'])
-            except User.DoesNotExist:
-                raise AuthenticationFailed
-            return user.username
+        serializer.instance = user
+        return Response(serializer.data)
+
+    def sign_out(self, request: Request):
+        logout(request)
+        return Response(status=HTTPStatus.OK)
 
 
-    class SignOut(GenericAPIView):
-        def get(self, request: Request):
-            logout(request)
-            return Response(status=HTTPStatus.OK)
+def authenticate(request: Request, email: str, password: str) -> User:
+    # TODO: User Manager 를 이용해서 authenticate 하도록 모델을 수정한 후, 이 프록시 메소드를 제거할 것.
+    queryset = User.objects.filter(email=email)
+    if not queryset.exists():
+        return None
+    username = queryset.first().username
+    user = django_authenticate(request, username=username, password=password)
+    return user

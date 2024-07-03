@@ -9,6 +9,7 @@ class User(DjangoUser):
         'password',
     ]
     image = models.ImageField(
+        help_text='프로필 이미지',
         upload_to='user_images/',
         null=True,
         blank=True,
@@ -16,6 +17,12 @@ class User(DjangoUser):
             # TODO: 이미지 크기 제한
             # TODO: 이미지 확장자 제한
         ]
+    )
+    boj_id = models.CharField(
+        help_text='백준 아이디',
+        max_length=40,
+        null=True,
+        blank=True,
     )
 
     def __repr__(self) -> str:

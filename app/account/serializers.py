@@ -1,8 +1,6 @@
 from rest_framework.serializers import *
 
-from boj.serializers import BOJUserSerializer
-
-from .models import *
+from .models import User
 
 
 class UserSerializer(ModelSerializer):
@@ -13,8 +11,6 @@ class UserSerializer(ModelSerializer):
             'image',
             'username',
         ]
-
-    # TODO: BOJUser Serializer 연결
 
 
 class UserSignInSerializer(ModelSerializer):
@@ -40,14 +36,12 @@ class UserSignInSerializer(ModelSerializer):
 
 class UserSignUpSerializer(ModelSerializer):
     boj_id = CharField(max_length=40, required=False)
-    boj_user = BOJUserSerializer(read_only=True)
 
     class Meta:
         model = User
         fields = [
             'id',
             'boj_id',
-            'boj_user',
             'image',
             'username',
             'email',
@@ -56,6 +50,5 @@ class UserSignUpSerializer(ModelSerializer):
         extra_kwargs = {
             'id': {'read_only': True},
             'boj_id': {'write_only': True},
-            'boj_user': {'read_only': True},
             'password': {'write_only': True},
         }
