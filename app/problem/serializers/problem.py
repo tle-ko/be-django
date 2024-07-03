@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from user.serializers import UserSerializer
+from account.serializers import UserSerializer
 
 from ..models import Problem
 from ..serializers.problem_analysis import ProblemAnalysisSerializer
