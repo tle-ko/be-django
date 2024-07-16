@@ -1,3 +1,24 @@
 from django.contrib import admin
 
-# Register your models here.
+from tle.models import *
+
+
+@admin.register(
+    User,
+
+    Crew,
+    CrewActivity,
+    CrewActivityProblem,
+    CrewApplicant,
+    CrewMember,
+
+    Problem,
+    ProblemAnalysis,
+    ProblemTag,
+
+    Submission,
+    SubmissionComment,
+    SubmissionLanguage,
+)
+class SuperAdmin(admin.ModelAdmin):
+    pass
