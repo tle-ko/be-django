@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -23,11 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = "django-insecure-1odep3cb9^%i11_pxm)l&i(hjk_k3+kii7o#_qbip-ubb)rlkc"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'tle-kr.com',
     'timelimitexceeded.kr',
+    'localhost',
 ]
 
 
@@ -41,8 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "account",
-    "problem",
+    "tle",
 ]
 
 MIDDLEWARE = [

@@ -20,16 +20,8 @@ from django.contrib import admin
 from django.urls import include, path
 
 
-import account.urls
-import problem.urls
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include([
-        path("account/", include(account.urls.urlpatterns)),
-        path("problem/", include(problem.urls.urlpatterns)),
-    ])),
 ]
 
 # Static files
