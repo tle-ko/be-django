@@ -1,4 +1,4 @@
-from tle.services.problem_analyser import *
+from tle.services.analysis import *
 
 
 class GeminiProblemAnalyser(ProblemAnalyser):

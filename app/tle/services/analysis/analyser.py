@@ -1,4 +1,4 @@
-from tle.services.dto import *
+from tle.services.analysis.dto import *
 
 
 class ProblemAnalyser:

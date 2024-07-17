@@ -1,4 +1,4 @@
-from .problem_analyser import ProblemAnalyser
+from .analyser import ProblemAnalyser
 from .dto import ProblemDTO, ProblemAnalysisDTO
 
 
