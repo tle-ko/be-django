@@ -13,22 +13,19 @@ class SubmissionComment(models.Model):
         help_text='제출을 입력해주세요.',
     )
     content = models.TextField(
-        help_text=(
-            '댓글을 입력해주세요.'
-        ),
+        max_length=1000,
+        help_text='댓글을 입력해주세요.',
+        blank=False,
+        null=False,
     )
     line_number_start = models.IntegerField(
-        help_text=(
-            '댓글 시작 라인을 입력해주세요.'
-        ),
+        help_text='댓글 시작 라인을 입력해주세요.',
         validators=[
             MinValueValidator(1),
         ],
     )
     line_number_end = models.IntegerField(
-        help_text=(
-            '댓글 종료 라인을 입력해주세요.'
-        ),
+        help_text='댓글 종료 라인을 입력해주세요.',
         validators=[
             MinValueValidator(1),
             # TODO: 시작 라인보다 작지 않도록 검사
@@ -39,10 +36,8 @@ class SubmissionComment(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='comments',
-        help_text=(
-            '유저를 입력해주세요.'
-        ),
+        related_name=User.FieldName.COMMENTS,
+        help_text='유저를 입력해주세요.',
     )
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,20 +1,20 @@
-from .user import User
-from .user_solved_tier import UserSolvedTier
+from tle.models.user import User
+from tle.models.user_solved_tier import UserSolvedTier
 
-from .crew import Crew
-from .crew_activity import CrewActivity
-from .crew_activity_problem import CrewActivityProblem
-from .crew_applicant import CrewApplicant
-from .crew_member import CrewMember
+from tle.models.crew import Crew
+from tle.models.crew_activity import CrewActivity
+from tle.models.crew_activity_problem import CrewActivityProblem
+from tle.models.crew_applicant import CrewApplicant
+from tle.models.crew_member import CrewMember
 
-from .problem import Problem
-from .problem_analysis import ProblemAnalysis
-from .problem_difficulty import ProblemDifficulty
-from .problem_tag import ProblemTag
+from tle.models.problem import Problem
+from tle.models.problem_analysis import ProblemAnalysis
+from tle.models.problem_difficulty import ProblemDifficulty
+from tle.models.problem_tag import ProblemTag
 
-from .submission import Submission
-from .submission_comment import SubmissionComment
-from .submission_language import SubmissionLanguage
+from tle.models.submission import Submission
+from tle.models.submission_comment import SubmissionComment
+from tle.models.submission_language import SubmissionLanguage
 
 
 __all__ = (
