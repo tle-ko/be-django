@@ -30,6 +30,3 @@ class ProblemDifficulty(models.IntegerChoices):
     EASY = 1, '쉬움'
     NORMAL = 2, '보통'
     HARD = 3, '어려움'
-
-    def get_name(self, value: int, lang='ko') -> str:
-        return ProblemDifficulty.get_name(value, lang)
