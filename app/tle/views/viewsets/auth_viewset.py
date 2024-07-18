@@ -56,7 +56,7 @@ class AuthViewSet(GenericViewSet):
     def sign_up(self, request: Request):
         serializer = self.get_validated_serializer(request)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTPStatus.CREATED)
 
     def sign_in(self, request: Request):
         serializer = self.get_validated_serializer(request)
