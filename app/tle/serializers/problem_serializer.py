@@ -68,7 +68,6 @@ class ProblemAnalysisSerializer(ModelSerializer):
 
 
 class ProblemMinimalSerializer(ModelSerializer):
-    created_by = UserMinimalSerializer(read_only=True)
     difficulty = SerializerMethodField()
 
     class Meta:
@@ -76,21 +75,11 @@ class ProblemMinimalSerializer(ModelSerializer):
         fields = [
             'id',
             'title',
-            'link',
             'difficulty',
             'created_at',
-            'created_by',
             'updated_at',
         ]
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'title': {'read_only': True},
-            'link': {'read_only': True},
-            'difficulty': {'read_only': True},
-            'created_at': {'read_only': True},
-            'created_by': {'read_only': True},
-            'updated_at': {'read_only': True},
-        }
+        read_only_fields = ['__all__']
 
     def get_difficulty(self, obj: Problem):
         try:

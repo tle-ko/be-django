@@ -85,18 +85,12 @@ GET /problem/search?<query_parameters>
         {
             "id": 1,
             "title": "A+B",
-            "link": "http://boj.kr/1000",
             "difficulty": {
                 "name_en": "EASY",
                 "name_ko": "쉬움",
                 "value": 1
             },
             "created_at": "2024-07-17T09:23:17.876425Z",
-            "created_by": {
-                "id": 1,
-                "profile_image": "http://localhost:8000/media/user/profile/1/b.png",
-                "username": "admin"
-            },
             "updated_at": "2024-07-17T09:23:17.876456Z"
         }
     ]
