@@ -132,16 +132,8 @@ class ProblemSerializer(ModelSerializer):
             'updated_at': {'read_only': True},
         }
 
-    def get_memory_limit_unit(self, obj: Problem):
-        return {
-            "name_ko": "메가 바이트",
-            "name_en": "Mega Bytes",
-            "abbr": "MB",
-        }
+    def get_memory_limit_unit(self, obj):
+        return Problem.MEMORY_LIMIT_UNIT
 
-    def get_time_limit_unit(self, obj: Problem):
-        return {
-            "name_ko": "초",
-            "name_en": "Seconds",
-            "abbr": "s",
-        }
+    def get_time_limit_unit(self, obj):
+        return Problem.TIME_LIMIT_UNIT
