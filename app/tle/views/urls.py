@@ -10,16 +10,16 @@ urlpatterns = [
         path("signout", UserViewSet.as_view({"get": "sign_out"})),
         path("current", UserViewSet.as_view({"get": "current"})),
     ])),
-    path("problem", ProblemViewSet.as_view({
-        "post": "create",
-        "get": "list",
-    })),
     path("problem/", include([
-        path("<int:id>", ProblemViewSet.as_view({
-            "get": "retrieve",
-            "put": "update",
-            "patch": "partial_update",
-            "delete": "destroy",
-        })),
+        path("", ProblemViewSet.as_view({"post": "create"})),
+        path("search", ProblemViewSet.as_view({"get": "list"})),
+        path("<int:id>/", include([
+            path("detail", ProblemViewSet.as_view({
+                "get": "retrieve",
+                "put": "update",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }))
+        ])),
     ])),
 ]

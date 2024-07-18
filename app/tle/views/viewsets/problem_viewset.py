@@ -13,7 +13,7 @@ class ProblemViewSet(ModelViewSet):
     # TODO: 내가 만든 문제만 수정할 수 있도록 변경
 
     def get_serializer_class(self):
-        if self.action in ['create', 'list']:
+        if self.action in ['list']:
             return ProblemMinimalSerializer
         return ProblemSerializer
 
