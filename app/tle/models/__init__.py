@@ -1,4 +1,4 @@
-from tle.models.user import User
+from tle.models.user import User, UserManager
 from tle.models.user_solved_tier import UserSolvedTier
 
 from tle.models.crew import Crew
@@ -19,6 +19,7 @@ from tle.models.submission_language import SubmissionLanguage
 
 __all__ = (
     'User',
+    'UserManager',
     'UserSolvedTier',
 
     'Crew',

@@ -86,7 +86,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     first_name = models.TextField(blank=True, null=True, default=None)
     last_name = models.TextField(blank=True, null=True, default=None)
-    date_joined = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
 
     objects = UserManager()
 
@@ -94,6 +94,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def crews(self):
         for member in self.members:
             yield member.crew
+
+    @property
+    def date_joined(self):
+        return self.created_at
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
