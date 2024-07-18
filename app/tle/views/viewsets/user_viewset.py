@@ -8,14 +8,11 @@ from django.contrib.auth import (
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
 from tle.models import User
-from tle.serializers import (
-    UserSerializer,
-    UserSignUpSerializer,
-    UserSignInSerializer,
-)
+from tle.serializers import *
 from tle.views.permissions import *
 
 
@@ -30,36 +27,44 @@ class UserViewSet(GenericViewSet):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
 
-    SERIALIZERS = {
-        'sign_up': UserSignUpSerializer,
-        'sign_in': UserSignInSerializer,
-    }
+    # Overrides
 
-    def get_serializer(self, *args, **kwargs):
-        if self.action in self.__class__.SERIALIZERS:
-            return self.__class__.SERIALIZERS[self.action](*args, **kwargs)
-        return UserSerializer(*args, **kwargs)
+    def get_serializer_class(self):
+        if self.action == 'sign_in':
+            return UserSignInSerializer
+        else:
+            return UserSerializer
+
+    # Helpers
+
+    def get_validated_serializer(self, request: Request) -> Serializer:
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return serializer
+
+    def authenticate(self, request: Request) -> User:
+        serializer = self.get_validated_serializer(request)
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+        user = authenticate(request, username=email, password=password)
+        if user is None:
+            raise AuthenticationFailed('Invalid email or password')
+
+    # Actions
 
     def current(self, request: Request):
         serializer = self.get_serializer(instance=request.user)
         return Response(serializer.data)
 
     def sign_up(self, request: Request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.instance = User.objects.create_user(**serializer.validated_data)
+        serializer = self.get_validated_serializer(request)
+        serializer.save()
         return Response(serializer.data)
 
     def sign_in(self, request: Request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data['email']
-        password = serializer.validated_data['password']
-        user = authenticate(request, email, password)
-        if user is None:
-            raise AuthenticationFailed('Invalid email or password')
-        login(request, user)
-        serializer.instance = user
+        serializer = self.get_validated_serializer(request)
+        serializer.instance = self.authenticate(request)
+        login(request, serializer.instance)
         return Response(serializer.data)
 
     def sign_out(self, request: Request):
@@ -67,5 +72,4 @@ class UserViewSet(GenericViewSet):
         return Response(status=HTTPStatus.OK)
 
     # TODO: 이메일 인증
-
     # TODO: 비밀번호 찾기
