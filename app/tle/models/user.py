@@ -19,6 +19,9 @@ def get_profile_image_path(instance: User, filename: str) -> str:
 class UserManager(BaseUserManager):
     model: typing.Callable[..., User]
 
+    def create(self, **kwargs):
+        return self.create_user(**kwargs)
+
     def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
