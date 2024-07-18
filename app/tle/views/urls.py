@@ -9,6 +9,7 @@ urlpatterns = [
         path("signup", UserViewSet.as_view({"post": "sign_up"})),
         path("signout", UserViewSet.as_view({"get": "sign_out"})),
     ])),
+    path("user/current", UserViewSet.as_view({"get": "current"})),
     path("problem/", include([
         path("", ProblemViewSet.as_view({"post": "create"})),
         path("search", ProblemViewSet.as_view({"get": "list"})),
