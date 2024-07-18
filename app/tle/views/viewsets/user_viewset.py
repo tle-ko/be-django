@@ -49,6 +49,7 @@ class UserViewSet(GenericViewSet):
         user = authenticate(request, username=email, password=password)
         if user is None:
             raise AuthenticationFailed('Invalid email or password')
+        return user
 
     # Actions
 
