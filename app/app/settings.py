@@ -11,10 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
-
-
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
