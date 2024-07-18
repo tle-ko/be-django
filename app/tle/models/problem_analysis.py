@@ -9,23 +9,17 @@ class ProblemAnalysis(models.Model):
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
-        related_name='analysis',
-        help_text=(
-            '문제를 입력해주세요.'
-        ),
+        related_name=Problem.FieldName.ANALYSIS,
+        help_text='문제를 입력해주세요.',
     )
     difficulty = models.IntegerField(
-        help_text=(
-            '문제 난이도를 입력해주세요.'
-        ),
+        help_text='문제 난이도를 입력해주세요.',
         choices=ProblemDifficulty.choices,
     )
     tags = models.ManyToManyField(
         ProblemTag,
         related_name='problems',
-        help_text=(
-            '문제의 DSA 태그를 입력해주세요.'
-        ),
+        help_text='문제의 DSA 태그를 입력해주세요.',
     )
     time_complexity = models.CharField(
         max_length=100,
@@ -38,9 +32,7 @@ class ProblemAnalysis(models.Model):
         ],
     )
     hint = models.JSONField(
-        help_text=(
-            '문제 힌트를 입력해주세요. Step-by-step 으로 입력해주세요.'
-        ),
+        help_text='문제 힌트를 입력해주세요. Step-by-step 으로 입력해주세요.',
         validators=[
             # TODO: 힌트 검증 로직 추가
         ],

@@ -121,11 +121,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             Submission as T_Submission,
             SubmissionComment as T_SubmissionComment,
         )
-        problems: models.QuerySet[T_Problem]
-        applicants: models.QuerySet[T_CrewApplicant]
-        members: models.QuerySet[T_CrewMember]
-        submissions: models.QuerySet[T_Submission]
-        comments: models.QuerySet[T_SubmissionComment]
+        problems: models.ManyToManyField[T_Problem]
+        applicants: models.ManyToManyField[T_CrewApplicant]
+        members: models.ManyToManyField[T_CrewMember]
+        submissions: models.ManyToManyField[T_Submission]
+        comments: models.ManyToManyField[T_SubmissionComment]
 
     def __repr__(self) -> str:
         return f'[@{self.username}]'

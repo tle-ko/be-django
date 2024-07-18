@@ -100,8 +100,8 @@ class Crew(models.Model):
             CrewApplicant as T_CrewApplicant,
             CrewMember as T_CrewMember,
         )
-        applicants: models.QuerySet[T_CrewApplicant]
-        members: models.QuerySet[T_CrewMember]
+        applicants: models.ManyToManyField[T_CrewApplicant]
+        members: models.ManyToManyField[T_CrewMember]
 
     def __repr__(self) -> str:
         return f'[{self.emoji} {self.name}]'

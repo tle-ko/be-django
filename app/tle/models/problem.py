@@ -1,3 +1,5 @@
+import typing
+
 from django.db import models
 
 from tle.models.user import User
@@ -41,6 +43,15 @@ class Problem(models.Model):
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
+
+    class FieldName:
+        ANALYSIS = 'analysis'
+
+    if typing.TYPE_CHECKING:
+        from . import (
+            ProblemAnalysis as T_ProblemAnalysis,
+        )
+        analysis: models.OneToOneField[T_ProblemAnalysis]
 
     def __repr__(self) -> str:
         return f'[{self.title}]'
