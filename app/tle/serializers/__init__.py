@@ -1,8 +1,1 @@
-from tle.serializers.user import *
-
-
-__all__ = (
-    'UserSerializer',
-    'UserSignInSerializer',
-    'UserSignUpSerializer',
-)
+from tle.serializers.user_serializer import *
