@@ -41,17 +41,14 @@ class ProblemDifficultySerializer(Serializer):
     name_ko = SerializerMethodField()
     value = SerializerMethodField()
 
-    def get_name_ko(self, choice: int):
-        return self._get_obj(choice).get_name('ko')
+    def get_name_ko(self, value: int):
+        return ProblemDifficulty.get_name(value, 'ko')
 
-    def get_name_en(self, choice: int):
-        return self._get_obj(choice).get_name('en')
+    def get_name_en(self, value: int):
+        return ProblemDifficulty.get_name(value, 'en')
 
-    def get_value(self, choice: int):
-        return self._get_obj(choice).value
-
-    def _get_obj(self, choice: int) -> ProblemDifficulty:
-        return ProblemDifficulty(choice)
+    def get_value(self, value: int):
+        return value
 
 
 class ProblemAnalysisSerializer(ModelSerializer):
@@ -72,6 +69,7 @@ class ProblemAnalysisSerializer(ModelSerializer):
 
 class ProblemMinimalSerializer(ModelSerializer):
     created_by = UserMinimalSerializer(read_only=True)
+    difficulty = SerializerMethodField()
 
     class Meta:
         model = Problem
@@ -79,6 +77,7 @@ class ProblemMinimalSerializer(ModelSerializer):
             'id',
             'title',
             'link',
+            'difficulty',
             'created_at',
             'created_by',
             'updated_at',
@@ -87,10 +86,18 @@ class ProblemMinimalSerializer(ModelSerializer):
             'id': {'read_only': True},
             'title': {'read_only': True},
             'link': {'read_only': True},
+            'difficulty': {'read_only': True},
             'created_at': {'read_only': True},
             'created_by': {'read_only': True},
             'updated_at': {'read_only': True},
         }
+
+    def get_difficulty(self, obj: Problem):
+        try:
+            difficulty = obj.analysis.difficulty
+        except ProblemAnalysis.DoesNotExist:
+            difficulty = 0
+        return ProblemDifficultySerializer(difficulty).data
 
 
 class ProblemSerializer(ModelSerializer):
