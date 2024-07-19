@@ -88,14 +88,14 @@ class Crew(models.Model):
         help_text='백준 아이디 필요 여부를 입력해주세요.',
         default=False,
     )
-    min_boj_tier = models.IntegerField(
+    min_boj_level = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
         choices=BojUserLevel.choices,
         blank=True,
         null=True,
         default=None,
     )
-    max_boj_tier = models.IntegerField(
+    max_boj_level = models.IntegerField(
         help_text='최대 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
         validators=[
             # TODO: 최대 레벨이 최소 레벨보다 높은지 검사
@@ -173,15 +173,15 @@ class Crew(models.Model):
             if user.boj_username is None:
                 # TODO: 인증된 BOJ 사용자명이어야 함
                 return False
-            if self.min_boj_tier is not None:
-                if user.boj_tier is None:
+            if self.min_boj_level is not None:
+                if user.boj_level is None:
                     return False
-                if user.boj_tier < self.min_boj_tier:
+                if user.boj_level < self.min_boj_level:
                     return False
-            if self.max_boj_tier is not None:
-                if user.boj_tier is None:
+            if self.max_boj_level is not None:
+                if user.boj_level is None:
                     return False
-                if user.boj_tier > self.max_boj_tier:
+                if user.boj_level > self.max_boj_level:
                     return False
         return True
 
@@ -194,25 +194,25 @@ class Crew(models.Model):
 
     def _build_tier_tags(self) -> typing.List[CrewTag]:
         tags = []
-        if self.min_boj_tier is None and self.max_boj_tier is None:
+        if self.min_boj_level is None and self.max_boj_level is None:
             tags.append(CrewTag.from_name('티어 무관'))
         else:
-            if self.min_boj_tier is not None:
+            if self.min_boj_level is not None:
                 tags.append(self._build_min_tier_tag())
-            if self.max_boj_tier is not None:
+            if self.max_boj_level is not None:
                 tags.append(self._build_max_tier_tag())
         return tags
 
     def _build_min_tier_tag(self) -> CrewTag:
-        if BojUserLevel.get_tier(self.min_boj_tier) == 5:
-            tier_name = BojUserLevel.get_rank_name(self.min_boj_tier)
+        if BojUserLevel.get_tier(self.min_boj_level) == 5:
+            level_name = BojUserLevel.get_rank_name(self.min_boj_level)
         else:
-            tier_name = BojUserLevel.get_name(self.min_boj_tier)
-        return CrewTag.from_name(f'{tier_name} 이상')
+            level_name = BojUserLevel.get_name(self.min_boj_level)
+        return CrewTag.from_name(f'{level_name} 이상')
 
     def _build_max_tier_tag(self) -> CrewTag:
-        if BojUserLevel.get_tier(self.max_boj_tier) == 1:
-            tier_name = BojUserLevel.get_rank_name(self.max_boj_tier)
+        if BojUserLevel.get_tier(self.max_boj_level) == 1:
+            level_name = BojUserLevel.get_rank_name(self.max_boj_level)
         else:
-            tier_name = BojUserLevel.get_name(self.max_boj_tier)
-        return CrewTag.from_name(f'{tier_name} 이하')
+            level_name = BojUserLevel.get_name(self.max_boj_level)
+        return CrewTag.from_name(f'{level_name} 이하')

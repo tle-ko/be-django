@@ -60,14 +60,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True,
     )
-    boj_tier = models.IntegerField(
+    boj_level = models.IntegerField(
         help_text='백준 티어',
         choices=BojUserLevel.choices,
         null=True,
         blank=True,
         default=None,
     )
-    boj_tier_updated_at = models.DateTimeField(
+    boj_level_updated_at = models.DateTimeField(
         help_text='백준 티어 갱신 시각',
         null=True,
         blank=True,
