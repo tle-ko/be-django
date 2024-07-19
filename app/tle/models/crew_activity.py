@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from tle.models.crew import Crew
 
@@ -23,6 +24,10 @@ class CrewActivity(models.Model):
     class Meta:
         ordering = ['start_at']
         get_latest_by = ['end_at']
+
+    @property
+    def is_ended(self) -> bool:
+        return self.end_at < timezone.now()
 
     def __repr__(self) -> str:
         return f'{self.crew.__repr__()} ← [{self.start_at.date()} ~ {self.end_at.date()}]'
