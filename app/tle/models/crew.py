@@ -106,7 +106,7 @@ class Crew(models.Model):
         return f'[{self.emoji} {self.name}]'
 
     def __str__(self) -> str:
-        member_count = f'({self.members.count()}/{self.max_member})'
+        member_count = f'({self.members.count()}/{self.max_members})'
         return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
 
     def is_joinable(self, user: User) -> bool:
