@@ -2,12 +2,25 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 
+from tle.enums import Emoji
 from tle.models.user import User
 from tle.models.user_solved_tier import UserSolvedTier
 from tle.models.submission_language import SubmissionLanguage
+
+
+class EmojiValidator:
+    def __init__(self, message: str | None = None) -> None:
+        self.message = message
+
+    def __call__(self, value) -> None:
+        try:
+            Emoji(value) # just checking if it's valid emoji
+        except ValueError:
+            raise ValidationError(self.message, params={"value": value})
 
 
 @dataclasses.dataclass
