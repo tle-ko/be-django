@@ -11,7 +11,7 @@ from django.core.validators import (
 from django.db import models, transaction
 
 from tle.enums import Emoji
-from tle.models.choices import UserSolvedTier
+from tle.models.choices import BojUserLevel
 from tle.models.user import User
 from tle.models.submission_language import SubmissionLanguage
 
@@ -90,7 +90,7 @@ class Crew(models.Model):
     )
     min_boj_tier = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
-        choices=UserSolvedTier.choices,
+        choices=BojUserLevel.choices,
         blank=True,
         null=True,
         default=None,
@@ -100,7 +100,7 @@ class Crew(models.Model):
         validators=[
             # TODO: 최대 레벨이 최소 레벨보다 높은지 검사
         ],
-        choices=UserSolvedTier.choices,
+        choices=BojUserLevel.choices,
         blank=True,
         null=True,
         default=None,
@@ -204,15 +204,15 @@ class Crew(models.Model):
         return tags
 
     def _build_min_tier_tag(self) -> CrewTag:
-        if UserSolvedTier.get_tier(self.min_boj_tier) == 5:
-            tier_name = UserSolvedTier.get_rank_name(self.min_boj_tier)
+        if BojUserLevel.get_tier(self.min_boj_tier) == 5:
+            tier_name = BojUserLevel.get_rank_name(self.min_boj_tier)
         else:
-            tier_name = UserSolvedTier.get_name(self.min_boj_tier)
+            tier_name = BojUserLevel.get_name(self.min_boj_tier)
         return CrewTag.from_name(f'{tier_name} 이상')
 
     def _build_max_tier_tag(self) -> CrewTag:
-        if UserSolvedTier.get_tier(self.max_boj_tier) == 1:
-            tier_name = UserSolvedTier.get_rank_name(self.max_boj_tier)
+        if BojUserLevel.get_tier(self.max_boj_tier) == 1:
+            tier_name = BojUserLevel.get_rank_name(self.max_boj_tier)
         else:
-            tier_name = UserSolvedTier.get_name(self.max_boj_tier)
+            tier_name = BojUserLevel.get_name(self.max_boj_tier)
         return CrewTag.from_name(f'{tier_name} 이하')

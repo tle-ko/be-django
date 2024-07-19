@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.utils import timezone
 
-from tle.models.choices import UserSolvedTier
+from tle.models.choices import BojUserLevel
 
 
 def get_profile_image_path(instance: User, filename: str) -> str:
@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     boj_tier = models.IntegerField(
         help_text='백준 티어',
-        choices=UserSolvedTier.choices,
+        choices=BojUserLevel.choices,
         null=True,
         blank=True,
         default=None,

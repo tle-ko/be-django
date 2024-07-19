@@ -32,7 +32,7 @@ ARABIC_NUMERALS = {
 }
 
 
-class UserSolvedTier(models.IntegerChoices):
+class BojUserLevel(models.IntegerChoices):
     U = 0, 'Unrated'
     B5 = 1, '브론즈 5'
     B4 = 2, '브론즈 4'
