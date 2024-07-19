@@ -1,4 +1,5 @@
 from __future__ import annotations
+import dataclasses
 import typing
 
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -7,6 +8,20 @@ from django.db import models
 from tle.models.user import User
 from tle.models.user_solved_tier import UserSolvedTier
 from tle.models.submission_language import SubmissionLanguage
+
+
+@dataclasses.dataclass
+class CrewTag:
+    key: typing.Optional[str]
+    name: str
+
+    @classmethod
+    def from_language(cls, lang: SubmissionLanguage) -> CrewTag:
+        return CrewTag(key=lang.key, name=lang.name)
+
+    @classmethod
+    def from_name(cls, name: str) -> CrewTag:
+        return CrewTag(key=None, name=name)
 
 
 class Crew(models.Model):
@@ -134,3 +149,35 @@ class Crew(models.Model):
                 if user.boj_tier > self.max_boj_tier:
                     return False
         return True
+
+    def get_tags(self) -> typing.List[CrewTag]:
+        return [
+            *map(CrewTag.from_language, self.submittable_languages.all()),
+            *self._build_tier_tags(),
+            *map(CrewTag.from_name, self.custom_tags),
+        ]
+
+    def _build_tier_tags(self) -> typing.List[CrewTag]:
+        tags = []
+        if self.min_boj_tier is None and self.max_boj_tier is None:
+            tags.append(CrewTag.from_name('티어 무관'))
+        else:
+            if self.min_boj_tier is not None:
+                tags.append(self._build_min_tier_tag())
+            if self.max_boj_tier is not None:
+                tags.append(self._build_max_tier_tag())
+        return tags
+
+    def _build_min_tier_tag(self) -> CrewTag:
+        if UserSolvedTier.get_tier(self.min_boj_tier) == 5:
+            tier_name = UserSolvedTier.get_rank_name(self.min_boj_tier)
+        else:
+            tier_name = UserSolvedTier.get_name(self.min_boj_tier)
+        return CrewTag.from_name(f'{tier_name} 이상')
+
+    def _build_max_tier_tag(self) -> CrewTag:
+        if UserSolvedTier.get_tier(self.max_boj_tier) == 1:
+            tier_name = UserSolvedTier.get_rank_name(self.max_boj_tier)
+        else:
+            tier_name = UserSolvedTier.get_name(self.max_boj_tier)
+        return CrewTag.from_name(f'{tier_name} 이하')
