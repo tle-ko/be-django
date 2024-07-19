@@ -20,6 +20,10 @@ class CrewActivity(models.Model):
         help_text='활동 종료 일자를 입력해주세요.',
     )
 
+    class Meta:
+        ordering = ['start_at']
+        get_latest_by = ['end_at']
+
     def __repr__(self) -> str:
         return f'{self.crew.__repr__()} ← [{self.start_at.date()} ~ {self.end_at.date()}]'
 
