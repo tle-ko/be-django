@@ -1,10 +1,7 @@
 from __future__ import annotations
 import typing
 
-from django.core.validators import (
-    MinValueValidator,
-    MaxValueValidator,
-)
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from tle.models.user_solved_tier import UserSolvedTier
@@ -42,7 +39,20 @@ class Crew(models.Model):
         blank=True,
         max_length=500,  # TODO: 최대 길이 제한이 적정한지 검토
     )
-    is_boj_user_only = models.BooleanField(
+    submittable_languages = models.ManyToManyField[SubmissionLanguage](
+        SubmissionLanguage,
+        related_name='crews',
+        help_text='유저가 사용 가능한 언어를 입력해주세요.',
+    )
+    custom_tags = models.JSONField(
+        help_text='태그를 입력해주세요.',
+        validators=[
+            # TODO: 태그 형식 검사
+        ],
+        blank=True,
+        default=list,
+    )
+    is_boj_username_required = models.BooleanField(
         help_text='백준 아이디 필요 여부를 입력해주세요.',
         default=False,
     )
@@ -62,19 +72,6 @@ class Crew(models.Model):
         blank=True,
         null=True,
         default=None,
-    )
-    allowed_languages = models.ManyToManyField(
-        SubmissionLanguage,
-        related_name='crews',
-        help_text='유저가 사용 가능한 언어를 입력해주세요.',
-    )
-    custom_tags = models.JSONField(
-        help_text='태그를 입력해주세요.',
-        validators=[
-            # TODO: 태그 형식 검사
-        ],
-        blank=True,
-        default=list,
     )
     is_recruiting = models.BooleanField(
         help_text='모집 중 여부를 입력해주세요.',
