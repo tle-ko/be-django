@@ -11,6 +11,9 @@ from django.utils import timezone
 
 from tle.models.choices import BojUserLevel
 
+if typing.TYPE_CHECKING:
+    import tle.models as t
+
 
 def get_profile_image_path(instance: User, filename: str) -> str:
     return f'user/profile/{instance.pk}/{filename}'
@@ -44,6 +47,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    problems: models.ManyToManyField[t.Problem]
+    applicants: models.ManyToManyField[t.CrewApplicant]
+    members: models.ManyToManyField[t.CrewMember]
+    submissions: models.ManyToManyField[t.Submission]
+    comments: models.ManyToManyField[t.SubmissionComment]
+
     profile_image = models.ImageField(
         help_text='프로필 이미지',
         upload_to=get_profile_image_path,
@@ -93,39 +102,41 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    @property
-    def crews(self):
-        for member in self.members:
-            yield member.crew
-
-    @property
-    def date_joined(self):
-        return self.created_at
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    class FieldName:
+    class field_name:
+        # related fields
         PROBLEMS = 'problems'
         APPLICANTS = 'applicants'
         MEMBERS = 'members'
         SUBMISSIONS = 'submissions'
         COMMENTS = 'comments'
+        # fields
+        PROFILE_IMAGE = 'profile_image'
+        BOJ_USERNAME = 'boj_username'
+        BOJ_LEVEL = 'boj_level'
+        BOJ_LEVEL_UPDATED_AT = 'boj_level_updated_at'
+        USERNAME = 'username'
+        EMAIL = 'email'
+        PASSWORD = 'password'
+        IS_ACTIVE = 'is_active'
+        IS_STAFF = 'is_staff'
+        IS_SUPERUSER = 'is_superuser'
+        FIRST_NAME = 'first_name'
+        LAST_NAME = 'last_name'
+        CREATED_AT = 'created_at'
+        LAST_LOGIN = 'last_login'
 
-    if typing.TYPE_CHECKING:
-        from . import (
-            Problem as T_Problem,
-            Crew as T_Crew,
-            CrewApplicant as T_CrewApplicant,
-            CrewMember as T_CrewMember,
-            Submission as T_Submission,
-            SubmissionComment as T_SubmissionComment,
+    def crews(self):
+        return self.members.values_list(
+            self.members.model.crew.field.name,
+            flat=True,
         )
-        problems: models.ManyToManyField[T_Problem]
-        applicants: models.ManyToManyField[T_CrewApplicant]
-        members: models.ManyToManyField[T_CrewMember]
-        submissions: models.ManyToManyField[T_Submission]
-        comments: models.ManyToManyField[T_SubmissionComment]
+
+    @property
+    def date_joined(self):
+        return self.created_at
 
     def __repr__(self) -> str:
         return f'[@{self.username}]'

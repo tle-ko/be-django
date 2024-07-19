@@ -1,3 +1,5 @@
+import typing
+
 from django.db import models
 from django.utils import timezone
 
@@ -8,7 +10,7 @@ class CrewActivity(models.Model):
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
-        related_name=Crew.FieldName.ACTIVITIES,
+        related_name=Crew.field_name.ACTIVITIES,
         help_text='크루를 입력해주세요.',
     )
     name = models.TextField(
@@ -20,6 +22,20 @@ class CrewActivity(models.Model):
     end_at = models.DateTimeField(
         help_text='활동 종료 일자를 입력해주세요.',
     )
+
+    if typing.TYPE_CHECKING:
+        import tle.models as t
+
+        problems: models.ManyToOneRel[t.CrewActivityProblem]
+
+    class field_name:
+        # related fields
+        PROBLEMS = 'problems'
+        # fields
+        CREW = 'crew'
+        NAME = 'name'
+        START_AT = 'start_at'
+        END_AT = 'end_at'
 
     class Meta:
         ordering = ['start_at']

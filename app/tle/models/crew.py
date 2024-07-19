@@ -22,7 +22,7 @@ class EmojiValidator(BaseValidator):
 
     def __call__(self, value) -> None:
         try:
-            Emoji(value) # just checking if it's valid emoji
+            Emoji(value)  # just checking if it's valid emoji
         except ValueError:
             raise ValidationError(self.message, params={"value": value})
 
@@ -73,7 +73,6 @@ class Crew(models.Model):
     )
     submittable_languages = models.ManyToManyField(
         SubmissionLanguage,
-        related_name='crews',
         help_text='유저가 사용 가능한 언어를 입력해주세요.',
     )
     custom_tags = models.JSONField(
@@ -122,28 +121,41 @@ class Crew(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def captain(self) -> T_CrewMember:
-        return self.members.get(is_captain=True)
+    if typing.TYPE_CHECKING:
+        import tle.models as t
+
+        applicants: models.ManyToManyField[t.CrewApplicant]
+        members: models.ManyToManyField[t.CrewMember]
+        activities: models.ManyToManyField[t.CrewActivity]
+        submittable_languages: models.ManyToManyField[SubmissionLanguage]
+
+    class field_name:
+        # related fields
+        APPLICANTS = 'applicants'
+        MEMBERS = 'members'
+        ACTIVITIES = 'activities'
+        SUBMITTABLE_LANGUAGES = 'submittable_languages'
+        # fields
+        NAME = 'name'
+        EMOJI = 'emoji'
+        MAX_MEMBERS = 'max_members'
+        NOTICE = 'notice'
+        CUSTOM_TAGS = 'custom_tags'
+        IS_BOJ_USERNAME_REQUIRED = 'is_boj_username_required'
+        MIN_BOJ_LEVEL = 'min_boj_level'
+        MAX_BOJ_LEVEL = 'max_boj_level'
+        IS_RECRUITING = 'is_recruiting'
+        IS_ACTIVE = 'is_active'
+        CREATED_AT = 'created_at'
+        CREATED_BY = 'created_by'
+        UPDATED_AT = 'updated_at'
 
     class Meta:
         ordering = ['-updated_at']
 
-    class FieldName:
-        APPLICANTS = 'applicants'
-        MEMBERS = 'members'
-        ACTIVITIES = 'activities'
-
-    if typing.TYPE_CHECKING:
-        from . import (
-            CrewApplicant as T_CrewApplicant,
-            CrewMember as T_CrewMember,
-            CrewActivity as T_CrewActivity,
-        )
-        applicants: models.ManyToManyField[T_CrewApplicant]
-        members: models.ManyToManyField[T_CrewMember]
-        activities: models.ManyToManyField[T_CrewActivity]
-        submittable_languages: models.ManyToManyField[SubmissionLanguage]
+    @property
+    def captain(self) -> t.CrewMember:
+        return self.members.get(is_captain=True)
 
     def __repr__(self) -> str:
         return f'[{self.emoji} {self.name}]'

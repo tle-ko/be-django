@@ -2,7 +2,6 @@ from django.db import models
 
 
 class ProblemTag(models.Model):
-    """Data Structure & Algorithm"""
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -34,6 +33,12 @@ class ProblemTag(models.Model):
             '알고리즘 태그 이름(영문)을 입력해주세요. (최대 50자)'
         ),
     )
+
+    class field_name:
+        PARENT = 'parent'
+        KEY = 'key'
+        NAME_KO = 'name_ko'
+        NAME_EN = 'name_en'
 
     class Meta:
         ordering = ['key']

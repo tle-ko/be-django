@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from django.db import (
-    models,
-    transaction,
-)
+from django.db import models, transaction
 
 from tle.models.user import User
 from tle.models.crew import Crew
@@ -13,13 +10,13 @@ class CrewMember(models.Model):
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
-        related_name=Crew.FieldName.MEMBERS,
+        related_name=Crew.field_name.MEMBERS,
         help_text='크루를 입력해주세요.',
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=User.FieldName.MEMBERS,
+        related_name=User.field_name.MEMBERS,
         help_text='유저를 입력해주세요.',
     )
     is_captain = models.BooleanField(
@@ -27,6 +24,12 @@ class CrewMember(models.Model):
         help_text='선장인지 여부를 입력해주세요.',
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class field_name:
+        CREW = 'crew'
+        USER = 'user'
+        IS_CAPTAIN = 'is_captain'
+        CREATED_AT = 'created_at'
 
     class Meta:
         constraints = [
@@ -39,6 +42,7 @@ class CrewMember(models.Model):
                 name='unique_member_per_crew'
             ),
         ]
+        ordering = ['is_captain', 'created_at']
 
     def __repr__(self) -> str:
         return f'[{self.crew.emoji} {self.crew.name}] ← [@{self.user.username}]'

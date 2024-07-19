@@ -10,13 +10,13 @@ class Submission(models.Model):
     activity_problem = models.ForeignKey(
         CrewActivityProblem,
         on_delete=models.PROTECT,
-        related_name=CrewActivityProblem.FieldName.SUBMISSIONS,
+        related_name=CrewActivityProblem.field_name.SUBMISSIONS,
         help_text='활동 문제를 입력해주세요.',
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=User.FieldName.SUBMISSIONS,
+        related_name=User.field_name.SUBMISSIONS,
         help_text='유저를 입력해주세요.',
     )
     code = models.TextField(
@@ -37,8 +37,21 @@ class Submission(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class FieldName:
+    class field_name:
+        # related fields
         COMMENTS = 'comments'
+        # fields
+        ACTIVITY_PROBLEM = 'activity_problem'
+        USER = 'user'
+        CODE = 'code'
+        LANGUAGE = 'language'
+        IS_CORRECT = 'is_correct'
+        IS_HELP_NEEDED = 'is_help_needed'
+        CREATED_AT = 'created_at'
+        UPDATED_AT = 'updated_at'
+
+    class Meta:
+        ordering = ['created_at']
 
     def __repr__(self) -> str:
         return f'{self.activity_problem.__repr__()} ← {self.user.__repr__()} ({self.language.name})'

@@ -9,7 +9,7 @@ class ProblemAnalysis(models.Model):
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
-        related_name=Problem.FieldName.ANALYSIS,
+        related_name=Problem.field_name.ANALYSIS,
         help_text='문제를 입력해주세요.',
     )
     difficulty = models.IntegerField(
@@ -18,7 +18,6 @@ class ProblemAnalysis(models.Model):
     )
     tags = models.ManyToManyField(
         ProblemTag,
-        related_name='problems',
         help_text='문제의 DSA 태그를 입력해주세요.',
     )
     time_complexity = models.CharField(
@@ -40,6 +39,14 @@ class ProblemAnalysis(models.Model):
         default=list,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class field_name:
+        PROBLEM = 'problem'
+        DIFFICULTY = 'difficulty'
+        TAGS = 'tags'
+        TIME_COMPLEXITY = 'time_complexity'
+        HINT = 'hint'
+        CREATED_AT = 'created_at'
 
     def __repr__(self) -> str:
         tags = ' '.join(f'#{tag.key}' for tag in self.tags.all())

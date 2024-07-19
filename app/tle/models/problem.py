@@ -38,23 +38,36 @@ class Problem(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
-        related_name=User.FieldName.PROBLEMS,
+        related_name=User.field_name.PROBLEMS,
         help_text='이 문제를 추가한 사용자를 입력해주세요.',
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
 
+    if typing.TYPE_CHECKING:
+        import tle.models as t
+
+        analysis: models.OneToOneField[t.ProblemAnalysis]
+        activity_problems: models.ManyToOneRel[t.CrewActivityProblem]
+
+    class field_name:
+        # related fields
+        ANALYSIS = 'analysis'
+        ACTIVITY_PROBLEMS = 'activity_problems'
+        # fields
+        TITLE = 'title'
+        LINK = 'link'
+        DESCRIPTION = 'description'
+        INPUT_DESCRIPTION = 'input_description'
+        OUTPUT_DESCRIPTION = 'output_description'
+        MEMORY_LIMIT = 'memory_limit'
+        TIME_LIMIT = 'time_limit'
+        CREATED_AT = 'created_at'
+        CREATED_BY = 'created_by'
+        UPDATED_AT = 'updated_at'
+
     class Meta:
         ordering = ['-created_at']
-
-    class FieldName:
-        ANALYSIS = 'analysis'
-
-    if typing.TYPE_CHECKING:
-        from . import (
-            ProblemAnalysis as T_ProblemAnalysis,
-        )
-        analysis: models.OneToOneField[T_ProblemAnalysis]
 
     MEMORY_LIMIT_UNIT = {
         "name_ko": "메가 바이트",
