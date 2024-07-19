@@ -4,6 +4,7 @@ import typing
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from tle.models.user import User
 from tle.models.user_solved_tier import UserSolvedTier
 from tle.models.submission_language import SubmissionLanguage
 
@@ -106,3 +107,28 @@ class Crew(models.Model):
     def __str__(self) -> str:
         member_count = f'({self.members.count()}/{self.max_member})'
         return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
+
+    def is_joinable(self, user: User) -> bool:
+        if not self.is_recruiting:
+            return False
+        if self.captain == user:
+            return False
+        if self.members.count() >= self.max_members:
+            return False
+        if self.members.filter(user=user).exists():
+            return False
+        if self.is_boj_username_required:
+            if user.boj_username is None:
+                # TODO: 인증된 BOJ 사용자명이어야 함
+                return False
+            if self.min_boj_tier is not None:
+                if user.boj_tier is None:
+                    return False
+                if user.boj_tier < self.min_boj_tier:
+                    return False
+            if self.max_boj_tier is not None:
+                if user.boj_tier is None:
+                    return False
+                if user.boj_tier > self.max_boj_tier:
+                    return False
+        return True
