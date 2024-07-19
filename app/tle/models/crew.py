@@ -142,6 +142,9 @@ class Crew(models.Model):
                 captain.save()
         return obj
 
+    def is_member(self, user: User) -> bool:
+        return self.members.filter(user=user).exists()
+
     def is_joinable(self, user: User) -> bool:
         if not self.is_recruiting:
             return False
