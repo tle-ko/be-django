@@ -99,6 +99,12 @@ class Crew(models.Model):
         default=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
