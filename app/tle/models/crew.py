@@ -3,7 +3,7 @@ import dataclasses
 import typing
 
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models
+from django.db import models, transaction
 
 from tle.models.user import User
 from tle.models.user_solved_tier import UserSolvedTier
@@ -130,6 +130,17 @@ class Crew(models.Model):
     def __str__(self) -> str:
         member_count = f'({self.members.count()}/{self.max_members})'
         return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
+
+    def save(self, *args, **kwargs) -> None:
+        with transaction.atomic():
+            obj = super().save(*args, **kwargs)
+            if not self.members.filter(user=self.created_by).exists():
+                captain = self.members.create(
+                    user=self.created_by,
+                    is_captain=True
+                )
+                captain.save()
+        return obj
 
     def is_joinable(self, user: User) -> bool:
         if not self.is_recruiting:
