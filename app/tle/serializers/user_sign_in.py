@@ -2,9 +2,10 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.serializers import *
 
 from tle.models import User
+from tle.serializers.mixins import BojProfileMixin
 
 
-class UserSignInSerializer(ModelSerializer):
+class UserSignInSerializer(ModelSerializer, BojProfileMixin):
     email = EmailField(write_only=True, validators=None)
     boj = SerializerMethodField()
 
@@ -31,12 +32,7 @@ class UserSignInSerializer(ModelSerializer):
         }
 
     def get_boj(self, obj: User) -> dict:
-        return {
-            'username': obj.boj_username,
-            'profile_url': f'https://boj.kr/{obj.boj_username}',
-            'tier': obj.boj_tier,
-            'tier_updated_at': obj.boj_tier_updated_at,
-        }
+        return self.boj_profile(obj)
 
     def create(self, validated_data):
         raise PermissionDenied('Cannot create user through this serializer')

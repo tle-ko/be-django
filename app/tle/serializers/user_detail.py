@@ -1,9 +1,10 @@
 from rest_framework.serializers import *
 
 from tle.models import User, UserManager
+from tle.serializers.mixins import BojProfileMixin
 
 
-class UserDetailSerializer(ModelSerializer):
+class UserDetailSerializer(ModelSerializer, BojProfileMixin):
     boj = SerializerMethodField(read_only=True)
 
     class Meta:
@@ -29,12 +30,7 @@ class UserDetailSerializer(ModelSerializer):
         }
 
     def get_boj(self, obj: User) -> dict:
-        return {
-            'username': obj.boj_username,
-            'profile_url': f'https://boj.kr/{obj.boj_username}',
-            'tier': obj.boj_tier,
-            'tier_updated_at': obj.boj_tier_updated_at,
-        }
+        return self.boj_profile(obj)
 
     def create(self, validated_data):
         user_manager: UserManager = User.objects
