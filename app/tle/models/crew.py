@@ -126,6 +126,9 @@ class Crew(models.Model):
     def captain(self) -> T_CrewMember:
         return self.members.get(is_captain=True)
 
+    class Meta:
+        ordering = ['-updated_at']
+
     class FieldName:
         APPLICANTS = 'applicants'
         MEMBERS = 'members'
