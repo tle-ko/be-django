@@ -20,4 +20,5 @@ class CrewViewSet(ModelViewSet):
             return CrewRecruitingSerializer
 
     def list_recruiting(self, request):
+        # TODO: 검색 옵션 (사용 언어 / 백준 티어) 제공
         return super().list(request)
