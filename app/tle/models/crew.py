@@ -40,7 +40,7 @@ class Crew(models.Model):
         blank=True,
         max_length=500,  # TODO: 최대 길이 제한이 적정한지 검토
     )
-    submittable_languages = models.ManyToManyField[SubmissionLanguage](
+    submittable_languages = models.ManyToManyField(
         SubmissionLanguage,
         related_name='crews',
         help_text='유저가 사용 가능한 언어를 입력해주세요.',
@@ -100,6 +100,7 @@ class Crew(models.Model):
         )
         applicants: models.ManyToManyField[T_CrewApplicant]
         members: models.ManyToManyField[T_CrewMember]
+        submittable_languages: models.ManyToManyField[SubmissionLanguage]
 
     def __repr__(self) -> str:
         return f'[{self.emoji} {self.name}]'
