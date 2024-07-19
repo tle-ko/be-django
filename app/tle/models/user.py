@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.utils import timezone
 
-from tle.models.user_solved_tier import UserSolvedTier
+from tle.models.choices import UserSolvedTier
 
 
 def get_profile_image_path(instance: User, filename: str) -> str:

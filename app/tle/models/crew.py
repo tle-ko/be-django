@@ -7,8 +7,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 
 from tle.enums import Emoji
+from tle.models.choices import UserSolvedTier
 from tle.models.user import User
-from tle.models.user_solved_tier import UserSolvedTier
 from tle.models.submission_language import SubmissionLanguage
 
 

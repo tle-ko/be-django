@@ -1,6 +1,6 @@
 from rest_framework.serializers import *
 
-from tle.models import ProblemDifficulty
+from tle.models.choices import ProblemDifficulty
 
 
 class ProblemDifficultySerializer(Serializer):
