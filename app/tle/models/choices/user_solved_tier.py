@@ -73,7 +73,7 @@ class UserSolvedTier(models.IntegerChoices):
         return ((value-1) // 5)+1
 
     @classmethod
-    def get_rank_name(cls, value: int, lang='ko') -> str:
+    def get_rank_name(cls, value: int, lang='en') -> str:
         assert 0 <= value <= 30
         return RANK_NAMES[lang][cls.get_rank(value)]
 
@@ -85,11 +85,14 @@ class UserSolvedTier(models.IntegerChoices):
         return 5 - ((value-1) % 5)
 
     @classmethod
-    def get_tier_name(cls, value: int) -> str:
+    def get_tier_name(cls, value: int, arabic=True) -> str:
         assert 0 <= value <= 30
-        return ARABIC_NUMERALS[cls.get_tier(value)]
+        tier = cls.get_tier(value)
+        if arabic:
+            return ARABIC_NUMERALS[tier]
+        return str(tier)
 
     @classmethod
-    def get_name(cls, value: int, lang='ko') -> str:
+    def get_name(cls, value: int, lang='en', arabic=True) -> str:
         assert 0 <= value <= 30
-        return f'{cls.get_rank_name(value, lang)} {cls.get_tier_name(value)}'
+        return f'{cls.get_rank_name(value, lang=lang)} {cls.get_tier_name(value, arabic=arabic)}'
