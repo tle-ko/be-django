@@ -22,6 +22,7 @@ class Crew(models.Model):
         ],
         null=True,
         blank=True,
+        default='🚢',
         help_text='크루 아이콘을 입력해주세요. (이모지)',
     )
     max_members = models.IntegerField(
