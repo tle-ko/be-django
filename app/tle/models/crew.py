@@ -129,14 +129,17 @@ class Crew(models.Model):
     class FieldName:
         APPLICANTS = 'applicants'
         MEMBERS = 'members'
+        ACTIVITIES = 'activities'
 
     if typing.TYPE_CHECKING:
         from . import (
             CrewApplicant as T_CrewApplicant,
             CrewMember as T_CrewMember,
+            CrewActivity as T_CrewActivity,
         )
         applicants: models.ManyToManyField[T_CrewApplicant]
         members: models.ManyToManyField[T_CrewMember]
+        activities: models.ManyToManyField[T_CrewActivity]
         submittable_languages: models.ManyToManyField[SubmissionLanguage]
 
     def __repr__(self) -> str:

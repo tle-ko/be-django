@@ -7,7 +7,7 @@ class CrewActivity(models.Model):
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
-        related_name='activities',
+        related_name=Crew.FieldName.ACTIVITIES,
         help_text='크루를 입력해주세요.',
     )
     name = models.TextField(
