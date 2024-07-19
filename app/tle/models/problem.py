@@ -44,6 +44,9 @@ class Problem(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
     class FieldName:
         ANALYSIS = 'analysis'
 
