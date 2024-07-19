@@ -33,4 +33,7 @@ urlpatterns = [
             }))
         ])),
     ])),
+    path("crews/", include([
+        path("recruiting", CrewViewSet.as_view({"get": "list_recruiting"})),
+    ])),
 ]
