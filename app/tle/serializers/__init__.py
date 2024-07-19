@@ -9,6 +9,7 @@ from tle.serializers.problem_minimal import ProblemMinimalSerializer
 from tle.serializers.problem_tag import ProblemTagSerializer
 
 from tle.serializers.crew_member import CrewMemberSerializer
+from tle.serializers.crew_recruiting import CrewRecruitingSerializer
 
 
 UserSerializer = UserDetailSerializer
@@ -29,4 +30,5 @@ __all__ = (
     'ProblemTagSerializer',
 
     'CrewMemberSerializer',
+    'CrewRecruitingSerializer',
 )
