@@ -3,7 +3,11 @@ import dataclasses
 import typing
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (
+    BaseValidator,
+    MinValueValidator,
+    MaxValueValidator,
+)
 from django.db import models, transaction
 
 from tle.enums import Emoji
@@ -12,7 +16,7 @@ from tle.models.user import User
 from tle.models.submission_language import SubmissionLanguage
 
 
-class EmojiValidator:
+class EmojiValidator(BaseValidator):
     def __init__(self, message: str | None = None) -> None:
         self.message = message
 
