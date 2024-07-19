@@ -1,6 +1,37 @@
 from django.db import models
 
 
+RANK_NAMES = {
+    'ko': {
+        0: '난이도를 매길 수 없음',
+        1: '브론즈',
+        2: '실버',
+        3: '골드',
+        4: '플래티넘',
+        5: '다이아몬드',
+        6: '루비',
+    },
+    'en': {
+        0: 'Unrated',
+        1: 'Bronze',
+        2: 'Silver',
+        3: 'Gold',
+        4: 'Platinum',
+        5: 'Diamond',
+        6: 'Ruby',
+    },
+}
+
+ARABIC_NUMERALS = {
+    0: '',
+    1: 'I',
+    2: 'II',
+    3: 'III',
+    4: 'IV',
+    5: 'V',
+}
+
+
 class UserSolvedTier(models.IntegerChoices):
     U = 0, 'Unrated'
     B5 = 1, '브론즈 5'
@@ -33,3 +64,32 @@ class UserSolvedTier(models.IntegerChoices):
     R3 = 28, '루비 3'
     R2 = 29, '루비 2'
     R1 = 30, '루비 1'
+
+    @classmethod
+    def get_rank(cls, value: int) -> int:
+        if value == 0:
+            return 0
+        assert 1 <= value <= 30
+        return ((value-1) // 5)+1
+
+    @classmethod
+    def get_rank_name(cls, value: int, lang='ko') -> str:
+        assert 0 <= value <= 30
+        return RANK_NAMES[lang][cls.get_rank(value)]
+
+    @classmethod
+    def get_tier(cls, value: int) -> int:
+        if value == 0:
+            return 0
+        assert 1 <= value <= 30
+        return 5 - ((value-1) % 5)
+
+    @classmethod
+    def get_tier_name(cls, value: int) -> str:
+        assert 0 <= value <= 30
+        return ARABIC_NUMERALS[cls.get_tier(value)]
+
+    @classmethod
+    def get_name(cls, value: int, lang='ko') -> str:
+        assert 0 <= value <= 30
+        return f'{cls.get_rank_name(value, lang)} {cls.get_tier_name(value)}'
