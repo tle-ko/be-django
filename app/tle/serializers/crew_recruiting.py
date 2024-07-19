@@ -21,6 +21,7 @@ class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin):
             'members',
             'tags',
         ]
+        read_only_fields = ['__all__']
 
     def get_is_joinable(self, obj: Crew):
         return obj.is_recruiting
