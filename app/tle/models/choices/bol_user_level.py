@@ -1,7 +1,7 @@
 from django.db import models
 
 
-RANK_NAMES = {
+DIVISION_NAMES = {
     'ko': {
         0: '난이도를 매길 수 없음',
         1: '브론즈',
@@ -66,16 +66,16 @@ class BojUserLevel(models.IntegerChoices):
     R1 = 30, '루비 1'
 
     @classmethod
-    def get_rank(cls, value: int) -> int:
+    def get_division(cls, value: int) -> int:
         if value == 0:
             return 0
         assert 1 <= value <= 30
         return ((value-1) // 5)+1
 
     @classmethod
-    def get_rank_name(cls, value: int, lang='en') -> str:
+    def get_division_name(cls, value: int, lang='en') -> str:
         assert 0 <= value <= 30
-        return RANK_NAMES[lang][cls.get_rank(value)]
+        return DIVISION_NAMES[lang][cls.get_division(value)]
 
     @classmethod
     def get_tier(cls, value: int) -> int:
@@ -95,4 +95,4 @@ class BojUserLevel(models.IntegerChoices):
     @classmethod
     def get_name(cls, value: int, lang='en', arabic=True) -> str:
         assert 0 <= value <= 30
-        return f'{cls.get_rank_name(value, lang=lang)} {cls.get_tier_name(value, arabic=arabic)}'
+        return f'{cls.get_division_name(value, lang=lang)} {cls.get_tier_name(value, arabic=arabic)}'

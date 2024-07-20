@@ -67,7 +67,7 @@ class TagListMixin:
         메시지의 마지막에는 bound_msg를 출력한다.
         """
         if BojUserLevel.get_tier(level) == bound_tier:
-            level_name = BojUserLevel.get_rank_name(level, lang=lang)
+            level_name = BojUserLevel.get_division_name(level, lang=lang)
         else:
             level_name = BojUserLevel.get_name(level, lang=lang, arabic=arabic)
         return TagDict(key=None, name=f'{level_name} {bound_msg}')
