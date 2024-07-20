@@ -27,20 +27,6 @@ class EmojiValidator(BaseValidator):
             raise ValidationError(self.message, params={"value": value})
 
 
-@dataclasses.dataclass
-class CrewTag:
-    key: typing.Optional[str]
-    name: str
-
-    @classmethod
-    def from_language(cls, lang: SubmissionLanguage) -> CrewTag:
-        return CrewTag(key=lang.key, name=lang.name)
-
-    @classmethod
-    def from_name(cls, name: str) -> CrewTag:
-        return CrewTag(key=None, name=name)
-
-
 class Crew(models.Model):
     name = models.CharField(
         max_length=20,
@@ -202,35 +188,3 @@ class Crew(models.Model):
                 if user.boj_level > self.max_boj_level:
                     return False
         return True
-
-    def get_tags(self) -> typing.List[CrewTag]:
-        return [
-            *map(CrewTag.from_language, self.submittable_languages.all()),
-            *self._build_tier_tags(),
-            *map(CrewTag.from_name, self.custom_tags),
-        ]
-
-    def _build_tier_tags(self) -> typing.List[CrewTag]:
-        tags = []
-        if self.min_boj_level is None and self.max_boj_level is None:
-            tags.append(CrewTag.from_name('티어 무관'))
-        else:
-            if self.min_boj_level is not None:
-                tags.append(self._build_min_tier_tag())
-            if self.max_boj_level is not None:
-                tags.append(self._build_max_tier_tag())
-        return tags
-
-    def _build_min_tier_tag(self) -> CrewTag:
-        if BojUserLevel.get_tier(self.min_boj_level) == 5:
-            level_name = BojUserLevel.get_rank_name(self.min_boj_level)
-        else:
-            level_name = BojUserLevel.get_name(self.min_boj_level)
-        return CrewTag.from_name(f'{level_name} 이상')
-
-    def _build_max_tier_tag(self) -> CrewTag:
-        if BojUserLevel.get_tier(self.max_boj_level) == 1:
-            level_name = BojUserLevel.get_rank_name(self.max_boj_level)
-        else:
-            level_name = BojUserLevel.get_name(self.max_boj_level)
-        return CrewTag.from_name(f'{level_name} 이하')
