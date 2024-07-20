@@ -1,5 +1,4 @@
 from __future__ import annotations
-import dataclasses
 import typing
 
 from django.core.exceptions import ValidationError
