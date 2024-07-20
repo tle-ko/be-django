@@ -79,7 +79,7 @@ class Crew(models.Model):
     )
     is_boj_username_required = models.BooleanField(
         help_text='백준 아이디 필요 여부를 입력해주세요.',
-        default=False,
+        default=True,
     )
     min_boj_level = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
