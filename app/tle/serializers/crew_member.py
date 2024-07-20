@@ -16,4 +16,4 @@ class CrewMemberSerializer(ModelSerializer):
         )
 
     def get_is_captain(self, obj: CrewMember) -> bool:
-        return obj.crew.captain == obj.user
+        return obj.is_captain()

@@ -143,16 +143,12 @@ class Crew(models.Model):
     def of_user(cls, user: User) -> models.QuerySet[Crew]:
         return cls.objects.filter(members__user=user)
 
-    @property
-    def captain(self) -> _T.CrewMember:
-        return self.members.get(is_captain=True)
-
     def __repr__(self) -> str:
         return f'[{self.icon} {self.name}]'
 
     def __str__(self) -> str:
         member_count = f'({self.members.count()}/{self.max_members})'
-        return f'{self.pk} : {self.__repr__()} {member_count} ← {self.captain.__repr__()}'
+        return f'{self.pk} : {repr(self)} {member_count} ← {repr(self.created_by)}'
 
     def save(self, *args, **kwargs) -> None:
         with transaction.atomic():
