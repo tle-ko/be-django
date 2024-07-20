@@ -53,7 +53,7 @@ class CrewActivity(models.Model):
         """종료된 활동 목록을 반환합니다."""
         return cls.objects.filter(crew=crew, end_at__lt=timezone.now())
 
-    def is_open(self) -> bool:
+    def is_opened(self) -> bool:
         """활동이 진행 중인지 여부를 반환합니다."""
         return self.start_at <= timezone.now() <= self.end_at
 

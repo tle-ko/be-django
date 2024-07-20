@@ -23,7 +23,7 @@ class ActivityDict:
         return ActivityDict(
             name=activity.name,
             nth=activity.nth(),
-            is_open=activity.is_open(),
+            is_open=activity.is_opened(),
             date_start_at=activity.start_at.date(),
             date_end_at=activity.end_at.date(),
             start_at=activity.start_at,
