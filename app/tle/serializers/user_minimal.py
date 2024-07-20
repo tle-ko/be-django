@@ -8,11 +8,11 @@ class UserMinimalSerializer(ModelSerializer):
         model = User
         fields = [
             'id',
-            'profile_image',
-            'username',
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
         ]
         extra_kwargs = {
             'id': {'read_only': True},
-            'profile_image': {'read_only': True},
-            'username': {'read_only': True},
+            User.field_name.PROFILE_IMAGE: {'read_only': True},
+            User.field_name.USERNAME: {'read_only': True},
         }

@@ -13,9 +13,9 @@ class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin):
     class Meta:
         model = Crew
         fields = [
-            'name',
-            'emoji',
-            'is_recruiting',
+            Crew.field_name.NAME,
+            Crew.field_name.EMOJI,
+            Crew.field_name.IS_RECRUITING,
             'is_joinable',
             'is_member',
             'members',

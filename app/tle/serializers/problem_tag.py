@@ -9,10 +9,10 @@ class ProblemTagSerializer(ModelSerializer):
     class Meta:
         model = ProblemTag
         fields = [
-            'parent',
-            'key',
-            'name_ko',
-            'name_en',
+            ProblemTag.field_name.KEY,
+            ProblemTag.field_name.NAME_KO,
+            ProblemTag.field_name.NAME_EN,
+            ProblemTag.field_name.PARENT,
         ]
         read_only_fields = ['__all__']
 

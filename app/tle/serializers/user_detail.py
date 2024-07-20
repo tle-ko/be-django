@@ -11,22 +11,22 @@ class UserDetailSerializer(ModelSerializer, BojProfileMixin):
         model = User
         fields = [
             'id',
-            'email',
-            'profile_image',
-            'username',
-            'password',
-            'boj_username',
+            User.field_name.EMAIL,
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
+            User.field_name.PASSWORD,
+            User.field_name.BOJ_USERNAME,
             'boj',
-            'created_at',
-            'last_login',
+            User.field_name.CREATED_AT,
+            User.field_name.LAST_LOGIN,
         ]
         extra_kwargs = {
             'id': {'read_only': True},
             'boj': {'read_only': True},
-            'created_at': {'read_only': True},
-            'last_login': {'read_only': True},
-            'password': {'write_only': True},
-            'boj_username': {'write_only': True},
+            User.field_name.CREATED_AT: {'read_only': True},
+            User.field_name.LAST_LOGIN: {'read_only': True},
+            User.field_name.PASSWORD: {'write_only': True},
+            User.field_name.BOJ_USERNAME: {'write_only': True},
         }
 
     def get_boj(self, obj: User) -> dict:

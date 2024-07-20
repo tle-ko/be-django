@@ -1,26 +1,25 @@
 from rest_framework.serializers import *
 
 from tle.models import Problem, ProblemAnalysis
-from tle.serializers.problem_difficulty import ProblemDifficultySerializer
+from tle.serializers.mixins import DifficultyDictMixin
 
 
-class ProblemMinimalSerializer(ModelSerializer):
+class ProblemMinimalSerializer(ModelSerializer, DifficultyDictMixin):
     difficulty = SerializerMethodField()
 
     class Meta:
         model = Problem
         fields = [
             'id',
-            'title',
+            Problem.field_name.TITLE,
             'difficulty',
-            'created_at',
-            'updated_at',
+            Problem.field_name.CREATED_AT,
+            Problem.field_name.UPDATED_AT,
         ]
         read_only_fields = ['__all__']
 
     def get_difficulty(self, obj: Problem):
         try:
-            difficulty = obj.analysis.difficulty
+            return self.difficulty_dict(obj.analysis.difficulty)
         except ProblemAnalysis.DoesNotExist:
-            difficulty = 0
-        return ProblemDifficultySerializer(difficulty).data
+            return self.difficulty_dict(0)
