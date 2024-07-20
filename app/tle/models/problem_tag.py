@@ -1,7 +1,16 @@
+import typing
+
 from django.db import models
+
+if typing.TYPE_CHECKING:
+    import tle.models as _T
 
 
 class ProblemTag(models.Model):
+    if typing.TYPE_CHECKING:
+        parent: models.ManyToManyField[_T.ProblemTag]
+        children: models.ManyToManyField[_T.ProblemTag]
+
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,

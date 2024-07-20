@@ -14,6 +14,9 @@ from tle.models.choices import BojUserLevel
 from tle.models.user import User
 from tle.models.submission_language import SubmissionLanguage
 
+if typing.TYPE_CHECKING:
+    import tle.models as _T
+
 
 class EmojiValidator(BaseValidator):
     def __init__(self, message: str | None = None) -> None:
@@ -27,6 +30,12 @@ class EmojiValidator(BaseValidator):
 
 
 class Crew(models.Model):
+    if typing.TYPE_CHECKING:
+        applicants: models.ManyToManyField[_T.CrewApplicant]
+        members: models.ManyToManyField[_T.CrewMember]
+        activities: models.ManyToManyField[_T.CrewActivity]
+        submittable_languages: models.ManyToManyField[SubmissionLanguage]
+
     name = models.CharField(
         max_length=20,
         unique=True,
@@ -106,14 +115,6 @@ class Crew(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
-    if typing.TYPE_CHECKING:
-        import tle.models as t
-
-        applicants: models.ManyToManyField[t.CrewApplicant]
-        members: models.ManyToManyField[t.CrewMember]
-        activities: models.ManyToManyField[t.CrewActivity]
-        submittable_languages: models.ManyToManyField[SubmissionLanguage]
-
     class field_name:
         # related fields
         APPLICANTS = 'applicants'
@@ -143,7 +144,7 @@ class Crew(models.Model):
         return cls.objects.filter(members__user=user)
 
     @property
-    def captain(self) -> t.CrewMember:
+    def captain(self) -> _T.CrewMember:
         return self.members.get(is_captain=True)
 
     def __repr__(self) -> str:

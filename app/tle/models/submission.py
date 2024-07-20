@@ -1,11 +1,19 @@
+import typing
+
 from django.db import models
 
 from tle.models.user import User
 from tle.models.crew_activity_problem import CrewActivityProblem
 from tle.models.submission_language import SubmissionLanguage
 
+if typing.TYPE_CHECKING:
+    import tle.models as _T
+
 
 class Submission(models.Model):
+    if typing.TYPE_CHECKING:
+        comments: models.ManyToManyField[_T.SubmissionComment]
+
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     activity_problem = models.ForeignKey(
         CrewActivityProblem,

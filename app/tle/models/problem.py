@@ -4,8 +4,15 @@ from django.db import models
 
 from tle.models.user import User
 
+if typing.TYPE_CHECKING:
+    import tle.models as _T
+
 
 class Problem(models.Model):
+    if typing.TYPE_CHECKING:
+        analysis: models.OneToOneField[_T.ProblemAnalysis]
+        activity_problems: models.ManyToOneRel[_T.CrewActivityProblem]
+
     title = models.CharField(
         max_length=100,
         help_text='문제 이름을 입력해주세요.',
@@ -43,12 +50,6 @@ class Problem(models.Model):
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
-
-    if typing.TYPE_CHECKING:
-        import tle.models as t
-
-        analysis: models.OneToOneField[t.ProblemAnalysis]
-        activity_problems: models.ManyToOneRel[t.CrewActivityProblem]
 
     class field_name:
         # related fields

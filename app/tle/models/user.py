@@ -12,7 +12,7 @@ from django.utils import timezone
 from tle.models.choices import BojUserLevel
 
 if typing.TYPE_CHECKING:
-    import tle.models as t
+    import tle.models as _T
 
 
 def get_profile_image_path(instance: User, filename: str) -> str:
@@ -47,11 +47,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    problems: models.ManyToManyField[t.Problem]
-    applicants: models.ManyToManyField[t.CrewApplicant]
-    members: models.ManyToManyField[t.CrewMember]
-    submissions: models.ManyToManyField[t.Submission]
-    comments: models.ManyToManyField[t.SubmissionComment]
+    problems: models.ManyToManyField[_T.Problem]
+    applicants: models.ManyToManyField[_T.CrewApplicant]
+    members: models.ManyToManyField[_T.CrewMember]
+    submissions: models.ManyToManyField[_T.Submission]
+    comments: models.ManyToManyField[_T.SubmissionComment]
 
     profile_image = models.ImageField(
         help_text='프로필 이미지',

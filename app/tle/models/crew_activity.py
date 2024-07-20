@@ -1,3 +1,4 @@
+from __future__ import annotations
 import typing
 
 from django.db import models
@@ -5,8 +6,14 @@ from django.utils import timezone
 
 from tle.models.crew import Crew
 
+if typing.TYPE_CHECKING:
+    import tle.models as _T
+
 
 class CrewActivity(models.Model):
+    if typing.TYPE_CHECKING:
+        problems: models.ManyToOneRel[_T.CrewActivityProblem]
+
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
@@ -22,11 +29,6 @@ class CrewActivity(models.Model):
     end_at = models.DateTimeField(
         help_text='활동 종료 일자를 입력해주세요.',
     )
-
-    if typing.TYPE_CHECKING:
-        import tle.models as t
-
-        problems: models.ManyToOneRel[t.CrewActivityProblem]
 
     class field_name:
         # related fields

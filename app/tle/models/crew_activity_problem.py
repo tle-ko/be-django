@@ -6,8 +6,14 @@ from django.db import models
 from tle.models.crew_activity import CrewActivity
 from tle.models.problem import Problem
 
+if typing.TYPE_CHECKING:
+    import tle.models as _T
+
 
 class CrewActivityProblem(models.Model):
+    if typing.TYPE_CHECKING:
+        submissions: models.ManyToOneRel[_T.Submission]
+
     activity = models.ForeignKey(
         CrewActivity,
         on_delete=models.CASCADE,
@@ -27,11 +33,6 @@ class CrewActivityProblem(models.Model):
         ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
-    if typing.TYPE_CHECKING:
-        import tle.models as t
-
-        submissions: models.ManyToOneRel[t.Submission]
 
     class field_name:
         # related fields
