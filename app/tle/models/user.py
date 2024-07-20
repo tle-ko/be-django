@@ -128,12 +128,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         CREATED_AT = 'created_at'
         LAST_LOGIN = 'last_login'
 
-    def crews(self):
-        return self.members.values_list(
-            self.members.model.crew.field.name,
-            flat=True,
-        )
-
     @property
     def date_joined(self):
         return self.created_at

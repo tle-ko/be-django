@@ -138,6 +138,10 @@ class Crew(models.Model):
     class Meta:
         ordering = ['-updated_at']
 
+    @classmethod
+    def of_user(cls, user: User) -> models.QuerySet[Crew]:
+        return cls.objects.filter(members__user=user)
+
     @property
     def captain(self) -> t.CrewMember:
         return self.members.get(is_captain=True)
