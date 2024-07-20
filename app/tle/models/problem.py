@@ -27,10 +27,10 @@ class Problem(models.Model):
         help_text='문제 출력 설명을 입력해주세요.',
         blank=True,
     )
-    memory_limit = models.FloatField(
+    memory_limit_megabyte = models.FloatField(
         help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
     )
-    time_limit = models.FloatField(
+    time_limit_second = models.FloatField(
         help_text='문제 시간 제한을 입력해주세요. (초 단위)',
         default=1.0,
     )
@@ -60,8 +60,8 @@ class Problem(models.Model):
         DESCRIPTION = 'description'
         INPUT_DESCRIPTION = 'input_description'
         OUTPUT_DESCRIPTION = 'output_description'
-        MEMORY_LIMIT = 'memory_limit'
-        TIME_LIMIT = 'time_limit'
+        MEMORY_LIMIT_MEGABYTE = 'memory_limit_megabyte'
+        TIME_LIMIT_SECOND = 'time_limit_second'
         CREATED_AT = 'created_at'
         CREATED_BY = 'created_by'
         UPDATED_AT = 'updated_at'
