@@ -51,7 +51,7 @@ class CrewActivity(models.Model):
     @classmethod
     def closed_of_crew(cls, crew: Crew) -> models.QuerySet[CrewActivity]:
         """종료된 활동 목록을 반환합니다."""
-        return cls.objects.filter(crew=crew, end_at__gt=timezone.now())
+        return cls.objects.filter(crew=crew, end_at__lt=timezone.now())
 
     def is_open(self) -> bool:
         """활동이 진행 중인지 여부를 반환합니다."""
