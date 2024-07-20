@@ -57,7 +57,7 @@ class CrewActivity(models.Model):
         """활동이 진행 중인지 여부를 반환합니다."""
         return self.start_at <= timezone.now() <= self.end_at
 
-    def is_ended(self) -> bool:
+    def is_closed(self) -> bool:
         """활동이 종료되었는지 여부를 반환합니다."""
         return self.end_at < timezone.now()
 
