@@ -69,18 +69,6 @@ class Problem(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    MEMORY_LIMIT_UNIT = {
-        "name_ko": "메가 바이트",
-        "name_en": "Mega Bytes",
-        "abbr": "MB",
-    }
-
-    TIME_LIMIT_UNIT = {
-        "name_ko": "초",
-        "name_en": "Seconds",
-        "abbr": "s",
-    }
-
     def __repr__(self) -> str:
         return f'[{self.title}]'
 
