@@ -12,8 +12,23 @@ class ActivityDict:
     name: str
     nth: Optional[int] = None
     in_progress: bool = False
+    # TODO: 프론트에게 날짜만 쓸지 시간도 쓸지 물어보기
     start_at: Optional[date] = None
     end_at: Optional[date] = None
+    date_start_at: Optional[date] = None
+    date_end_at: Optional[date] = None
+
+    @classmethod
+    def from_activity(cls, activity: CrewActivity) -> 'ActivityDict':
+        return cls(
+            name=activity.name,
+            nth=activity.nth(),
+            date_start_at=activity.start_at.date(),
+            date_end_at=activity.end_at.date(),
+            start_at=activity.start_at,
+            end_at=activity.end_at,
+            in_progress=activity.is_open(),
+        )
 
 
 class CrewJoinedSerializer(ModelSerializer):
@@ -37,29 +52,13 @@ class CrewJoinedSerializer(ModelSerializer):
 
     def get_recent_activity(self, crew: Crew) -> dict:
         if not crew.is_active:
-            activity_dict = ActivityDict(
-                name='활동 종료',
-            )
+            activity_dict = ActivityDict(name='활동 종료')
         elif (opened_activities := CrewActivity.opened_of_crew(crew)).exists():
             activity = opened_activities.earliest()
-            activity_dict = ActivityDict(
-                name=activity.name,
-                nth=activity.nth(),
-                start_at=activity.start_at.date(),
-                end_at=activity.end_at.date(),
-                in_progress=activity.is_open(),
-            )
+            activity_dict = ActivityDict.from_activity(activity)
         elif (closed_activities := CrewActivity.closed_of_crew(crew)).exists():
             activity = closed_activities.latest()
-            activity_dict = ActivityDict(
-                nth=activity.nth(),
-                name=activity.name,
-                start_at=activity.start_at.date(),
-                end_at=activity.end_at.date(),
-                in_progress=activity.is_open(),
-            )
+            activity_dict = ActivityDict.from_activity(activity)
         else:
-            activity_dict = ActivityDict(
-                name='등록된 활동 없음',
-            )
+            activity_dict = ActivityDict(name='등록된 활동 없음')
         return asdict(activity_dict)
