@@ -41,7 +41,7 @@ class Crew(models.Model):
         unique=True,
         help_text='크루 이름을 입력해주세요. (최대 20자)',
     )
-    emoji = models.CharField(
+    icon = models.CharField(
         max_length=2,
         validators=[EmojiValidator(message='이모지 형식이 아닙니다.')],
         null=False,
@@ -123,7 +123,7 @@ class Crew(models.Model):
         SUBMITTABLE_LANGUAGES = 'submittable_languages'
         # fields
         NAME = 'name'
-        EMOJI = 'emoji'
+        ICON = 'icon'
         MAX_MEMBERS = 'max_members'
         NOTICE = 'notice'
         CUSTOM_TAGS = 'custom_tags'
@@ -148,7 +148,7 @@ class Crew(models.Model):
         return self.members.get(is_captain=True)
 
     def __repr__(self) -> str:
-        return f'[{self.emoji} {self.name}]'
+        return f'[{self.icon} {self.name}]'
 
     def __str__(self) -> str:
         member_count = f'({self.members.count()}/{self.max_members})'

@@ -37,7 +37,7 @@ class CrewJoinedSerializer(ModelSerializer):
     class Meta:
         model = Crew
         fields = [
-            Crew.field_name.EMOJI,
+            Crew.field_name.ICON,
             Crew.field_name.NAME,
             'activities',
             Crew.field_name.IS_ACTIVE,

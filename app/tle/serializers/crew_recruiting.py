@@ -13,8 +13,8 @@ class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin, TagListMixin):
     class Meta:
         model = Crew
         fields = [
+            Crew.field_name.ICON,
             Crew.field_name.NAME,
-            Crew.field_name.EMOJI,
             Crew.field_name.IS_RECRUITING,
             'is_joinable',
             'is_member',

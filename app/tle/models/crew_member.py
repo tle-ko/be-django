@@ -45,7 +45,7 @@ class CrewMember(models.Model):
         ordering = ['is_captain', 'created_at']
 
     def __repr__(self) -> str:
-        return f'[{self.crew.emoji} {self.crew.name}] ← [@{self.user.username}]'
+        return f'[{self.crew.icon} {self.crew.name}] ← [@{self.user.username}]'
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()}'
