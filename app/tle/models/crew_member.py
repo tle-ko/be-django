@@ -42,4 +42,4 @@ class CrewMember(models.Model):
 
     @admin.display(boolean=True, description='Is Captain')
     def is_captain(self) -> bool:
-        return self.crew.created_by == self.user
+        return self.crew.is_captain(self.user)

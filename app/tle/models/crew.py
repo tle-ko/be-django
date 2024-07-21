@@ -164,10 +164,13 @@ class Crew(models.Model):
     def is_member(self, user: User) -> bool:
         return self.members.filter(user=user).exists()
 
+    def is_captain(self, user: User) -> bool:
+        return self.created_by == user
+
     def is_joinable(self, user: User) -> bool:
         if not self.is_recruiting:
             return False
-        if self.captain == user:
+        if self.is_captain(user):
             return False
         if self.members.count() >= self.max_members:
             return False
