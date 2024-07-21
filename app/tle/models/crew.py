@@ -143,8 +143,9 @@ class Crew(models.Model):
     def of_user(cls, user: User) -> models.QuerySet[Crew]:
         return cls.objects.filter(members__user=user)
 
-    def __repr__(self) -> str:
-        return f'[{self.icon} {self.name}]'
+    @classmethod
+    def of_user_as_captain(cls, user: User) -> models.QuerySet[Crew]:
+        return cls.objects.filter(created_by=user)
 
     def __str__(self) -> str:
         member_count = f'({self.members.count()}/{self.max_members})'
