@@ -9,14 +9,11 @@ from tle.models import Crew, CrewActivity
 
 @dataclass
 class ActivityDict:
-    name: str
     nth: Optional[int] = None
-    is_open: bool = False  # 제출 가능 여부
-    # TODO: 프론트에게 날짜만 쓸지 시간도 쓸지 물어보기
+    name: str = ''
     start_at: Optional[date] = None
     end_at: Optional[date] = None
-    date_start_at: Optional[date] = None
-    date_end_at: Optional[date] = None
+    is_open: bool = False  # 제출 가능 여부
 
     @classmethod
     def from_activity(cls, activity: CrewActivity) -> 'ActivityDict':
@@ -24,8 +21,6 @@ class ActivityDict:
             name=activity.name,
             nth=activity.nth(),
             is_open=activity.is_opened(),
-            date_start_at=activity.start_at.date(),
-            date_end_at=activity.end_at.date(),
             start_at=activity.start_at,
             end_at=activity.end_at,
         )
