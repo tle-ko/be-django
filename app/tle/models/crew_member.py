@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from django.db import models, transaction
+from django.contrib import admin
+from django.db import models
 
 from tle.models.user import User
 from tle.models.crew import Crew
@@ -39,11 +40,6 @@ class CrewMember(models.Model):
     def captain_of(cls, crew: Crew) -> CrewMember:
         return cls.objects.get(crew=crew, user=crew.created_by)
 
-    def __repr__(self) -> str:
-        return f'[{self.crew.icon} {self.crew.name}] ← [@{self.user.username}]'
-
-    def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()}'
-
+    @admin.display(boolean=True, description='Is Captain')
     def is_captain(self) -> bool:
         return self.crew.created_by == self.user

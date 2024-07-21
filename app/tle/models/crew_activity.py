@@ -1,6 +1,7 @@
 from __future__ import annotations
 import typing
 
+from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 
@@ -53,14 +54,17 @@ class CrewActivity(models.Model):
         """종료된 활동 목록을 반환합니다."""
         return cls.objects.filter(crew=crew, end_at__lt=timezone.now())
 
+    @admin.display(boolean=True, description='Is Opend')
     def is_opened(self) -> bool:
         """활동이 진행 중인지 여부를 반환합니다."""
         return self.start_at <= timezone.now() <= self.end_at
 
+    @admin.display(boolean=True, description='Is Closed')
     def is_closed(self) -> bool:
         """활동이 종료되었는지 여부를 반환합니다."""
         return self.end_at < timezone.now()
 
+    @admin.display(description='Nth')
     def nth(self) -> int:
         """활동의 회차 번호를 반환합니다.
 
@@ -69,9 +73,3 @@ class CrewActivity(models.Model):
         더한 값을 반환하므로, 고정된 값이 아닙니다.
         """
         return self.crew.activities.filter(start_at__lte=self.start_at).count()
-
-    def __repr__(self) -> str:
-        return f'{self.crew.__repr__()} ← [{self.start_at.date()} ~ {self.end_at.date()}]'
-
-    def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()}'

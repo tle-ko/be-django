@@ -132,12 +132,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def date_joined(self):
         return self.created_at
 
-    def __repr__(self) -> str:
-        return f'[@{self.username}]'
-
     def __str__(self) -> str:
-        staff = '(관리자)' if self.is_staff else ''
-        return f'{self.pk} : {self.__repr__()} {staff}'
+        return f'[{self.pk} : "{self.username}"]' + (' (관리자)' if self.is_staff else '')
 
     def has_perm(self, perm, obj=None):
         return True

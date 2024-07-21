@@ -47,10 +47,3 @@ class ProblemAnalysis(models.Model):
         TIME_COMPLEXITY = 'time_complexity'
         HINT = 'hint'
         CREATED_AT = 'created_at'
-
-    def __repr__(self) -> str:
-        tags = ' '.join(f'#{tag.key}' for tag in self.tags.all())
-        return f'[{ProblemDifficulty(self.difficulty).label} / {self.time_complexity} / {tags}]'
-
-    def __str__(self) -> str:
-        return f'{self.pk} : {self.problem.__repr__()} ← {self.__repr__()}'

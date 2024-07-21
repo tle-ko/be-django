@@ -70,8 +70,5 @@ class Problem(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def __repr__(self) -> str:
-        return f'[{self.title}]'
-
     def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()} ← {self.created_by.__repr__()}'
+        return f'[{self.pk} : {self.title}]'

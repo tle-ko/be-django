@@ -148,8 +148,7 @@ class Crew(models.Model):
         return cls.objects.filter(created_by=user)
 
     def __str__(self) -> str:
-        member_count = f'({self.members.count()}/{self.max_members})'
-        return f'{self.pk} : {repr(self)} {member_count} ← {repr(self.created_by)}'
+        return f'[{self.pk} : {self.icon} "{self.name}"] ({self.members.count()}/{self.max_members})'
 
     def save(self, *args, **kwargs) -> None:
         with transaction.atomic():
