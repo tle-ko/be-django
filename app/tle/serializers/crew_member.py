@@ -11,8 +11,9 @@ class CrewMemberSerializer(ModelSerializer):
     class Meta:
         model = CrewMember
         fields = (
-            'user',
+            CrewMember.field_name.USER,
             'is_captain',
+            CrewMember.field_name.CREATED_AT,
         )
 
     def get_is_captain(self, obj: CrewMember) -> bool:

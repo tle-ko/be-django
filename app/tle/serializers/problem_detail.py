@@ -44,15 +44,19 @@ class ProblemDetailSerializer(ModelSerializer, AnalysisDictMixin):
     def get_memory_limit(self, obj: Problem):
         return {
             "value": obj.memory_limit_megabyte,
-            "name_ko": Unit.MEGA_BYTE.name_ko,
-            "name_en": Unit.MEGA_BYTE.name_en,
-            "abbr": Unit.MEGA_BYTE.abbr,
+            "unit": {
+                "name_ko": Unit.MEGA_BYTE.name_ko,
+                "name_en": Unit.MEGA_BYTE.name_en,
+                "abbr": Unit.MEGA_BYTE.abbr,
+            },
         }
 
     def get_time_limit(self, obj: Problem):
         return {
             "value": obj.time_limit_second,
-            "name_ko": Unit.SECOND.name_ko,
-            "name_en": Unit.SECOND.name_en,
-            "abbr": Unit.SECOND.abbr,
+            "unit": {
+                "name_ko": Unit.SECOND.name_ko,
+                "name_en": Unit.SECOND.name_en,
+                "abbr": Unit.SECOND.abbr,
+            },
         }
