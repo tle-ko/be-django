@@ -1,12 +1,20 @@
 from rest_framework.serializers import *
 
 from tle.models import Crew
-from tle.serializers.mixins import CurrentUserMixin, TagListMixin
+from tle.serializers.mixins import (
+    CurrentUserMixin,
+    TagListMixin,
+    RecentActivityMixin,
+)
 
 
-class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin, TagListMixin):
+class CrewRecruitingSerializer(CurrentUserMixin,
+                               TagListMixin,
+                               RecentActivityMixin,
+                               ModelSerializer):
     is_joinable = SerializerMethodField()
     is_member = SerializerMethodField()
+    activities = SerializerMethodField()
     members = SerializerMethodField()
     tags = SerializerMethodField()
 
@@ -18,6 +26,7 @@ class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin, TagListMixin):
             Crew.field_name.IS_RECRUITING,
             'is_joinable',
             'is_member',
+            'activities',
             'members',
             'tags',
         ]
@@ -28,6 +37,12 @@ class CrewRecruitingSerializer(ModelSerializer, CurrentUserMixin, TagListMixin):
 
     def get_is_member(self, obj: Crew):
         return obj.is_member(self.current_user())
+
+    def get_activities(self, crew: Crew) -> dict:
+        return {
+            "count": crew.activities.count(),
+            "recent": self.recent_activity(crew),
+        }
 
     def get_members(self, obj: Crew):
         return {
