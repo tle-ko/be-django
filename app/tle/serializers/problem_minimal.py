@@ -1,6 +1,7 @@
 from rest_framework.serializers import *
 
 from tle.models import Problem, ProblemAnalysis
+from tle.models.choices import ProblemDifficulty
 from tle.serializers.mixins import DifficultyDictMixin
 
 
@@ -20,6 +21,6 @@ class ProblemMinimalSerializer(ModelSerializer, DifficultyDictMixin):
 
     def get_difficulty(self, obj: Problem):
         try:
-            return self.difficulty_dict(obj.analysis.difficulty)
+            return self.difficulty_dict(ProblemDifficulty(obj.analysis.difficulty))
         except ProblemAnalysis.DoesNotExist:
-            return self.difficulty_dict(0)
+            return self.difficulty_dict(ProblemDifficulty(0))
