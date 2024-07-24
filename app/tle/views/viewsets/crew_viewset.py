@@ -25,7 +25,7 @@ class CrewViewSet(ModelViewSet):
         if self.action in 'list_recruiting':
             return Crew.objects.filter(is_recruiting=True)
         if self.action in 'list_joined':
-            return Crew.of_user(self.request.user)
+            return Crew.of_user(self.request.user).order_by('-'+Crew.field_name.IS_ACTIVE)
         return Crew.objects.all()
 
     def get_serializer_class(self):
