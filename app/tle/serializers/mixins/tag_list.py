@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import typing
 
 from rest_framework.serializers import *
@@ -7,10 +8,17 @@ from tle.models import Crew
 from tle.models.choices import BojUserLevel
 
 
+class TagType(enum.Enum):
+    LANGUAGE = 'language'
+    LEVEL = 'level'
+    CUSTOM = 'custom'
+
+
 @dataclasses.dataclass
 class TagDict:
     key: str
     name: str
+    type: TagType
 
 
 class TagListMixin:
@@ -42,7 +50,7 @@ class TagListMixin:
 
     def _get_language_tags(self, crew: Crew) -> typing.Iterable[TagDict]:
         for lang in crew.submittable_languages.all():
-            yield TagDict(key=lang.key, name=lang.name)
+            yield TagDict(key=lang.key, name=lang.name, type=TagType.LANGUAGE.value)
 
     def _get_boj_level_tags(self, crew: Crew) -> typing.Iterable[TagDict]:
         if crew.min_boj_level is not None:
@@ -50,7 +58,7 @@ class TagListMixin:
         if crew.max_boj_level is not None:
             yield self._get_boj_level_bound_tag(crew.max_boj_level, 1, "이하")
         if crew.min_boj_level is None and crew.max_boj_level is None:
-            yield TagDict(key=None, name="티어 무관")
+            yield TagDict(key=None, name="티어 무관", type=TagType.LEVEL.value)
 
     def _get_boj_level_bound_tag(self, level: int, bound_tier: int, bound_msg: str, lang='ko', arabic=False) -> TagDict:
         """level에 대한 백준 난이도 태그를 반환한다.
@@ -70,8 +78,8 @@ class TagListMixin:
             level_name = BojUserLevel.get_division_name(level, lang=lang)
         else:
             level_name = BojUserLevel.get_name(level, lang=lang, arabic=arabic)
-        return TagDict(key=None, name=f'{level_name} {bound_msg}')
+        return TagDict(key=None, name=f'{level_name} {bound_msg}', type=TagType.LEVEL.value)
 
     def _get_custom_tags(self, crew: Crew) -> typing.Iterable[TagDict]:
         for tag in crew.custom_tags:
-            yield TagDict(key=None, name=tag)
+            yield TagDict(key=None, name=tag, type=TagType.CUSTOM.value)
