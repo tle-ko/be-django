@@ -40,7 +40,7 @@ class TagListMixin:
         # 태그의 나열 순서는 리스트에 선언한 순서를 따름.
         tags: typing.List[TagDict] = [
             *self._get_language_tags(crew),
-            *self._get_boj_level_tags(crew),
+            *self._get_level_tags(crew),
             *self._get_custom_tags(crew),
         ]
         return {
@@ -52,13 +52,11 @@ class TagListMixin:
         for lang in crew.submittable_languages.all():
             yield TagDict(key=lang.key, name=lang.name, type=TagType.LANGUAGE.value)
 
-    def _get_boj_level_tags(self, crew: Crew) -> typing.Iterable[TagDict]:
-        if crew.min_boj_level is not None:
-            yield self._get_boj_level_bound_tag(crew.min_boj_level, 5, "이상")
-        if crew.max_boj_level is not None:
-            yield self._get_boj_level_bound_tag(crew.max_boj_level, 1, "이하")
-        if crew.min_boj_level is None and crew.max_boj_level is None:
+    def _get_level_tags(self, crew: Crew) -> typing.Iterable[TagDict]:
+        if crew.min_boj_level is None:
             yield TagDict(key=None, name="티어 무관", type=TagType.LEVEL.value)
+        else:
+            yield self._get_boj_level_bound_tag(crew.min_boj_level, 5, "이상")
 
     def _get_boj_level_bound_tag(self, level: int, bound_tier: int, bound_msg: str, lang='ko', arabic=False) -> TagDict:
         """level에 대한 백준 난이도 태그를 반환한다.

@@ -118,14 +118,13 @@ class ProblemTagModelAdmin(admin.ModelAdmin):
 class CrewModelAdmin(admin.ModelAdmin):
     list_display = [
         'get_display_name',
+        'get_captain',
         'get_members',
         'get_applicants',
         'get_activities',
         Crew.field_name.IS_ACTIVE,
         Crew.field_name.IS_RECRUITING,
-        Crew.field_name.CREATED_BY,
         Crew.field_name.CREATED_AT,
-        Crew.field_name.UPDATED_AT,
     ]
     search_fields = [
         Crew.field_name.NAME,
@@ -135,11 +134,11 @@ class CrewModelAdmin(admin.ModelAdmin):
 
     @admin.display(description='Display Name')
     def get_display_name(self, obj: Crew) -> str:
-        return f'{obj.icon} {obj.name}'
+        return obj.get_display_name()
 
-    @admin.display(description='Activities')
-    def get_activities(self, obj: Crew) -> str:
-        return obj.activities.count()
+    @admin.display(description='Captain')
+    def get_captain(self, obj: Crew) -> str:
+        return obj.get_captain()
 
     @admin.display(description='Members')
     def get_members(self, obj: Crew) -> str:
@@ -149,20 +148,27 @@ class CrewModelAdmin(admin.ModelAdmin):
     def get_applicants(self, obj: Crew) -> str:
         return obj.applicants.count()
 
+    @admin.display(description='Activities')
+    def get_activities(self, obj: Crew) -> str:
+        return obj.activities.count()
+
 
 @admin.register(CrewMember)
 class CrewMemberModelAdmin(admin.ModelAdmin):
     list_display = [
         CrewMember.field_name.USER,
-        'is_captain',
         CrewMember.field_name.CREW,
+        CrewMember.field_name.IS_CAPTAIN,
         CrewMember.field_name.CREATED_AT,
     ]
     search_fields = [
         CrewMember.field_name.CREW+'__'+Crew.field_name.NAME,
         CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
     ]
-    ordering = [CrewMember.field_name.CREW]
+    ordering = [
+        CrewMember.field_name.CREW,
+        CrewMember.field_name.IS_CAPTAIN,
+    ]
 
 
 @admin.register(CrewActivity)

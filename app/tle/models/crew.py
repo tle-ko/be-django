@@ -77,22 +77,8 @@ class Crew(models.Model):
         blank=True,
         default=list,
     )
-    is_boj_username_required = models.BooleanField(
-        help_text='백준 아이디 필요 여부를 입력해주세요.',
-        default=True,
-    )
     min_boj_level = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
-        choices=BojUserLevel.choices,
-        blank=True,
-        null=True,
-        default=None,
-    )
-    max_boj_level = models.IntegerField(
-        help_text='최대 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
-        validators=[
-            # TODO: 최대 레벨이 최소 레벨보다 높은지 검사
-        ],
         choices=BojUserLevel.choices,
         blank=True,
         null=True,
@@ -127,9 +113,7 @@ class Crew(models.Model):
         MAX_MEMBERS = 'max_members'
         NOTICE = 'notice'
         CUSTOM_TAGS = 'custom_tags'
-        IS_BOJ_USERNAME_REQUIRED = 'is_boj_username_required'
         MIN_BOJ_LEVEL = 'min_boj_level'
-        MAX_BOJ_LEVEL = 'max_boj_level'
         IS_RECRUITING = 'is_recruiting'
         IS_ACTIVE = 'is_active'
         CREATED_AT = 'created_at'
@@ -176,18 +160,9 @@ class Crew(models.Model):
             return False
         if self.members.filter(user=user).exists():
             return False
-        if self.is_boj_username_required:
-            if user.boj_username is None:
-                # TODO: 인증된 BOJ 사용자명이어야 함
-                return False
-            if self.min_boj_level is not None:
-                if user.boj_level is None:
-                    return False
-                if user.boj_level < self.min_boj_level:
-                    return False
-            if self.max_boj_level is not None:
-                if user.boj_level is None:
-                    return False
-                if user.boj_level > self.max_boj_level:
-                    return False
+        if self.min_boj_level is not None:
+            return bool(
+                (user.boj_level is not None) and
+                (user.boj_level >= self.min_boj_level)
+            )
         return True
