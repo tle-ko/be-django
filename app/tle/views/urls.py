@@ -35,6 +35,6 @@ urlpatterns = [
     ])),
     path("crews/", include([
         path("recruiting", CrewViewSet.as_view({"get": "list_recruiting"})),
-        path("joined", CrewViewSet.as_view({"get": "list_joined"})),
+        path("my", CrewViewSet.as_view({"get": "list_my"})),
     ])),
 ]
