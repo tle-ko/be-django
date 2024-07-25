@@ -136,29 +136,39 @@ class Crew(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         with transaction.atomic():
-            obj = super().save(*args, **kwargs)
-            if not self.members.filter(user=self.created_by).exists():
-                captain = self.members.create(
-                    user=self.created_by,
-                    is_captain=True
-                )
+            super().save(*args, **kwargs)
+            self.set_captain(self.created_by)
+
+    def get_display_name(self) -> str:
+        return f'{self.icon} {self.name}'
+
+    def get_captain(self) -> User:
+        return self.members.get(is_captain=True).user
+
+    def set_captain(self, user: User) -> None:
+        assert isinstance(user, User)
+        with transaction.atomic():
+            self.members.filter(is_captain=True).update(is_captain=False)
+            try:
+                captain = self.members.get(user=user)
+                captain.is_captain = True
+            except self.members.model.DoesNotExist:
+                captain = self.members.create(user=user, is_captain=True)
+            finally:
                 captain.save()
-        return obj
+
+    def is_captain(self, user: User) -> bool:
+        return self.members.filter(user=user, is_captain=True).exists()
 
     def is_member(self, user: User) -> bool:
         return self.members.filter(user=user).exists()
 
-    def is_captain(self, user: User) -> bool:
-        return self.created_by == user
-
     def is_joinable(self, user: User) -> bool:
         if not self.is_recruiting:
             return False
-        if self.is_captain(user):
-            return False
         if self.members.count() >= self.max_members:
             return False
-        if self.members.filter(user=user).exists():
+        if self.is_member(user):
             return False
         if self.min_boj_level is not None:
             return bool(

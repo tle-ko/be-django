@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from django.contrib import admin
 from django.db import models
 
 from tle.models.user import User
@@ -20,11 +19,16 @@ class CrewMember(models.Model):
         related_name=User.field_name.MEMBERS,
         help_text='유저를 입력해주세요.',
     )
+    is_captain = models.BooleanField(
+        default=False,
+        help_text='크루장 여부',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class field_name:
         CREW = 'crew'
         USER = 'user'
+        IS_CAPTAIN = 'is_captain'
         CREATED_AT = 'created_at'
 
     class Meta:
@@ -38,8 +42,7 @@ class CrewMember(models.Model):
 
     @classmethod
     def captain_of(cls, crew: Crew) -> CrewMember:
-        return cls.objects.get(crew=crew, user=crew.created_by)
-
-    @admin.display(boolean=True, description='Is Captain')
-    def is_captain(self) -> bool:
-        return self.crew.is_captain(self.user)
+        return cls.objects.get(**{
+            CrewMember.field_name.CREW: crew,
+            CrewMember.field_name.IS_CAPTAIN: True,
+        })
