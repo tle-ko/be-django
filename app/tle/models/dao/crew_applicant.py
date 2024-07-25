@@ -1,25 +1,22 @@
-from django.db import (
-    models,
-    transaction,
-)
+from django.db import models, transaction
 from django.utils import timezone
 
-from tle.models.user import User
-from tle.models.crew import Crew
-from tle.models.crew_member import CrewMember
+from tle.models.dao.user import User
+from tle.models.dao.crew import Crew
+from tle.models.dao.crew_member import CrewMember
 
 
 class CrewApplicant(models.Model):
     crew = models.ForeignKey[Crew](
         Crew,
         on_delete=models.CASCADE,
-        related_name=Crew.FieldName.APPLICANTS,
+        related_name=Crew.field_name.APPLICANTS,
         help_text='크루를 입력해주세요.',
     )
     user = models.ForeignKey[User](
         User,
         on_delete=models.CASCADE,
-        related_name=User.FieldName.APPLICANTS,
+        related_name=User.field_name.APPLICANTS,
         help_text='유저를 입력해주세요.',
     )
     message = models.TextField(
@@ -46,6 +43,15 @@ class CrewApplicant(models.Model):
         default=None,
     )
 
+    class field_name:
+        CREW = 'crew'
+        USER = 'user'
+        MESSAGE = 'message'
+        IS_ACCEPTED = 'is_accepted'
+        CREATED_AT = 'created_at'
+        REVIEWED_AT = 'reviewed_at'
+        REVIEWED_BY = 'reviewed_by'
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -53,6 +59,7 @@ class CrewApplicant(models.Model):
                 name='unique_applicant_per_crew',
             ),
         ]
+        ordering = ['reviewed_by', 'created_at']
 
     def __repr__(self) -> str:
         return f'{self.crew.__repr__()} ← {self.user.__repr__()} : "{self.message}"'

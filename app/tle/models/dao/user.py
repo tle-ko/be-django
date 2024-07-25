@@ -9,7 +9,10 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.utils import timezone
 
-from tle.models.user_solved_tier import UserSolvedTier
+from tle.models.choices import BojUserLevel
+
+if typing.TYPE_CHECKING:
+    import tle.models as _T
 
 
 def get_profile_image_path(instance: User, filename: str) -> str:
@@ -44,6 +47,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    problems: models.ManyToManyField[_T.Problem]
+    applicants: models.ManyToManyField[_T.CrewApplicant]
+    members: models.ManyToManyField[_T.CrewMember]
+    submissions: models.ManyToManyField[_T.Submission]
+    comments: models.ManyToManyField[_T.SubmissionComment]
+
     profile_image = models.ImageField(
         help_text='프로필 이미지',
         upload_to=get_profile_image_path,
@@ -60,14 +69,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True,
     )
-    boj_tier = models.IntegerField(
+    boj_level = models.IntegerField(
         help_text='백준 티어',
-        choices=UserSolvedTier.choices,
+        choices=BojUserLevel.choices,
         null=True,
         blank=True,
         default=None,
     )
-    boj_tier_updated_at = models.DateTimeField(
+    boj_level_updated_at = models.DateTimeField(
         help_text='백준 티어 갱신 시각',
         null=True,
         blank=True,
@@ -93,46 +102,38 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    @property
-    def crews(self):
-        for member in self.members:
-            yield member.crew
-
-    @property
-    def date_joined(self):
-        return self.created_at
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    class FieldName:
+    class field_name:
+        # related fields
         PROBLEMS = 'problems'
         APPLICANTS = 'applicants'
         MEMBERS = 'members'
         SUBMISSIONS = 'submissions'
         COMMENTS = 'comments'
+        # fields
+        PROFILE_IMAGE = 'profile_image'
+        BOJ_USERNAME = 'boj_username'
+        BOJ_LEVEL = 'boj_level'
+        BOJ_LEVEL_UPDATED_AT = 'boj_level_updated_at'
+        USERNAME = 'username'
+        EMAIL = 'email'
+        PASSWORD = 'password'
+        IS_ACTIVE = 'is_active'
+        IS_STAFF = 'is_staff'
+        IS_SUPERUSER = 'is_superuser'
+        FIRST_NAME = 'first_name'
+        LAST_NAME = 'last_name'
+        CREATED_AT = 'created_at'
+        LAST_LOGIN = 'last_login'
 
-    if typing.TYPE_CHECKING:
-        from . import (
-            Problem as T_Problem,
-            Crew as T_Crew,
-            CrewApplicant as T_CrewApplicant,
-            CrewMember as T_CrewMember,
-            Submission as T_Submission,
-            SubmissionComment as T_SubmissionComment,
-        )
-        problems: models.ManyToManyField[T_Problem]
-        applicants: models.ManyToManyField[T_CrewApplicant]
-        members: models.ManyToManyField[T_CrewMember]
-        submissions: models.ManyToManyField[T_Submission]
-        comments: models.ManyToManyField[T_SubmissionComment]
-
-    def __repr__(self) -> str:
-        return f'[@{self.username}]'
+    @property
+    def date_joined(self):
+        return self.created_at
 
     def __str__(self) -> str:
-        staff = '(관리자)' if self.is_staff else ''
-        return f'{self.pk} : {self.__repr__()} {staff}'
+        return f'[{self.pk} : "{self.username}"]' + (' (관리자)' if self.is_staff else '')
 
     def has_perm(self, perm, obj=None):
         return True

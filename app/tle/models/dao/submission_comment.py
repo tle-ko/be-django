@@ -1,15 +1,15 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.user import User
-from tle.models.submission import Submission
+from tle.models.dao.user import User
+from tle.models.dao.submission import Submission
 
 
 class SubmissionComment(models.Model):
     submission = models.ForeignKey(
         Submission,
         on_delete=models.CASCADE,
-        related_name=Submission.FieldName.COMMENTS,
+        related_name=Submission.field_name.COMMENTS,
         help_text='제출을 입력해주세요.',
     )
     content = models.TextField(
@@ -36,10 +36,23 @@ class SubmissionComment(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=User.FieldName.COMMENTS,
+        related_name=User.field_name.COMMENTS,
         help_text='유저를 입력해주세요.',
     )
     updated_at = models.DateTimeField(auto_now=True)
+
+    class field_name:
+        # fields
+        SUBMISSION = 'submission'
+        CONTENT = 'content'
+        LINE_NUMBER_START = 'line_number_start'
+        LINE_NUMBER_END = 'line_number_end'
+        CREATED_AT = 'created_at'
+        CREATED_BY = 'created_by'
+        UPDATED_AT = 'updated_at'
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __repr__(self) -> str:
         line_range = f'L{self.line_number_start}:L{self.line_number_end}'

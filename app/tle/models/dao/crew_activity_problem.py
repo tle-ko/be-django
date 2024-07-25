@@ -3,21 +3,27 @@ import typing
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.crew_activity import CrewActivity
-from tle.models.problem import Problem
+from tle.models.dao.crew_activity import CrewActivity
+from tle.models.dao.problem import Problem
+
+if typing.TYPE_CHECKING:
+    import tle.models as _T
 
 
 class CrewActivityProblem(models.Model):
+    if typing.TYPE_CHECKING:
+        submissions: models.ManyToOneRel[_T.Submission]
+
     activity = models.ForeignKey(
         CrewActivity,
         on_delete=models.CASCADE,
-        related_name='problems',
+        related_name=CrewActivity.field_name.PROBLEMS,
         help_text='활동을 입력해주세요.',
     )
     problem = models.ForeignKey(
         Problem,
         on_delete=models.PROTECT,
-        related_name='activities',
+        related_name=Problem.field_name.ACTIVITY_PROBLEMS,
         help_text='문제를 입력해주세요.',
     )
     order = models.IntegerField(
@@ -28,6 +34,15 @@ class CrewActivityProblem(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class field_name:
+        # related fields
+        SUBMISSIONS = 'submissions'
+        # fields
+        ACTIVITY = 'activity'
+        PROBLEM = 'problem'
+        ORDER = 'order'
+        CREATED_AT = 'created_at'
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -35,15 +50,7 @@ class CrewActivityProblem(models.Model):
                 name='unique_order_per_activity_problem',
             ),
         ]
-
-    class FieldName:
-        SUBMISSIONS = 'submissions'
-
-    if typing.TYPE_CHECKING:
-        from tle.models.submission import (
-            Submission as T_Submission,
-        )
-        submissions: models.QuerySet[T_Submission]
+        ordering = ['order']
 
     def __repr__(self) -> str:
         return f'{self.activity.__repr__()} ← #{self.order} {self.problem.__repr__()}'

@@ -1,8 +1,16 @@
+import typing
+
 from django.db import models
+
+if typing.TYPE_CHECKING:
+    import tle.models as _T
 
 
 class ProblemTag(models.Model):
-    """Data Structure & Algorithm"""
+    if typing.TYPE_CHECKING:
+        parent: models.ManyToManyField[_T.ProblemTag]
+        children: models.ManyToManyField[_T.ProblemTag]
+
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -34,6 +42,12 @@ class ProblemTag(models.Model):
             '알고리즘 태그 이름(영문)을 입력해주세요. (최대 50자)'
         ),
     )
+
+    class field_name:
+        PARENT = 'parent'
+        KEY = 'key'
+        NAME_KO = 'name_ko'
+        NAME_EN = 'name_en'
 
     class Meta:
         ordering = ['key']

@@ -2,10 +2,18 @@ import typing
 
 from django.db import models
 
-from tle.models.user import User
+from tle.models.dao.user import User
+
+if typing.TYPE_CHECKING:
+    import tle.models as _T
 
 
 class Problem(models.Model):
+    if typing.TYPE_CHECKING:
+        analysis: models.OneToOneField[_T.ProblemAnalysis]
+        analysis_queue: models.ManyToManyField[_T.ProblemAnalysisQueue]
+        activity_problems: models.ManyToOneRel[_T.CrewActivityProblem]
+
     title = models.CharField(
         max_length=100,
         help_text='문제 이름을 입력해주세요.',
@@ -27,10 +35,10 @@ class Problem(models.Model):
         help_text='문제 출력 설명을 입력해주세요.',
         blank=True,
     )
-    memory_limit = models.FloatField(
+    memory_limit_megabyte = models.FloatField(
         help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
     )
-    time_limit = models.FloatField(
+    time_limit_second = models.FloatField(
         help_text='문제 시간 제한을 입력해주세요. (초 단위)',
         default=1.0,
     )
@@ -38,35 +46,36 @@ class Problem(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
-        related_name=User.FieldName.PROBLEMS,
+        related_name=User.field_name.PROBLEMS,
         help_text='이 문제를 추가한 사용자를 입력해주세요.',
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
 
-    class FieldName:
+    class field_name:
+        # related fields
         ANALYSIS = 'analysis'
+        ANALYSIS_QUEUE = 'analysis_queue'
+        ACTIVITY_PROBLEMS = 'activity_problems'
+        # fields
+        TITLE = 'title'
+        LINK = 'link'
+        DESCRIPTION = 'description'
+        INPUT_DESCRIPTION = 'input_description'
+        OUTPUT_DESCRIPTION = 'output_description'
+        MEMORY_LIMIT_MEGABYTE = 'memory_limit_megabyte'
+        TIME_LIMIT_SECOND = 'time_limit_second'
+        CREATED_AT = 'created_at'
+        CREATED_BY = 'created_by'
+        UPDATED_AT = 'updated_at'
 
-    if typing.TYPE_CHECKING:
-        from . import (
-            ProblemAnalysis as T_ProblemAnalysis,
-        )
-        analysis: models.OneToOneField[T_ProblemAnalysis]
-
-    MEMORY_LIMIT_UNIT = {
-        "name_ko": "메가 바이트",
-        "name_en": "Mega Bytes",
-        "abbr": "MB",
-    }
-
-    TIME_LIMIT_UNIT = {
-        "name_ko": "초",
-        "name_en": "Seconds",
-        "abbr": "s",
-    }
-
-    def __repr__(self) -> str:
-        return f'[{self.title}]'
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()} ← {self.created_by.__repr__()}'
+        return f'[{self.pk} : {self.title}]'
+
+    def save(self, *args, **kwargs) -> None:
+        from tle.models import ProblemAnalysisQueue
+        super().save(*args, **kwargs)
+        ProblemAnalysisQueue.append(self)
