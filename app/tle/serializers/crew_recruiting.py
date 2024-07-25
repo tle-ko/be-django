@@ -23,6 +23,7 @@ class CrewRecruitingSerializer(CurrentUserMixin,
         fields = [
             Crew.field_name.ICON,
             Crew.field_name.NAME,
+            Crew.field_name.IS_ACTIVE,
             Crew.field_name.IS_RECRUITING,
             'is_joinable',
             'is_member',
