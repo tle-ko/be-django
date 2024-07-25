@@ -49,7 +49,10 @@ class ProblemModelAdmin(admin.ModelAdmin):
         Problem.field_name.CREATED_BY+'__'+User.field_name.USERNAME,
     ]
     ordering = ['-'+Problem.field_name.CREATED_AT]
-    actions = ['set_creator']
+    actions = [
+        'set_creator',
+        'add_to_analysis_queue',
+    ]
 
     @admin.action(description="set admin(you) as creator for selected problems")
     def set_creator(self, request, queryset: QuerySet[Problem]):
@@ -62,6 +65,20 @@ class ProblemModelAdmin(admin.ModelAdmin):
                 updated,
             )
             % updated,
+            messages.SUCCESS,
+        )
+
+    @admin.action(description="add selected problems to analysis queue")
+    def add_to_analysis_queue(self, request, queryset: QuerySet[Problem]):
+        ProblemAnalysisQueue.extend(queryset)
+        self.message_user(
+            request,
+            ngettext(
+                "%d problem was successfully added to analysis queue.",
+                "%d problems were successfully added to analysis queue.",
+                queryset.count(),
+            )
+            % queryset.count(),
             messages.SUCCESS,
         )
 
@@ -96,6 +113,27 @@ class ProblemAnalysisModelAdmin(admin.ModelAdmin):
     @admin.display(description='Hint (Steps, Verbose)')
     def get_hint(self, obj: ProblemAnalysis) -> str:
         return len(obj.hint), shorten(', '.join(obj.hint), width=32)
+
+
+@admin.register(ProblemAnalysisQueue)
+class ProblemAnalysisQueueModelAdmin(admin.ModelAdmin):
+    list_display = [
+        ProblemAnalysisQueue.field_name.PROBLEM,
+        ProblemAnalysisQueue.field_name.ANALYSIS,
+        ProblemAnalysisQueue.field_name.IS_ANALYZING,
+        'get_is_analyzed',
+        ProblemAnalysisQueue.field_name.CREATED_AT,
+    ]
+    search_fields = [
+        ProblemAnalysisQueue.field_name.PROBLEM+'__'+Problem.field_name.TITLE,
+    ]
+    ordering = [
+        ProblemAnalysisQueue.field_name.CREATED_AT,
+    ]
+
+    @admin.display(description='Is Analyzed', boolean=True)
+    def get_is_analyzed(self, obj: ProblemAnalysisQueue) -> bool:
+        return obj.analysis is not None
 
 
 @admin.register(ProblemTag)

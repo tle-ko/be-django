@@ -47,3 +47,6 @@ class ProblemAnalysis(models.Model):
         TIME_COMPLEXITY = 'time_complexity'
         HINT = 'hint'
         CREATED_AT = 'created_at'
+
+    def __str__(self):
+        return f'[Analyse of {self.problem}]'

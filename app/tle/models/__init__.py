@@ -10,6 +10,7 @@ from tle.models.crew_member import CrewMember
 
 from tle.models.problem import Problem
 from tle.models.problem_analysis import ProblemAnalysis
+from tle.models.problem_analysis_queue import ProblemAnalysisQueue
 from tle.models.problem_tag import ProblemTag
 
 from tle.models.submission import Submission
@@ -31,6 +32,7 @@ __all__ = (
 
     'Problem',
     'ProblemAnalysis',
+    'ProblemAnalysisQueue',
     'ProblemTag',
 
     'Submission',

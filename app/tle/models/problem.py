@@ -11,6 +11,7 @@ if typing.TYPE_CHECKING:
 class Problem(models.Model):
     if typing.TYPE_CHECKING:
         analysis: models.OneToOneField[_T.ProblemAnalysis]
+        analysis_queue: models.ManyToManyField[_T.ProblemAnalysisQueue]
         activity_problems: models.ManyToOneRel[_T.CrewActivityProblem]
 
     title = models.CharField(
@@ -54,6 +55,7 @@ class Problem(models.Model):
     class field_name:
         # related fields
         ANALYSIS = 'analysis'
+        ANALYSIS_QUEUE = 'analysis_queue'
         ACTIVITY_PROBLEMS = 'activity_problems'
         # fields
         TITLE = 'title'
@@ -72,3 +74,8 @@ class Problem(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.pk} : {self.title}]'
+
+    def save(self, *args, **kwargs) -> None:
+        from tle.models import ProblemAnalysisQueue
+        super().save(*args, **kwargs)
+        ProblemAnalysisQueue.append(self)
