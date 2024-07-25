@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from django.db import models
 
-from tle.models.user import User
-from tle.models.crew import Crew
+from tle.models.dao.user import User
+from tle.models.dao.crew import Crew
 
 
 class CrewMember(models.Model):

@@ -1,8 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.user import User
-from tle.models.submission import Submission
+from tle.models.dao.user import User
+from tle.models.dao.submission import Submission
 
 
 class SubmissionComment(models.Model):

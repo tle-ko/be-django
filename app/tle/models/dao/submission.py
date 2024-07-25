@@ -2,9 +2,9 @@ import typing
 
 from django.db import models
 
-from tle.models.user import User
-from tle.models.crew_activity_problem import CrewActivityProblem
-from tle.models.submission_language import SubmissionLanguage
+from tle.models.dao.user import User
+from tle.models.dao.crew_activity_problem import CrewActivityProblem
+from tle.models.dao.submission_language import SubmissionLanguage
 
 if typing.TYPE_CHECKING:
     import tle.models as _T

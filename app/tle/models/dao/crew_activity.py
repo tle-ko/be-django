@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 
-from tle.models.crew import Crew
+from tle.models.dao.crew import Crew
 
 if typing.TYPE_CHECKING:
     import tle.models as _T

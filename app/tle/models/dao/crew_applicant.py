@@ -1,9 +1,9 @@
 from django.db import models, transaction
 from django.utils import timezone
 
-from tle.models.user import User
-from tle.models.crew import Crew
-from tle.models.crew_member import CrewMember
+from tle.models.dao.user import User
+from tle.models.dao.crew import Crew
+from tle.models.dao.crew_member import CrewMember
 
 
 class CrewApplicant(models.Model):

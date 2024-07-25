@@ -2,7 +2,7 @@ import typing
 
 from django.db import models
 
-from tle.models.user import User
+from tle.models.dao.user import User
 
 if typing.TYPE_CHECKING:
     import tle.models as _T

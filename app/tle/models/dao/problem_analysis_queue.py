@@ -1,7 +1,7 @@
 from django.db import models
 
-from tle.models.problem import Problem
-from tle.models.problem_analysis import ProblemAnalysis
+from tle.models.dao.problem import Problem
+from tle.models.dao.problem_analysis import ProblemAnalysis
 
 
 class ProblemAnalysisQueue(models.Model):

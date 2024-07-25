@@ -3,8 +3,8 @@ import typing
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.crew_activity import CrewActivity
-from tle.models.problem import Problem
+from tle.models.dao.crew_activity import CrewActivity
+from tle.models.dao.problem import Problem
 
 if typing.TYPE_CHECKING:
     import tle.models as _T

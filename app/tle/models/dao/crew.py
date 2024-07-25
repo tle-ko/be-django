@@ -11,8 +11,8 @@ from django.db import models, transaction
 
 from tle.enums import Emoji
 from tle.models.choices import BojUserLevel
-from tle.models.user import User
-from tle.models.submission_language import SubmissionLanguage
+from tle.models.dao.user import User
+from tle.models.dao.submission_language import SubmissionLanguage
 
 if typing.TYPE_CHECKING:
     import tle.models as _T

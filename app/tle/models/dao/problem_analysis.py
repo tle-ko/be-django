@@ -1,8 +1,8 @@
 from django.db import models
 
 from tle.models.choices import ProblemDifficulty
-from tle.models.problem import Problem
-from tle.models.problem_tag import ProblemTag
+from tle.models.dao.problem import Problem
+from tle.models.dao.problem_tag import ProblemTag
 
 
 class ProblemAnalysis(models.Model):
