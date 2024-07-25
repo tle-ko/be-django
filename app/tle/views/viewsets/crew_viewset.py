@@ -12,8 +12,7 @@ class CrewPermission(BasePermission):
         if view.action == 'list_recruiting':
             # 모든 사용자에게 공개
             return True
-        if view.action == 'list_my':
-            return request.user.is_authenticated
+        return request.user.is_authenticated
 
 
 class CrewViewSet(ModelViewSet):
@@ -33,6 +32,7 @@ class CrewViewSet(ModelViewSet):
             return CrewRecruitingSerializer
         if self.action in 'list_my':
             return CrewJoinedSerializer
+        return CrewDetailSerializer
 
     def list_recruiting(self, request):
         # TODO: 검색 옵션 (사용 언어 / 백준 티어) 제공
