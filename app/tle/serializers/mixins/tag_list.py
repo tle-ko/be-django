@@ -4,8 +4,8 @@ import typing
 
 from rest_framework.serializers import *
 
+from users.models import UserBojLevel
 from tle.models import Crew
-from tle.models.choices import BojUserLevel
 
 
 class TagType(enum.Enum):
@@ -72,10 +72,10 @@ class TagListMixin:
 
         메시지의 마지막에는 bound_msg를 출력한다.
         """
-        if BojUserLevel.get_tier(level) == bound_tier:
-            level_name = BojUserLevel.get_division_name(level, lang=lang)
+        if UserBojLevel.get_tier(level) == bound_tier:
+            level_name = UserBojLevel.get_division_name(level, lang=lang)
         else:
-            level_name = BojUserLevel.get_name(level, lang=lang, arabic=arabic)
+            level_name = UserBojLevel.get_name(level, lang=lang, arabic=arabic)
         return TagDict(key=None, name=f'{level_name} {bound_msg}', type=TagType.LEVEL.value)
 
     def _get_custom_tags(self, crew: Crew) -> typing.Iterable[TagDict]:

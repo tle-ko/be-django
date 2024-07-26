@@ -1,6 +1,6 @@
 from rest_framework.serializers import Serializer
 
-from tle.models import User
+from users.models import User
 
 
 class CurrentUserMixin:

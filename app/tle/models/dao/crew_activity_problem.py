@@ -6,24 +6,16 @@ from django.db import models
 from tle.models.dao.crew_activity import CrewActivity
 from tle.models.dao.problem import Problem
 
-if typing.TYPE_CHECKING:
-    import tle.models as _T
-
 
 class CrewActivityProblem(models.Model):
-    if typing.TYPE_CHECKING:
-        submissions: models.ManyToOneRel[_T.Submission]
-
     activity = models.ForeignKey(
         CrewActivity,
         on_delete=models.CASCADE,
-        related_name=CrewActivity.field_name.PROBLEMS,
         help_text='활동을 입력해주세요.',
     )
     problem = models.ForeignKey(
         Problem,
         on_delete=models.PROTECT,
-        related_name=Problem.field_name.ACTIVITY_PROBLEMS,
         help_text='문제를 입력해주세요.',
     )
     order = models.IntegerField(

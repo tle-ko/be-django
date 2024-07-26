@@ -19,12 +19,20 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from users.views import SignIn, SignUp, SignOut, CurrentUser
 import tle.views.urls
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include(tle.views.urls.urlpatterns)),
+    path("api/v1/", include([
+        path("auth/", include([
+            path("signin", SignIn.as_view()),
+            path("signup", SignUp.as_view()),
+            path("signout", SignOut.as_view()),
+        ])),
+        path("users/current", CurrentUser.as_view()),
+        *tle.views.urls.urlpatterns,
+    ])),
 ]
 
 # Static files

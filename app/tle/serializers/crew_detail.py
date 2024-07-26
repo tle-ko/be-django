@@ -2,9 +2,9 @@ from django.db.models import QuerySet
 from django.db.transaction import atomic
 from rest_framework.serializers import *
 
+from users.serializers import UserMinimalSerializer
 from tle.models import Crew, SubmissionLanguage
 from tle.serializers.crew_member import CrewMemberSerializer
-from tle.serializers.user_minimal import UserMinimalSerializer
 from tle.serializers.mixins import CurrentUserMixin, TagListMixin
 
 

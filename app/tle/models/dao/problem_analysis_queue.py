@@ -8,7 +8,6 @@ class ProblemAnalysisQueue(models.Model):
     problem = models.ForeignKey(
         Problem,
         on_delete=models.CASCADE,
-        related_name=Problem.field_name.ANALYSIS_QUEUE,
         help_text='문제를 입력해주세요.',
     )
     analysis = models.OneToOneField(

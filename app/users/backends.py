@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
 
-from tle.models import User
+from users.models import User
 
 
 logger = logging.getLogger(__name__)

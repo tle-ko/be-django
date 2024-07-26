@@ -1,10 +1,10 @@
 from textwrap import shorten
 
 from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin
 from django.db.models import QuerySet
 from django.utils.translation import ngettext
 
+from users.models import User
 from tle.models import *
 
 
@@ -15,25 +15,6 @@ admin.site.register([
     SubmissionComment,
 ])
 
-
-@admin.register(User)
-class UserModelAdmin(UserAdmin):
-    list_display = [
-        User.field_name.USERNAME,
-        User.field_name.EMAIL,
-        User.field_name.BOJ_USERNAME,
-        User.field_name.BOJ_LEVEL,
-        'get_crews',
-        User.field_name.IS_ACTIVE,
-        User.field_name.IS_STAFF,
-        User.field_name.IS_SUPERUSER,
-        User.field_name.CREATED_AT,
-        User.field_name.BOJ_LEVEL_UPDATED_AT,
-    ]
-
-    @admin.display(description='captains / members')
-    def get_crews(self, user: User) -> str:
-        return f'{Crew.of_user_as_captain(user).count()} / {Crew.of_user(user).count()}'
 
 
 @admin.register(Problem)

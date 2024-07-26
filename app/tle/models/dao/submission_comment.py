@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.dao.user import User
+from users.models import User
 from tle.models.dao.submission import Submission
 
 
@@ -9,7 +9,6 @@ class SubmissionComment(models.Model):
     submission = models.ForeignKey(
         Submission,
         on_delete=models.CASCADE,
-        related_name=Submission.field_name.COMMENTS,
         help_text='제출을 입력해주세요.',
     )
     content = models.TextField(
@@ -36,13 +35,11 @@ class SubmissionComment(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=User.field_name.COMMENTS,
         help_text='유저를 입력해주세요.',
     )
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
-        # fields
         SUBMISSION = 'submission'
         CONTENT = 'content'
         LINE_NUMBER_START = 'line_number_start'

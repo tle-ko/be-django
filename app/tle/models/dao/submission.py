@@ -1,30 +1,20 @@
-import typing
-
 from django.db import models
 
-from tle.models.dao.user import User
+from users.models import User
 from tle.models.dao.crew_activity_problem import CrewActivityProblem
 from tle.models.dao.submission_language import SubmissionLanguage
 
-if typing.TYPE_CHECKING:
-    import tle.models as _T
-
 
 class Submission(models.Model):
-    if typing.TYPE_CHECKING:
-        comments: models.ManyToManyField[_T.SubmissionComment]
-
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     activity_problem = models.ForeignKey(
         CrewActivityProblem,
         on_delete=models.PROTECT,
-        related_name=CrewActivityProblem.field_name.SUBMISSIONS,
         help_text='활동 문제를 입력해주세요.',
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=User.field_name.SUBMISSIONS,
         help_text='유저를 입력해주세요.',
     )
     code = models.TextField(
@@ -46,9 +36,6 @@ class Submission(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
-        # related fields
-        COMMENTS = 'comments'
-        # fields
         ACTIVITY_PROBLEM = 'activity_problem'
         USER = 'user'
         CODE = 'code'

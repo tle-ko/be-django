@@ -1,7 +1,7 @@
 from rest_framework.serializers import *
 
+from users.serializers import UserMinimalSerializer
 from tle.models import CrewMember
-from tle.serializers.user_minimal import UserMinimalSerializer
 
 
 class CrewMemberSerializer(ModelSerializer):

@@ -7,18 +7,11 @@ from django.utils import timezone
 
 from tle.models.dao.crew import Crew
 
-if typing.TYPE_CHECKING:
-    import tle.models as _T
-
 
 class CrewActivity(models.Model):
-    if typing.TYPE_CHECKING:
-        problems: models.ManyToOneRel[_T.CrewActivityProblem]
-
     crew = models.ForeignKey(
         Crew,
         on_delete=models.CASCADE,
-        related_name=Crew.field_name.ACTIVITIES,
         help_text='크루를 입력해주세요.',
     )
     name = models.TextField(
@@ -32,9 +25,6 @@ class CrewActivity(models.Model):
     )
 
     class field_name:
-        # related fields
-        PROBLEMS = 'problems'
-        # fields
         CREW = 'crew'
         NAME = 'name'
         START_AT = 'start_at'

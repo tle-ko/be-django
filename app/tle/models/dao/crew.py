@@ -1,5 +1,4 @@
 from __future__ import annotations
-import typing
 
 from django.core.exceptions import ValidationError
 from django.core.validators import (
@@ -9,13 +8,9 @@ from django.core.validators import (
 )
 from django.db import models, transaction
 
+from users.models import User, UserBojLevel
 from tle.enums import Emoji
-from tle.models.choices import BojUserLevel
-from tle.models.dao.user import User
 from tle.models.dao.submission_language import SubmissionLanguage
-
-if typing.TYPE_CHECKING:
-    import tle.models as _T
 
 
 class EmojiValidator(BaseValidator):
@@ -30,12 +25,6 @@ class EmojiValidator(BaseValidator):
 
 
 class Crew(models.Model):
-    if typing.TYPE_CHECKING:
-        applicants: models.ManyToManyField[_T.CrewApplicant]
-        members: models.ManyToManyField[_T.CrewMember]
-        activities: models.ManyToManyField[_T.CrewActivity]
-        submittable_languages: models.ManyToManyField[SubmissionLanguage]
-
     name = models.CharField(
         max_length=20,
         unique=True,
@@ -79,7 +68,7 @@ class Crew(models.Model):
     )
     min_boj_level = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
-        choices=BojUserLevel.choices,
+        choices=UserBojLevel.choices,
         blank=True,
         null=True,
         default=None,
@@ -102,12 +91,6 @@ class Crew(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
-        # related fields
-        APPLICANTS = 'applicants'
-        MEMBERS = 'members'
-        ACTIVITIES = 'activities'
-        SUBMITTABLE_LANGUAGES = 'submittable_languages'
-        # fields
         NAME = 'name'
         ICON = 'icon'
         MAX_MEMBERS = 'max_members'

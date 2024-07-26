@@ -5,9 +5,6 @@ from tle.models.dao import *
 __all__ = (
     'choices',
 
-    'User',
-    'UserManager',
-
     'Crew',
     'CrewActivity',
     'CrewActivityProblem',

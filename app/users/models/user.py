@@ -1,58 +1,18 @@
 from __future__ import annotations
-import typing
 
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-from tle.models.choices import BojUserLevel
-
-if typing.TYPE_CHECKING:
-    import tle.models as _T
+from users.models.user_manager import UserManager
+from users.models.user_boj_level import UserBojLevel
 
 
-def get_profile_image_path(instance: User, filename: str) -> str:
-    return f'user/profile/{instance.pk}/{filename}'
-
-
-class UserManager(BaseUserManager):
-    model: typing.Callable[..., User]
-
-    def create(self, **kwargs):
-        return self.create_user(**kwargs)
-
-    def create_user(self, email, username, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        if not username:
-            raise ValueError('The Username field must be set')
-        email = self.normalize_email(email)
-        user = self.model(
-            email=email,
-            username=username,
-            **extra_fields
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, username, password, **extra_fields)
+def get_profile_image_path(user: User, filename: str) -> str:
+    return f'user/profile/{user.pk}/{filename}'
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    problems: models.ManyToManyField[_T.Problem]
-    applicants: models.ManyToManyField[_T.CrewApplicant]
-    members: models.ManyToManyField[_T.CrewMember]
-    submissions: models.ManyToManyField[_T.Submission]
-    comments: models.ManyToManyField[_T.SubmissionComment]
-
     profile_image = models.ImageField(
         help_text='프로필 이미지',
         upload_to=get_profile_image_path,
@@ -71,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     boj_level = models.IntegerField(
         help_text='백준 티어',
-        choices=BojUserLevel.choices,
+        choices=UserBojLevel.choices,
         null=True,
         blank=True,
         default=None,
@@ -106,13 +66,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['username']
 
     class field_name:
-        # related fields
-        PROBLEMS = 'problems'
-        APPLICANTS = 'applicants'
-        MEMBERS = 'members'
-        SUBMISSIONS = 'submissions'
-        COMMENTS = 'comments'
-        # fields
         PROFILE_IMAGE = 'profile_image'
         BOJ_USERNAME = 'boj_username'
         BOJ_LEVEL = 'boj_level'

@@ -1,7 +1,7 @@
 from django.db import models, transaction
 from django.utils import timezone
 
-from tle.models.dao.user import User
+from users.models import User
 from tle.models.dao.crew import Crew
 from tle.models.dao.crew_member import CrewMember
 
@@ -10,13 +10,11 @@ class CrewApplicant(models.Model):
     crew = models.ForeignKey[Crew](
         Crew,
         on_delete=models.CASCADE,
-        related_name=Crew.field_name.APPLICANTS,
         help_text='크루를 입력해주세요.',
     )
     user = models.ForeignKey[User](
         User,
         on_delete=models.CASCADE,
-        related_name=User.field_name.APPLICANTS,
         help_text='유저를 입력해주세요.',
     )
     message = models.TextField(
@@ -37,6 +35,7 @@ class CrewApplicant(models.Model):
     )
     reviewed_by = models.ForeignKey[User](
         User,
+        related_name='reviewed_applicants',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

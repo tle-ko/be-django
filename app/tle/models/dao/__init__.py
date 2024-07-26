@@ -1,5 +1,3 @@
-from tle.models.dao.user import User, UserManager
-
 from tle.models.dao.crew import Crew
 from tle.models.dao.crew_activity import CrewActivity
 from tle.models.dao.crew_activity_problem import CrewActivityProblem
@@ -17,9 +15,6 @@ from tle.models.dao.submission_language import SubmissionLanguage
 
 
 __all__ = (
-    'User',
-    'UserManager',
-
     'Crew',
     'CrewActivity',
     'CrewActivityProblem',

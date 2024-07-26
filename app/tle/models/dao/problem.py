@@ -2,18 +2,13 @@ import typing
 
 from django.db import models
 
-from tle.models.dao.user import User
+from users.models import User
 
 if typing.TYPE_CHECKING:
     import tle.models as _T
 
 
 class Problem(models.Model):
-    if typing.TYPE_CHECKING:
-        analysis: models.OneToOneField[_T.ProblemAnalysis]
-        analysis_queue: models.ManyToManyField[_T.ProblemAnalysisQueue]
-        activity_problems: models.ManyToOneRel[_T.CrewActivityProblem]
-
     title = models.CharField(
         max_length=100,
         help_text='문제 이름을 입력해주세요.',
@@ -46,18 +41,12 @@ class Problem(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
-        related_name=User.field_name.PROBLEMS,
         help_text='이 문제를 추가한 사용자를 입력해주세요.',
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
-        # related fields
-        ANALYSIS = 'analysis'
-        ANALYSIS_QUEUE = 'analysis_queue'
-        ACTIVITY_PROBLEMS = 'activity_problems'
-        # fields
         TITLE = 'title'
         LINK = 'link'
         DESCRIPTION = 'description'

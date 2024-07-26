@@ -9,7 +9,6 @@ class ProblemAnalysis(models.Model):
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
-        related_name=Problem.field_name.ANALYSIS,
         help_text='문제를 입력해주세요.',
     )
     difficulty = models.IntegerField(
