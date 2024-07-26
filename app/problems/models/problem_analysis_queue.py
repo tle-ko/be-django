@@ -1,7 +1,7 @@
 from django.db import models
 
-from tle.models.dao.problem import Problem
-from tle.models.dao.problem_analysis import ProblemAnalysis
+from problems.models.problem import Problem
+from problems.models.problem_analysis import ProblemAnalysis
 
 
 class ProblemAnalysisQueue(models.Model):
@@ -31,15 +31,3 @@ class ProblemAnalysisQueue(models.Model):
 
     class Meta:
         ordering = ['created_at']
-
-    @classmethod
-    def append(cls, problem: Problem):
-        return cls.objects.create(**{
-            cls.field_name.PROBLEM: problem,
-        })
-
-    @classmethod
-    def extend(cls, problems: models.QuerySet[Problem]):
-        # TODO: Do bulk_create()
-        for problem in problems:
-            cls.append(problem)

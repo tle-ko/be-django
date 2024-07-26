@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from users.views import SignIn, SignUp, SignOut, CurrentUser
+from problems.views import ProblemCreate, ProblemDetail, ProblemSearch
 import tle.views.urls
 
 urlpatterns = [
@@ -31,6 +32,11 @@ urlpatterns = [
             path("signout", SignOut.as_view()),
         ])),
         path("users/current", CurrentUser.as_view()),
+        path("problems/", include([
+            path("", ProblemCreate.as_view()),
+            path("search", ProblemSearch.as_view()),
+            path("<int:id>/detail", ProblemDetail.as_view()),
+        ])),
         *tle.views.urls.urlpatterns,
     ])),
 ]

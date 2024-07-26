@@ -1,8 +1,8 @@
 from django.db import models
 
-from tle.models.choices import ProblemDifficulty
-from tle.models.dao.problem import Problem
-from tle.models.dao.problem_tag import ProblemTag
+from problems.models.problem import Problem
+from problems.models.problem_difficulty import ProblemDifficulty
+from problems.models.problem_tag import ProblemTag
 
 
 class ProblemAnalysis(models.Model):
@@ -46,6 +46,9 @@ class ProblemAnalysis(models.Model):
         TIME_COMPLEXITY = 'time_complexity'
         HINT = 'hint'
         CREATED_AT = 'created_at'
+
+    class Meta:
+        verbose_name_plural = 'Problem Analyses'
 
     def __str__(self):
         return f'[Analyse of {self.problem}]'

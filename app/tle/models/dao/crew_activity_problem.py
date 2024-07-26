@@ -1,10 +1,8 @@
-import typing
-
 from django.core.validators import MinValueValidator
 from django.db import models
 
 from tle.models.dao.crew_activity import CrewActivity
-from tle.models.dao.problem import Problem
+from problems.models.problem import Problem
 
 
 class CrewActivityProblem(models.Model):

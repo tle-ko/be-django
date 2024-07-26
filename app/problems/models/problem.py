@@ -1,11 +1,6 @@
-import typing
-
 from django.db import models
 
 from users.models import User
-
-if typing.TYPE_CHECKING:
-    import tle.models as _T
 
 
 class Problem(models.Model):
@@ -65,6 +60,5 @@ class Problem(models.Model):
         return f'[{self.pk} : {self.title}]'
 
     def save(self, *args, **kwargs) -> None:
-        from tle.models import ProblemAnalysisQueue
         super().save(*args, **kwargs)
-        ProblemAnalysisQueue.append(self)
+        # TODO: Add to ProblemAnalysisQueue

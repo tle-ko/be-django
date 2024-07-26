@@ -1,4 +1,7 @@
-from tle.services.analysis.dto import *
+from problems.models import (
+    ProblemDTO,
+    ProblemAnalysisDTO,
+)
 
 
 class ProblemAnalyser:

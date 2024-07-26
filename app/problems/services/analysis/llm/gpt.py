@@ -1,4 +1,8 @@
-from tle.services.analysis import *
+from problems.services.analysis.analyser import (
+    ProblemAnalyser,
+    ProblemDTO,
+    ProblemAnalysisDTO,
+)
 
 
 class GPTProblemAnalyser(ProblemAnalyser):
