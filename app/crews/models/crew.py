@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from crews.validators import EmojiValidator
-from users.models import User, UserBojLevel
+from users.models import User, UserBojLevelChoices
 
 
 class Crew(models.Model):
@@ -45,7 +45,7 @@ class Crew(models.Model):
     )
     min_boj_level = models.IntegerField(
         help_text='최소 백준 레벨을 입력해주세요. 0: Unranked, 1: Bronze V, 2: Bronze IV, ..., 6: Silver V, ..., 30: Ruby I',
-        choices=UserBojLevel.choices,
+        choices=UserBojLevelChoices.choices,
         blank=True,
         null=True,
         default=None,

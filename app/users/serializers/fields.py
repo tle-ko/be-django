@@ -1,13 +1,13 @@
-from users.models import User, UserBojLevel
+from users.models import User, UserBojLevelChoices
 from users.serializers.mixins import ReadOnlyField
 
 
 class UserBojField(ReadOnlyField):
     def to_representation(self, user: User):
         if user.boj_username is None:
-            user_boj_level = UserBojLevel.U
+            user_boj_level = UserBojLevelChoices.U
         else:
-            user_boj_level = UserBojLevel(user.boj_level)
+            user_boj_level = UserBojLevelChoices(user.boj_level)
         return {
             'username': user.boj_username,
             'profile_url': f'https://boj.kr/{user.boj_username}',

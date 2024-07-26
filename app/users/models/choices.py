@@ -8,7 +8,7 @@ DIVISION_NAMES = {
 ARABIC_NUMERALS = ['', 'I', 'II', 'III', 'IV', 'V']
 
 
-class UserBojLevel(models.IntegerChoices):
+class UserBojLevelChoices(models.IntegerChoices):
     U = 0, 'Unrated'
     B5 = 1, '브론즈 5'
     B4 = 2, '브론즈 4'

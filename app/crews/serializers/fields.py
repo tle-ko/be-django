@@ -8,7 +8,7 @@ from rest_framework.serializers import ReadOnlyField
 from crews.models import Crew, CrewActivity
 from crews.serializers.mixins import CurrentUserMixin
 from crews.services import get_members, is_member, is_joinable
-from users.models import UserBojLevel
+from users.models import UserBojLevelChoices
 
 
 class MemberCountField(ReadOnlyField):
@@ -96,13 +96,13 @@ class TagsField(ReadOnlyField):
         yield TagDict(
             key=None,
             name=self.get_boj_level_bounded_name(
-                level=UserBojLevel(crew.min_boj_level),
+                level=UserBojLevelChoices(crew.min_boj_level),
             ),
             type=TagType.LEVEL.value,
         )
 
     def get_boj_level_bounded_name(self,
-                                   level: Optional[UserBojLevel],
+                                   level: Optional[UserBojLevelChoices],
                                    bound_tier: int = 5,
                                    bound_msg: str = "이상",
                                    default_msg: str = "티어 무관",

@@ -4,8 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
+from users.models.choices import UserBojLevelChoices
 from users.models.user_manager import UserManager
-from users.models.user_boj_level import UserBojLevel
 
 
 def get_profile_image_path(user: User, filename: str) -> str:
@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     boj_level = models.IntegerField(
         help_text='백준 티어',
-        choices=UserBojLevel.choices,
+        choices=UserBojLevelChoices.choices,
         null=True,
         blank=True,
         default=None,

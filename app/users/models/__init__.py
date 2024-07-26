@@ -1,10 +1,12 @@
 from users.models.user import User
 from users.models.user_manager import UserManager
-from users.models.user_boj_level import UserBojLevel
+
+from users.models.choices import UserBojLevelChoices
 
 
 __all__ = (
     'User',
     'UserManager',
-    'UserBojLevel',
+
+    'UserBojLevelChoices',
 )
