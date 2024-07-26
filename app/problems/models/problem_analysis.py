@@ -1,7 +1,7 @@
 from django.db import models
 
+from problems.models.choices import ProblemDifficultyChoices
 from problems.models.problem import Problem
-from problems.models.problem_difficulty import ProblemDifficulty
 from problems.models.problem_tag import ProblemTag
 
 
@@ -13,7 +13,7 @@ class ProblemAnalysis(models.Model):
     )
     difficulty = models.IntegerField(
         help_text='문제 난이도를 입력해주세요.',
-        choices=ProblemDifficulty.choices,
+        choices=ProblemDifficultyChoices.choices,
     )
     tags = models.ManyToManyField(
         ProblemTag,

@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 
 from problems.constants import Unit
-from problems.models import Problem, ProblemDifficulty, ProblemTag
+from problems.models import Problem, ProblemDifficultyChoices, ProblemTag
 from problems.serializers.mixins import ReadOnlyFieldMixin, AnalysisMixin
 
 
@@ -32,9 +32,9 @@ class TimeLimitField(ReadOnlyFieldMixin):
 class DifficultyField(ReadOnlyFieldMixin, AnalysisMixin):
     def to_representation(self, problem: Problem):
         if (analysis := self.get_analysis(problem)) is None:
-            difficulty = ProblemDifficulty.UNDER_ANALYSIS
+            difficulty = ProblemDifficultyChoices.UNDER_ANALYSIS
         else:
-            difficulty = ProblemDifficulty(analysis.difficulty)
+            difficulty = ProblemDifficultyChoices(analysis.difficulty)
         return {
             "name_ko": difficulty.get_name(lang='ko'),
             "name_en": difficulty.get_name(lang='en'),
@@ -45,7 +45,7 @@ class DifficultyField(ReadOnlyFieldMixin, AnalysisMixin):
 class AnalysisField(ReadOnlyFieldMixin, AnalysisMixin):
     def to_representation(self, problem: Problem):
         if (analysis := self.get_analysis(problem)) is None:
-            difficulty = ProblemDifficulty.UNDER_ANALYSIS
+            difficulty = ProblemDifficultyChoices.UNDER_ANALYSIS
             difficulty_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
             time_complexity = ''
             time_complexity_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
@@ -53,7 +53,7 @@ class AnalysisField(ReadOnlyFieldMixin, AnalysisMixin):
             tags = []
             is_analyzed = False
         else:
-            difficulty = ProblemDifficulty(analysis.difficulty)
+            difficulty = ProblemDifficultyChoices(analysis.difficulty)
             difficulty_description = "기초적인 계산적 사고와 프로그래밍 문법만 있어도 해결 가능한 수준 [이 기능은 추가될 예정이 없습니다]"
             time_complexity = analysis.time_complexity
             time_complexity_description = "선형시간에 풀이가 가능한 문제. N의 크기에 주의하세요. [이 기능은 추가될 예정이 없습니다]"

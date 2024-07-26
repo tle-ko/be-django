@@ -7,7 +7,7 @@ NAMES = {
 }
 
 
-class ProblemDifficulty(models.IntegerChoices):
+class ProblemDifficultyChoices(models.IntegerChoices):
     UNDER_ANALYSIS = 0, '분석 중'
     EASY = 1, '쉬움'
     NORMAL = 2, '보통'
