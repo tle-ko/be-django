@@ -1,8 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from submissions.models.submission import Submission
 from users.models import User
-from tle.models.dao.submission import Submission
 
 
 class SubmissionComment(models.Model):
@@ -51,9 +51,5 @@ class SubmissionComment(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def __repr__(self) -> str:
-        line_range = f'L{self.line_number_start}:L{self.line_number_end}'
-        return f'{self.submission.__repr__()} ← {self.created_by.__repr__()} {line_range} "{self.content}"'
-
     def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()}'
+        return f'[{self.pk} : {self.submission} ← {self.created_by}] L{self.line_number_start}:L{self.line_number_end}'

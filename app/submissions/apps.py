@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TleConfig(AppConfig):
+class SubmissionsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "tle"
+    name = "submissions"

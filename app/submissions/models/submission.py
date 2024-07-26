@@ -1,12 +1,12 @@
 from django.db import models
 
-from crews.models import CrewActivityProblem, CrewSubmittableLanguage
+from crews.models import CrewActivityProblem, ProgrammingLanguageChoices
 from users.models import User
 
 
 class Submission(models.Model):
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
-    activity_problem = models.ForeignKey(
+    problem = models.ForeignKey(
         CrewActivityProblem,
         on_delete=models.PROTECT,
         help_text='활동 문제를 입력해주세요.',
@@ -19,9 +19,8 @@ class Submission(models.Model):
     code = models.TextField(
         help_text='유저의 코드를 입력해주세요.',
     )
-    language = models.ForeignKey(
-        CrewSubmittableLanguage,
-        on_delete=models.PROTECT,
+    language = models.TextField(
+        choices=ProgrammingLanguageChoices.choices,
         help_text='유저의 코드 언어를 입력해주세요.',
     )
     is_correct = models.BooleanField(
@@ -35,7 +34,7 @@ class Submission(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
-        ACTIVITY_PROBLEM = 'activity_problem'
+        PROBLEM = 'problem'
         USER = 'user'
         CODE = 'code'
         LANGUAGE = 'language'
@@ -47,8 +46,5 @@ class Submission(models.Model):
     class Meta:
         ordering = ['created_at']
 
-    def __repr__(self) -> str:
-        return f'{self.activity_problem.__repr__()} ← {self.user.__repr__()} ({self.language.name})'
-
     def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()}'
+        return f'[{self.pk} : {self.problem}  ← {self.user}]'
