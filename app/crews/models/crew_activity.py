@@ -1,11 +1,10 @@
 from __future__ import annotations
-import typing
 
 from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 
-from tle.models.dao.crew import Crew
+from crews.models.crew import Crew
 
 
 class CrewActivity(models.Model):

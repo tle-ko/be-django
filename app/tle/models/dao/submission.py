@@ -1,8 +1,7 @@
 from django.db import models
 
+from crews.models import CrewActivityProblem, CrewSubmittableLanguage
 from users.models import User
-from tle.models.dao.crew_activity_problem import CrewActivityProblem
-from tle.models.dao.submission_language import SubmissionLanguage
 
 
 class Submission(models.Model):
@@ -21,7 +20,7 @@ class Submission(models.Model):
         help_text='유저의 코드를 입력해주세요.',
     )
     language = models.ForeignKey(
-        SubmissionLanguage,
+        CrewSubmittableLanguage,
         on_delete=models.PROTECT,
         help_text='유저의 코드 언어를 입력해주세요.',
     )

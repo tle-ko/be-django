@@ -21,7 +21,8 @@ from django.urls import include, path
 
 from users.views import SignIn, SignUp, SignOut, CurrentUser
 from problems.views import ProblemCreate, ProblemDetail, ProblemSearch
-import tle.views.urls
+from crews.views import CrewCreate, CrewDetail, CrewRecruiting, CrewJoined
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -37,7 +38,12 @@ urlpatterns = [
             path("search", ProblemSearch.as_view()),
             path("<int:id>/detail", ProblemDetail.as_view()),
         ])),
-        *tle.views.urls.urlpatterns,
+        path("crews/", include([
+            path("", CrewCreate.as_view()),
+            path("recruiting", CrewRecruiting.as_view()),
+            path("my", CrewJoined.as_view()),
+            path("<int:id>/detail", CrewDetail.as_view()),
+        ])),
     ])),
 ]
 

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from users.models import User
-from tle.models import CrewMember
+from crews.models import CrewMember
 
 
 @admin.register(User)

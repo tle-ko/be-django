@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from django.db import models
 
 from users.models import User
-from tle.models.dao.crew import Crew
+from crews.models.crew import Crew
 
 
 class CrewMember(models.Model):
@@ -37,10 +35,3 @@ class CrewMember(models.Model):
             ),
         ]
         ordering = ['created_at']
-
-    @classmethod
-    def captain_of(cls, crew: Crew) -> CrewMember:
-        return cls.objects.get(**{
-            CrewMember.field_name.CREW: crew,
-            CrewMember.field_name.IS_CAPTAIN: True,
-        })

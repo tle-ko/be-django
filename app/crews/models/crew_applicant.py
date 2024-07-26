@@ -2,8 +2,8 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from users.models import User
-from tle.models.dao.crew import Crew
-from tle.models.dao.crew_member import CrewMember
+from crews.models.crew import Crew
+from crews.models.crew_member import CrewMember
 
 
 class CrewApplicant(models.Model):
@@ -70,7 +70,6 @@ class CrewApplicant(models.Model):
         # 같은 크루에 여러 번 가입하는 것을 방지
         if self.crew.members.filter(user=self.user).exists():
             raise ValueError('이미 가입한 크루에 가입 신청을 할 수 없습니다.')
-
         return super().save(*args, **kwargs)
 
     def accept(self, commit=True) -> CrewMember:

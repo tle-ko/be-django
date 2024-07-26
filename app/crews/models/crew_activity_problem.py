@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from tle.models.dao.crew_activity import CrewActivity
+from crews.models.crew_activity import CrewActivity
 from problems.models.problem import Problem
 
 
@@ -22,7 +22,6 @@ class CrewActivityProblem(models.Model):
             MinValueValidator(1),
         ],
     )
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class field_name:
         # related fields
@@ -31,7 +30,6 @@ class CrewActivityProblem(models.Model):
         ACTIVITY = 'activity'
         PROBLEM = 'problem'
         ORDER = 'order'
-        CREATED_AT = 'created_at'
 
     class Meta:
         constraints = [

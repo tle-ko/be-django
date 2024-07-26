@@ -1,14 +1,8 @@
-from tle.models.dao import *
+from tle.models.dao.submission import Submission
+from tle.models.dao.submission_comment import SubmissionComment
 
 
 __all__ = (
-    'Crew',
-    'CrewActivity',
-    'CrewActivityProblem',
-    'CrewApplicant',
-    'CrewMember',
-
     'Submission',
     'SubmissionComment',
-    'SubmissionLanguage',
 )
