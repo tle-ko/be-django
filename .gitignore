@@ -168,5 +168,5 @@ cython_debug/
 # Django
 **/migrations/*
 !**/migrations/__init__.py
-static/
-media/
+.static/
+.media/
