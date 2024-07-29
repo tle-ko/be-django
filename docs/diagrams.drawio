@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-07-15T04:48:16.835Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" version="21.1.2" etag="7xn6DVkM_0BR2YjV0ISv" type="device" pages="4">
+<mxfile host="Electron" modified="2024-07-29T19:17:12.025Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="ZcIJNEJNltINWbDPRczC" version="21.1.2" type="device" pages="5">
   <diagram id="R8Hn3CipdI21ogDRWe-t" name="Use Case Diagram">
-    <mxGraphModel dx="1861" dy="733" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2164" dy="876" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -761,7 +761,7 @@
         <mxCell id="326" value="사용 가능한&lt;br&gt;아이디인지 검사" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="320" y="320" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="327" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="81" edge="1" target="326">
+        <mxCell id="327" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="81" target="326" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="560" y="200" as="sourcePoint" />
             <mxPoint x="320" y="260" as="targetPoint" />
@@ -796,207 +796,207 @@
             <mxPoint x="166.92307692307713" y="768.4615384615383" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-351" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?recruiting&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-351" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?recruiting&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="320" y="160" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-352" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/account/verify_email?email=:&lt;span style=&quot;font-weight: normal;&quot;&gt;email&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-352" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/account/verify_email?email=:&lt;span style=&quot;font-weight: normal;&quot;&gt;email&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="320" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-353" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST &lt;/span&gt;/account/signup&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-353" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST &lt;/span&gt;/account/signup&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="320" y="240" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-354" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST &lt;/span&gt;/account/signin&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-354" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST &lt;/span&gt;/account/signin&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="600" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-355" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/account/reset_password?email=:&lt;span style=&quot;font-weight: normal;&quot;&gt;email&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-355" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/account/reset_password?email=:&lt;span style=&quot;font-weight: normal;&quot;&gt;email&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="680" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-356" value="&lt;font face=&quot;Courier New&quot;&gt;/account/signout&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-356" value="&lt;font face=&quot;Courier New&quot;&gt;/account/signout&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="320" y="800" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-357" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-357" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="4280" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-359" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;span style=&quot;font-weight: 400;&quot;&gt;?activity&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-359" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;span style=&quot;font-weight: 400;&quot;&gt;?activity&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="880" y="4440" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-360" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&lt;/span&gt; /problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-360" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&lt;/span&gt; /problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="880" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-361" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-361" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="2720" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-362" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/analysis&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-362" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/analysis&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="1200" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-363" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-363" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="1120" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-364" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-364" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="1280" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-365" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem?q=&lt;span style=&quot;font-weight: normal;&quot;&gt;:query&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-365" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem?q=&lt;span style=&quot;font-weight: normal;&quot;&gt;:query&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="1360" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-366" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem?username=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-366" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&lt;/span&gt; /problem?username=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="1440" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-367" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;PUT&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-367" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;PUT&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="1680" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-368" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" edge="1" parent="1" source="145" target="bwB9pqVPpboVz1HK0iUg-369">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-368" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="145" target="bwB9pqVPpboVz1HK0iUg-369" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="560" y="-119.92000000000007" as="sourcePoint" />
             <mxPoint x="270" y="140.08000000000004" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-369" value="문제 사본 생성" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-369" value="문제 사본 생성" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="520" y="960" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-370" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/copy&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-370" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/copy&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="960" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-371" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" edge="1" parent="1" source="220" target="223">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-371" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="220" target="223" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="13.049023268214114" y="891.6145893135329" as="sourcePoint" />
             <mxPoint x="166.92307692307713" y="768.4615384615383" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-372" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;DELETE&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-372" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;DELETE&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="1760" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-373" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;POST&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/submission&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-373" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;POST&lt;/span&gt; /problem/&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;/submission&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2040" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-374" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-374" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="2120" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-375" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission?crew=&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-375" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission?crew=&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2200" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-376" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission?problem=&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-376" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission?problem=&lt;span style=&quot;font-weight: normal;&quot;&gt;:problemId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2280" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-377" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission/&lt;span style=&quot;font-weight: normal;&quot;&gt;:submissionId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-377" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;GET&lt;/span&gt; /submission/&lt;span style=&quot;font-weight: normal;&quot;&gt;:submissionId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="2360" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-378" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;POST&lt;/span&gt; /comment&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-378" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;POST&lt;/span&gt; /comment&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2440" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-379" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-379" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="520" y="2640" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-380" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?captain=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-380" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?captain=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2800" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-381" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?username=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-381" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?username=&lt;span style=&quot;font-weight: normal;&quot;&gt;:username&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2880" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-382" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/statistics/difficulty&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-382" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/statistics/difficulty&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="880" y="4120" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-383" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;span style=&quot;font-weight: normal;&quot;&gt;?activity=:activityId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-383" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/problem&lt;span style=&quot;font-weight: normal;&quot;&gt;?activity=:activityId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="880" y="4360" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-385" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/request&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-385" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/request&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="3120" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-387" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/member&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-387" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/member&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3200" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-388" value="사용자 초대하기" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-388" value="사용자 초대하기" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
           <mxGeometry x="520" y="3280" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-390" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" edge="1" parent="1" source="bwB9pqVPpboVz1HK0iUg-388" target="185">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-390" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" parent="1" source="bwB9pqVPpboVz1HK0iUg-388" target="185" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="550" y="3140" as="sourcePoint" />
             <mxPoint x="470" y="3060" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-391" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" connectable="0" vertex="1" parent="bwB9pqVPpboVz1HK0iUg-390">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-391" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" parent="bwB9pqVPpboVz1HK0iUg-390" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-40" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-392" value="초대 수락" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-392" value="초대 수락" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
           <mxGeometry x="720" y="3280" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-393" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" edge="1" parent="1" source="bwB9pqVPpboVz1HK0iUg-388" target="bwB9pqVPpboVz1HK0iUg-392">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-393" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="bwB9pqVPpboVz1HK0iUg-388" target="bwB9pqVPpboVz1HK0iUg-392" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="570.0022009588936" y="2819.995098517821" as="sourcePoint" />
             <mxPoint x="693.45" y="2749.67" as="targetPoint" />
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-395" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?recruiting&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-395" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew?recruiting&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2960" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-396" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/request&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-396" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/request&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3040" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-397" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/notice&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-397" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/notice&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3360" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-398" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;DELETE&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/notice&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-398" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;DELETE&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/notice&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3440" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-399" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-399" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="4040" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-401" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;DELETE&lt;/span&gt; /comment/&lt;span style=&quot;font-weight: normal;&quot;&gt;:commentId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-401" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;DELETE&lt;/span&gt; /comment/&lt;span style=&quot;font-weight: normal;&quot;&gt;:commentId&lt;/span&gt;&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="720" y="2520" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-405" value="크루가&lt;br&gt;풀이한 문제의 태그" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-405" value="크루가&lt;br&gt;풀이한 문제의 태그" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="720" y="4200" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-406" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" edge="1" parent="1" source="bwB9pqVPpboVz1HK0iUg-405" target="310">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-406" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" parent="1" source="bwB9pqVPpboVz1HK0iUg-405" target="310" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="550" y="3460" as="sourcePoint" />
             <mxPoint x="640" y="3460" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-407" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" connectable="0" vertex="1" parent="bwB9pqVPpboVz1HK0iUg-406">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-407" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" parent="bwB9pqVPpboVz1HK0iUg-406" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-40" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-408" value="(크루에서 자신이)&lt;br&gt;풀이한 문제의 난이도" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-408" value="(크루에서 자신이)&lt;br&gt;풀이한 문제의 난이도" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="720" y="4120" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-409" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" edge="1" parent="1" source="bwB9pqVPpboVz1HK0iUg-408" target="310">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-409" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" parent="1" source="bwB9pqVPpboVz1HK0iUg-408" target="310" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="550" y="3460" as="sourcePoint" />
             <mxPoint x="640" y="3460" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-410" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" connectable="0" vertex="1" parent="bwB9pqVPpboVz1HK0iUg-409">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-410" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" parent="bwB9pqVPpboVz1HK0iUg-409" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-40" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-411" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/statistics/tag&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-411" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;GET &lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/statistics/tag&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="880" y="4200" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-412" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" edge="1" parent="1" source="289" target="260">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-412" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;" parent="1" source="289" target="260" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="700" y="3699.5" as="sourcePoint" />
             <mxPoint x="780" y="3699.5" as="targetPoint" />
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-413" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/activity&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-413" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;POST&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/activity&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3760" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-414" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;PUT&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/activity&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" vertex="1" parent="1">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-414" value="&lt;font face=&quot;Courier New&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;PUT&amp;nbsp;&lt;/span&gt;/crew/&lt;span style=&quot;font-weight: normal;&quot;&gt;:crewId&lt;/span&gt;/activity&lt;/font&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;direction=south;position2=0.5;base=10;size=40;position=0.25;fontStyle=1;align=left;spacingLeft=16;" parent="1" vertex="1">
           <mxGeometry x="920" y="3840" width="440" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-415" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" edge="1" parent="1" source="277" target="267">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-415" value="" style="endArrow=block;html=1;rounded=0;align=center;verticalAlign=bottom;endFill=0;labelBackgroundColor=none;endSize=8;edgeStyle=elbowEdgeStyle;" parent="1" source="277" target="267" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="550" y="3460" as="sourcePoint" />
             <mxPoint x="640" y="3460" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bwB9pqVPpboVz1HK0iUg-416" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" connectable="0" vertex="1" parent="bwB9pqVPpboVz1HK0iUg-415">
+        <mxCell id="bwB9pqVPpboVz1HK0iUg-416" value="" style="resizable=0;html=1;align=center;verticalAlign=top;labelBackgroundColor=none;" parent="bwB9pqVPpboVz1HK0iUg-415" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-40" as="offset" />
           </mxGeometry>
@@ -1268,6 +1268,119 @@
         </mxCell>
         <mxCell id="rgVvXKldgTogcYoQLBNi-5" value="Gemini 1.5 Flash" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="400" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="djgfF4PLKdD6bvwJWoWE" name="Email Verification">
+    <mxGraphModel dx="1314" dy="876" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="iR53rcrbjHuptP4mLrTN-1" value="인증 실패" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="580" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-2" target="iR53rcrbjHuptP4mLrTN-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-2" value="이메일 입력" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=10;" vertex="1" parent="1">
+          <mxGeometry x="320" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-3" target="iR53rcrbjHuptP4mLrTN-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-3" value="Start" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="120" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-4" value="End" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1040" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-6" target="iR53rcrbjHuptP4mLrTN-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-6" target="iR53rcrbjHuptP4mLrTN-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-6" value="해당 이메일로 가입한&lt;br&gt;사용자가 존재하지 않음" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="280" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-9" target="iR53rcrbjHuptP4mLrTN-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-9" value="새로운 인증 코드 발급" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="400" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-10" value="No" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="480" y="290" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-16" target="iR53rcrbjHuptP4mLrTN-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-16" value="인증 코드 입력" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=10;" vertex="1" parent="1">
+          <mxGeometry x="320" y="480" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-18" target="iR53rcrbjHuptP4mLrTN-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-18" target="iR53rcrbjHuptP4mLrTN-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-18" value="인증코드가 올바름" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="560" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-19" value="Yes" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="360" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-22" value="No" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="480" y="570" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-23" value="Yes" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="640" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-24" target="iR53rcrbjHuptP4mLrTN-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-24" value="회원가입시 발급받은&lt;br&gt;인증 토큰을 함께 입력" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=10;" vertex="1" parent="1">
+          <mxGeometry x="320" y="760" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-25" target="iR53rcrbjHuptP4mLrTN-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-25" value="새로운 인증 토큰 발급" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="680" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-27" target="iR53rcrbjHuptP4mLrTN-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-27" target="iR53rcrbjHuptP4mLrTN-33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-27" value="인증토큰이 올바름" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="840" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-28" target="iR53rcrbjHuptP4mLrTN-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-28" value="회원 가입 시도" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="960" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="iR53rcrbjHuptP4mLrTN-33" target="iR53rcrbjHuptP4mLrTN-24">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-33" value="회원 가입 실패" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="860" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-38" value="No" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="480" y="850" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iR53rcrbjHuptP4mLrTN-39" value="Yes" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="920" width="40" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
