@@ -1,18 +1,29 @@
 from typing import Callable
 
-from django.contrib.auth import authenticate, login, logout
 from rest_framework import (
     mixins,
     permissions,
     status,
 )
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
-from users.models import User, UserManager
-from users.serializers import UserDetailSerializer, UserSignInSerializer
+from users.models import User
+from users.serializers import *
+from users.services import *
+
+
+__all__ = (
+    'SignUp',
+    'SignIn',
+    'SignOut',
+    'CurrentUser',
+    'SendVerificationCode',
+    'ValidateVerificationCode',
+)
 
 
 class SignUp(mixins.CreateModelMixin,
@@ -26,8 +37,9 @@ class SignUp(mixins.CreateModelMixin,
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer: Serializer):
-        user_manager: UserManager = User.objects
-        user = user_manager.create_user(**serializer.validated_data)
+        token = serializer.validated_data.pop('verification_token')
+        VerificationService.validate_verification_token(token)
+        user = AuthenticationService.sign_up(**serializer.validated_data)
         serializer.instance = user
 
 
@@ -43,17 +55,11 @@ class SignIn(mixins.RetrieveModelMixin,
     def get_object(self) -> User:
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-        # 사용자 인증을 위한 email과 password를 추출
-        email = serializer.validated_data['email']
-        password = serializer.validated_data['password']
-        # 사용자 인증
-        user = authenticate(self.request, username=email, password=password)
-        # 사용자 인증 실패 시 예외 발생
-        if user is None:
-            raise AuthenticationFailed('Invalid email or password')
-        # 사용자 인증 성공 시 (세션) 로그인
-        login(self.request, user)
-        return user
+        return AuthenticationService.sign_in(
+            request=self.request,
+            email=serializer.validated_data['email'],
+            password=serializer.validated_data['password'],
+        )
 
     def post(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -65,7 +71,7 @@ class SignOut(GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        logout(request)
+        AuthenticationService.sign_out(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -81,3 +87,40 @@ class CurrentUser(mixins.RetrieveModelMixin,
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+
+class SendVerificationCode(GenericAPIView):
+    """이메일 인증 요청 API"""
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserEmailSerializer
+
+    get_serializer: Callable[..., Serializer]
+
+    def get(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        if VerificationService.is_verified(email):
+            raise ValidationError('Email is already verified.')
+        code = VerificationService.get_verification_code(email)
+        VerificationService.send_verification_code(email, code)
+        return Response(status=status.HTTP_200_OK)
+
+
+class ValidateVerificationCode(GenericAPIView):
+    """이메일 인증 코드 검증 API"""
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserEmailVerificationCodeSerializer
+
+    get_serializer: Callable[..., Serializer]
+
+    def post(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        token = VerificationService.get_verification_token(email, code)
+        serializer.validated_data['token'] = token
+        return Response(serializer.data, status=status.HTTP_200_OK)

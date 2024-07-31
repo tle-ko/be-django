@@ -19,10 +19,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from users.views import SignIn, SignUp, SignOut, CurrentUser
+from users.views import *
 from problems.views import ProblemCreate, ProblemDetail, ProblemSearch
 from crews.views import CrewCreate, CrewDetail, CrewRecruiting, CrewJoined
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,6 +30,10 @@ urlpatterns = [
             path("signin", SignIn.as_view()),
             path("signup", SignUp.as_view()),
             path("signout", SignOut.as_view()),
+        ])),
+        path("verification", include([
+            path("email/send", SendVerificationCode.as_view()),
+            path("email/validate", ValidateVerificationCode.as_view()),
         ])),
         path("users/current", CurrentUser.as_view()),
         path("problems/", include([

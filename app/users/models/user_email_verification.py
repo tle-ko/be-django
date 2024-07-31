@@ -32,14 +32,15 @@ class UserEmailVerification(models.Model):
         help_text='이메일 주소',
         primary_key=True,
     )
-    verification_code = models.CharField(
+    verification_code = models.TextField(
         help_text='인증 코드',
-        max_length=6,
-        default=default_verification_code_factory,
+        null=False,
+        blank=False,
     )
     verification_token = models.TextField(
         help_text='인증 토큰',
-        default=default_verification_token_factory,
+        null=True,
+        blank=True,
     )
     expires_at = models.DateTimeField(default=default_expires_at_factory)
     created_at = models.DateTimeField(auto_now_add=True)
