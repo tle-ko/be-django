@@ -1,26 +1,8 @@
 from __future__ import annotations
 from datetime import timedelta
-from hashlib import sha256
-from random import randint
 
 from django.db import models
 from django.utils import timezone
-
-
-N_CODES = 6
-
-A, Z = ord('A'), ord('Z')
-
-
-def default_verification_code_factory() -> str:
-    def code(length=N_CODES):
-        for _ in range(length):
-            yield chr(randint(A, Z))
-    return ''.join(code())
-
-
-def default_verification_token_factory() -> str:
-    return sha256(default_verification_code_factory()).hexdigest()
 
 
 def default_expires_at_factory():

@@ -21,8 +21,7 @@ __all__ = (
     'SignIn',
     'SignOut',
     'CurrentUser',
-    'SendVerificationCode',
-    'ValidateVerificationCode',
+    'EmailVerification',
 )
 
 
@@ -89,13 +88,19 @@ class CurrentUser(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class SendVerificationCode(GenericAPIView):
+class EmailVerification(GenericAPIView):
     """이메일 인증 요청 API"""
 
     permission_classes = [permissions.AllowAny]
     serializer_class = UserEmailSerializer
 
     get_serializer: Callable[..., Serializer]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return UserEmailSerializer
+        if self.request.method == 'POST':
+            return UserEmailVerificationCodeSerializer
 
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
@@ -106,15 +111,6 @@ class SendVerificationCode(GenericAPIView):
         code = VerificationService.get_verification_code(email)
         VerificationService.send_verification_code(email, code)
         return Response(status=status.HTTP_200_OK)
-
-
-class ValidateVerificationCode(GenericAPIView):
-    """이메일 인증 코드 검증 API"""
-
-    permission_classes = [permissions.AllowAny]
-    serializer_class = UserEmailVerificationCodeSerializer
-
-    get_serializer: Callable[..., Serializer]
 
     def post(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -30,10 +30,7 @@ urlpatterns = [
             path("signin", SignIn.as_view()),
             path("signup", SignUp.as_view()),
             path("signout", SignOut.as_view()),
-        ])),
-        path("verification", include([
-            path("email/send", SendVerificationCode.as_view()),
-            path("email/validate", ValidateVerificationCode.as_view()),
+            path("verification", EmailVerification.as_view()),
         ])),
         path("users/current", CurrentUser.as_view()),
         path("problems/", include([
