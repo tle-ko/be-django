@@ -110,6 +110,7 @@ class EmailCheckAPIView(generics.GenericAPIView):
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
 
+    pagination_class = None
     permission_classes = [permissions.AllowAny]
     get_serializer: Callable[..., Serializer]
 
@@ -120,10 +121,14 @@ class EmailVerifyAPIView(generics.GenericAPIView):
             return serializers.EmailCodeSerializer
         raise ValueError
 
-    @swagger_auto_schema(responses={
-        status.HTTP_201_CREATED: '이메일 인증 코드 생성 성공 및 발신 완료',
-        status.HTTP_400_BAD_REQUEST: '잘못된 이메일 혹은 이미 동일한 이메일로 가입된 계정이 존재.',
-    })
+    @swagger_auto_schema(
+        operation_description="이메일을 입력하면, 입력된 이메일 주소로 인증 코드를 발송합니다. 해당 코드를 동일한 주소의 POST 요청으로 전달하면 회원가입시 사용할 수 있는 인증 토큰을 반환합니다.",
+        query_serializer=serializers.EmailSerializer,
+        responses={
+            status.HTTP_201_CREATED: '이메일 인증 코드 생성 성공 및 발신 완료',
+            status.HTTP_400_BAD_REQUEST: '잘못된 이메일 혹은 이미 동일한 이메일로 가입된 계정이 존재.',
+        },
+    )
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
