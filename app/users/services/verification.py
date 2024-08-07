@@ -18,6 +18,10 @@ from rest_framework.exceptions import ValidationError
 from users.models import User, UserEmailVerification
 
 
+def is_usable(email: str) -> bool:
+    return _is_verified(email)
+
+
 def send_verification_code(email: str) -> None:
     if _is_verified(email):
         raise ValidationError('Email is already verified.')
