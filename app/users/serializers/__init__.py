@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from rest_framework.serializers import *
 
 from users.models import User
-from users.serializers.fields import UserBojField
 from users.serializers.mixins import ReadOnlySerializerMixin
 
 
@@ -17,26 +15,26 @@ __all__ = (
 
 
 class EmailSerializer(serializers.Serializer):
-    email = EmailField()
+    email = serializers.EmailField()
 
 
 class EmailCodeSerializer(serializers.Serializer):
-    email = EmailField()
-    code = CharField()
+    email = serializers.EmailField()
+    code = serializers.CharField()
 
 
 class EmailTokenSerializer(serializers.Serializer):
-    email = EmailField()
-    token = CharField()
+    email = serializers.EmailField()
+    token = serializers.CharField()
 
 
 class SignInSerializer(serializers.Serializer):
-    email = EmailField()
-    password = CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    verification_token = CharField()
+    verification_token = serializers.CharField()
 
     class Meta:
         model = User
@@ -64,7 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserMinimalSerializer(ModelSerializer, ReadOnlySerializerMixin):
+class UserMinimalSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin):
     class Meta:
         model = User
         fields = [
