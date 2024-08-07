@@ -87,8 +87,29 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
         return self.request.user
 
 
+class UsernameCheckAPIView(generics.GenericAPIView):
+    """이메일이 사용가능한지 검사 API"""
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.UsernameSerializer
+    get_serializer: Callable[..., Serializer]
+
+    @swagger_auto_schema(responses={
+        status.HTTP_200_OK: '사용자명이 사용가능한지 검사에 성공.',
+        status.HTTP_400_BAD_REQUEST: '잘못된 데이터 형식을 입력했을 경우.',
+    })
+    def get(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
+        return Response(data={
+            "username": username,
+            "is_usable": services.is_email_usable(username),
+        }, status=status.HTTP_200_OK)
+
+
 class EmailCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
+
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.EmailSerializer
     get_serializer: Callable[..., Serializer]
@@ -103,14 +124,13 @@ class EmailCheckAPIView(generics.GenericAPIView):
         email = serializer.validated_data['email']
         return Response(data={
             "email": email,
-            "is_usable": services.is_usable(email),
+            "is_usable": services.is_email_usable(email),
         }, status=status.HTTP_200_OK)
 
 
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
 
-    pagination_class = None
     permission_classes = [permissions.AllowAny]
     get_serializer: Callable[..., Serializer]
 
@@ -136,10 +156,12 @@ class EmailVerifyAPIView(generics.GenericAPIView):
         services.send_verification_code(email)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @swagger_auto_schema(responses={
-        status.HTTP_200_OK: '이메일 인증 성공. 새로운 이메일 인증 토큰을 발급받는다. 이 때 받은 토큰은 회원 가입시 이메일 소유 증명을 위해 제출해야한다.',
-        status.HTTP_400_BAD_REQUEST: '잘못된 이메일 혹은 올바르지 않은 인증번호.',
-    })
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: '이메일 인증 성공. 새로운 이메일 인증 토큰을 발급받는다. 이 때 받은 토큰은 회원 가입시 이메일 소유 증명을 위해 제출해야한다.',
+            status.HTTP_400_BAD_REQUEST: '잘못된 이메일 혹은 올바르지 않은 인증번호.',
+        },
+    )
     def post(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

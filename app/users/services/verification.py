@@ -18,8 +18,14 @@ from rest_framework.exceptions import ValidationError
 from users.models import User, UserEmailVerification
 
 
-def is_usable(email: str) -> bool:
+def is_email_usable(email: str) -> bool:
     return _is_verified(email)
+
+
+def is_username_usable(username: str) -> bool:
+    return User.objects.filter(**{
+        User.field_name.USERNAME: username,
+    }).exists()
 
 
 def send_verification_code(email: str) -> None:

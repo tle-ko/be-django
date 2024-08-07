@@ -7,7 +7,8 @@ from users.services.verification import (
     send_verification_code,
     get_verification_token,
     verify_token,
-    is_usable,
+    is_email_usable,
+    is_username_usable,
 )
 
 
@@ -18,5 +19,6 @@ __all__ = (
     'send_verification_code',
     'get_verification_token',
     'verify_token',
-    'is_usable',
+    'is_email_usable',
+    'is_username_usable',
 )

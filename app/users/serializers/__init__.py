@@ -48,6 +48,10 @@ class SignUpSerializer(serializers.ModelSerializer):
         ]
 
 
+class UsernameSerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

@@ -159,9 +159,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEFAULT_EXCEPTION_REPORTER = "config.reporters.NACLExceptionReporter"
 
-REST_FRAMEWORK = {
-    'PAGE_SIZE': 10,
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-}
-
 APPEND_SLASH = False
