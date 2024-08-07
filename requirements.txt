@@ -2,3 +2,4 @@ django
 django-cors-headers
 djangorestframework
 Pillow
+drf-yasg
