@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import *
 
 from users.models import User
@@ -11,13 +12,58 @@ __all__ = (
     'UserDetailSerializer',
     'UserMinimalSerializer',
     'UserEmailSerializer',
-    'UserEmailVerificationCodeSerializer',
+    'EmailVerificationCodeSerializer',
 )
+
+
+class EmailSerializer(serializers.Serializer):
+    email = EmailField()
+
+
+class EmailVerificationCodeSerializer(serializers.Serializer):
+    email = EmailField(write_only=True)
+    code = CharField(write_only=True)
+    token = CharField(read_only=True)
+
+
+class SignInSerializer(serializers.Serializer):
+    email = EmailField()
+    password = CharField()
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    verification_token = CharField()
+
+    class Meta:
+        model = User
+        fields = [
+            User.field_name.EMAIL,
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
+            User.field_name.PASSWORD,
+            User.field_name.BOJ_USERNAME,
+            'verification_token',
+        ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    boj = UserBojField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            User.field_name.EMAIL,
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
+            'boj',
+            User.field_name.CREATED_AT,
+            User.field_name.LAST_LOGIN,
+        ]
 
 
 class UserSignInSerializer(ModelSerializer, ReadOnlySerializerMixin):
     email = EmailField(write_only=True, validators=None)
-    boj = UserBojField(read_only=True)
 
     class Meta:
         model = User
@@ -120,7 +166,7 @@ class UserEmailSerializer(Serializer):
     email = EmailField()
 
 
-class UserEmailVerificationCodeSerializer(Serializer, ReadOnlySerializerMixin):
+class EmailVerificationCodeSerializer(Serializer, ReadOnlySerializerMixin):
     email = EmailField(write_only=True)
     code = CharField(write_only=True)
     token = CharField(read_only=True)
