@@ -18,86 +18,98 @@ from rest_framework.exceptions import ValidationError
 from users.models import User, UserEmailVerification
 
 
-class VerificationService:
-    @staticmethod
-    def is_verified(email: str) -> bool:
-        return User.objects.filter(**{
-            User.field_name.EMAIL: email,
-        }).exists()
-
-    @staticmethod
-    def get_verification_code(email: str) -> str:
-        if has_verification_code(email):
-            if not (obj := get_verification_object(email)).is_expired():
-                return obj.verification_code
-            else:
-                obj.delete()
-        verification_code = generate_verification_code()
-        create_verification_object(email, verification_code)
-        return verification_code
-
-    @staticmethod
-    def send_verification_code(email: str, verification_code: str) -> str:
-        send_mail(
-            subject='[Time Limit Exceeded] 이메일 주소 인증 코드',
-            message=f'인증 코드: {verification_code}',
-            from_email=None,
-            recipient_list=[email],
-            fail_silently=False,
-        )
-
-    @staticmethod
-    def get_verification_token(email: str, verification_code: str) -> str:
-        VerificationService.validate_verification_code(
-            email, verification_code)
-        verification_token = generate_verification_token()
-        obj = get_verification_object(email)
-        obj.verification_token = verification_token
-        obj.save()
-        return verification_token
-
-    @staticmethod
-    def validate_verification_code(email: str, verification_code: str) -> None:
-        if not has_verification_code(email):
-            raise ValidationError('Verification code does not exist.')
-        obj = get_verification_object(email)
-        if obj.is_expired():
-            raise ValidationError('Verification code is expired.')
-        if obj.verification_code != verification_code:
-            raise ValidationError('Verification code is invalid.')
-
-    @staticmethod
-    def validate_verification_token(email: str, verification_token: str) -> None:
-        if not has_verification_code(email):
-            raise ValidationError('Verification token does not exist.')
-        obj = get_verification_object(email)
-        if obj.verification_token != verification_token:
-            raise ValidationError('Verification token is invalid.')
+def send_verification_code(email: str) -> None:
+    if _is_verified(email):
+        raise ValidationError('Email is already verified.')
+    code = _get_verification_code(email)
+    _send_verification_code(email, code)
 
 
-def has_verification_code(email: str) -> bool:
+def get_verification_token(email: str, verification_code: str) -> str:
+    _validate_verification_code(email, verification_code)
+    return _get_verification_token(email, verification_code)
+
+
+def verify_token(email: str, verification_token: str) -> None:
+    _validate_verification_token(email, verification_token)
+
+
+def _is_verified(email: str) -> bool:
+    return User.objects.filter(**{
+        User.field_name.EMAIL: email,
+    }).exists()
+
+
+def _get_verification_code(email: str) -> str:
+    if _has_verification_code(email):
+        if not (obj := _get_verification_object(email)).is_expired():
+            return obj.verification_code
+        else:
+            obj.delete()
+    verification_code = _generate_verification_code()
+    _create_verification_object(email, verification_code)
+    return verification_code
+
+
+def _send_verification_code(email: str, verification_code: str) -> str:
+    send_mail(
+        subject='[Time Limit Exceeded] 이메일 주소 인증 코드',
+        message=f'인증 코드: {verification_code}',
+        from_email=None,
+        recipient_list=[email],
+        fail_silently=False,
+    )
+
+
+def _get_verification_token(email: str) -> str:
+    verification_token = _generate_verification_token()
+    obj = _get_verification_object(email)
+    obj.verification_token = verification_token
+    obj.save()
+    return verification_token
+
+
+def _validate_verification_code(email: str, verification_code: str) -> None:
+    if not _has_verification_code(email):
+        raise ValidationError('Verification code does not exist.')
+    obj = _get_verification_object(email)
+    if obj.is_expired():
+        raise ValidationError('Verification code is expired.')
+    if obj.verification_code != verification_code:
+        raise ValidationError('Verification code is invalid.')
+
+
+def _validate_verification_token(email: str, verification_token: str) -> None:
+    if not _has_verification_code(email):
+        raise ValidationError('Verification token does not exist.')
+    obj = _get_verification_object(email)
+    if obj.verification_token != verification_token:
+        raise ValidationError('Verification token is invalid.')
+
+
+def _has_verification_code(email: str) -> bool:
     return UserEmailVerification.objects.filter(**{
         UserEmailVerification.field_name.EMAIL: email
     }).exists()
 
 
-def create_verification_object(email: str, verification_code: str) -> UserEmailVerification:
+def _create_verification_object(email: str, verification_code: str) -> UserEmailVerification:
     return UserEmailVerification.objects.create(**{
         UserEmailVerification.field_name.EMAIL: email,
         UserEmailVerification.field_name.VERIFICATION_CODE: verification_code
     })
 
 
-def get_verification_object(email: str) -> UserEmailVerification:
+def _get_verification_object(email: str) -> UserEmailVerification:
     return UserEmailVerification.objects.get(**{
         UserEmailVerification.field_name.EMAIL: email
     })
 
 
-def generate_verification_code(length: int = 6) -> str:
+def _generate_verification_code(length: int = 6) -> str:
     return ''.join(chr(randint(ord('A'), ord('Z'))) for _ in range(length))
 
 
-def generate_verification_token() -> str:
-    seed = generate_verification_code()  # TODO: Use better seed
+def _generate_verification_token() -> str:
+    seed = _generate_verification_code()  # TODO: Use better seed
     return sha256(seed.encode()).hexdigest()

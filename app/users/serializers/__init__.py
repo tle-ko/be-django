@@ -12,7 +12,7 @@ __all__ = (
     'UserDetailSerializer',
     'UserMinimalSerializer',
     'UserEmailSerializer',
-    'EmailVerificationCodeSerializer',
+    'EmailCodeSerializer',
 )
 
 
@@ -20,10 +20,14 @@ class EmailSerializer(serializers.Serializer):
     email = EmailField()
 
 
-class EmailVerificationCodeSerializer(serializers.Serializer):
-    email = EmailField(write_only=True)
-    code = CharField(write_only=True)
-    token = CharField(read_only=True)
+class EmailCodeSerializer(serializers.Serializer):
+    email = EmailField()
+    code = CharField()
+
+
+class EmailTokenSerializer(serializers.Serializer):
+    email = EmailField()
+    token = CharField()
 
 
 class SignInSerializer(serializers.Serializer):
@@ -47,8 +51,6 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    boj = UserBojField()
-
     class Meta:
         model = User
         fields = [
@@ -56,95 +58,10 @@ class UserSerializer(serializers.ModelSerializer):
             User.field_name.EMAIL,
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
-            'boj',
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-        ]
-
-
-class UserSignInSerializer(ModelSerializer, ReadOnlySerializerMixin):
-    email = EmailField(write_only=True, validators=None)
-
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            User.field_name.EMAIL,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.PASSWORD,
-            'boj',
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-        ]
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'boj': {'read_only': True},
-            User.field_name.PROFILE_IMAGE: {'read_only': True},
-            User.field_name.USERNAME: {'read_only': True},
-            User.field_name.CREATED_AT: {'read_only': True},
-            User.field_name.LAST_LOGIN: {'read_only': True},
-            User.field_name.PASSWORD: {'write_only': True},
-        }
-
-
-class UserSignUpSerializer(ModelSerializer, ReadOnlySerializerMixin):
-    boj = UserBojField(read_only=True)
-    verification_token = CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            User.field_name.EMAIL,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.PASSWORD,
             User.field_name.BOJ_USERNAME,
-            'boj',
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-            'verification_token',
-        ]
-        read_only_fields = [
-            'id',
-            'boj',
             User.field_name.CREATED_AT,
             User.field_name.LAST_LOGIN,
         ]
-        extra_kwargs = {
-            User.field_name.PASSWORD: {'write_only': True},
-            User.field_name.BOJ_USERNAME: {'write_only': True},
-            'verification_token': {'write_only': True},
-        }
-
-
-class UserDetailSerializer(ModelSerializer, ReadOnlySerializerMixin):
-    boj = UserBojField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            User.field_name.EMAIL,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.PASSWORD,
-            User.field_name.BOJ_USERNAME,
-            'boj',
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-        ]
-        read_only_fields = [
-            'id',
-            'boj',
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-        ]
-        extra_kwargs = {
-            User.field_name.PASSWORD: {'write_only': True},
-            User.field_name.BOJ_USERNAME: {'write_only': True},
-        }
 
 
 class UserMinimalSerializer(ModelSerializer, ReadOnlySerializerMixin):
@@ -160,13 +77,3 @@ class UserMinimalSerializer(ModelSerializer, ReadOnlySerializerMixin):
             User.field_name.PROFILE_IMAGE: {'read_only': True},
             User.field_name.USERNAME: {'read_only': True},
         }
-
-
-class UserEmailSerializer(Serializer):
-    email = EmailField()
-
-
-class EmailVerificationCodeSerializer(Serializer, ReadOnlySerializerMixin):
-    email = EmailField(write_only=True)
-    code = CharField(write_only=True)
-    token = CharField(read_only=True)
