@@ -19,11 +19,13 @@ from users.models import User, UserEmailVerification
 
 
 def is_email_usable(email: str) -> bool:
-    return _is_verified(email)
+    return not User.objects.filter(**{
+        User.field_name.EMAIL: email,
+    }).exists()
 
 
 def is_username_usable(username: str) -> bool:
-    return User.objects.filter(**{
+    return not User.objects.filter(**{
         User.field_name.USERNAME: username,
     }).exists()
 
