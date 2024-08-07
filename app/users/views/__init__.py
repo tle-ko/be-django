@@ -128,9 +128,15 @@ class EmailCheckAPIView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 
+
+class EmailVerifyThrottle(throttling.AnonRateThrottle):
+    THROTTLE_RATES = '1/min'
+
+
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
 
+    throttle_classes = [EmailVerifyThrottle]
     permission_classes = [permissions.AllowAny]
     get_serializer: Callable[..., Serializer]
 
