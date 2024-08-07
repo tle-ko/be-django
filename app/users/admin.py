@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from users.models import User
+from users.models import User, UserEmailVerification
 from crews.models import CrewMember
+
+
+admin.site.register([
+    UserEmailVerification,
+])
 
 
 @admin.register(User)
