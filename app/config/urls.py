@@ -40,6 +40,7 @@ urlpatterns = [
         path("problems/search", problems.views.ProblemSearch.as_view()),
         path("problems/<int:id>/detail", problems.views.ProblemDetail.as_view()),
         path("users/current", users.views.CurrentUserAPIView.as_view()),
+        path("submissions/<int:id>", submissions.views.CreateCodeReview.as_view()),
     ])),
     path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path(r'swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
