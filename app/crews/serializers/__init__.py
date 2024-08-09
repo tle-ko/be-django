@@ -1,4 +1,5 @@
 from django.db.transaction import atomic
+from rest_framework import serializers
 from rest_framework.serializers import (
     ModelSerializer,
     MultipleChoiceField,
@@ -117,3 +118,14 @@ class CrewJoinedSerializer(ReadOnlySerializerMixin,
             'activities',
         ]
         read_only_fields = ['__all__']
+
+
+class CrewDashboardSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    icon = serializers.CharField()
+    name = serializers.CharField()
+    activity = serializers.CharField()
+    members = serializers.CharField()
+    member_submissions = serializers.CharField()
+    tags = serializers.CharField()
+    statistics = serializers.CharField()

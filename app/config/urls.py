@@ -37,6 +37,7 @@ urlpatterns = [
         path("crews/recruiting", crews.views.CrewRecruiting.as_view()),
         path("crews/my", crews.views.CrewJoined.as_view()),
         path("crews/<int:id>/detail", crews.views.CrewDetail.as_view()),
+        path("crews/<int:id>/dashboard", crews.views.CrewDashboard.as_view()),
         path("problems/", problems.views.ProblemCreate.as_view()),
         path("problems/search", problems.views.ProblemSearch.as_view()),
         path("problems/<int:id>/detail", problems.views.ProblemDetail.as_view()),
