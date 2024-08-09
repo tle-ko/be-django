@@ -9,6 +9,7 @@ from rest_framework import permissions
 import crews.views
 import problems.views
 import users.views
+import submissions.views
 
 
 schema_view = get_schema_view(
@@ -19,7 +20,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="202115064@sangmyung.kr"),
     ),
     public=True,
-    permission_classes=[permissions.IsAdminUser],
+    permission_classes=[permissions.AllowAny],
 )
 
 
