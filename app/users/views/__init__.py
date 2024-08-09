@@ -139,7 +139,7 @@ class EmailVerifyThrottle(throttling.AnonRateThrottle):
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
 
-    throttle_classes = [EmailVerifyThrottle]
+    throttle_classes = []
     permission_classes = [permissions.AllowAny]
     get_serializer: Callable[..., Serializer]
 
