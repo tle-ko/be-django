@@ -58,8 +58,9 @@ class SignUpAPIView(generics.CreateAPIView):
         status.HTTP_400_BAD_REQUEST: '잘못 입력한 값이 존재',
     })
     def perform_create(self, serializer: Serializer):
+        email = serializer.validated_data['email']
         token = serializer.validated_data.pop('verification_token')
-        services.verify_token(token)
+        services.verify_token(email, token)
         user = services.sign_up(**serializer.validated_data)
         serializer.instance = user
 
