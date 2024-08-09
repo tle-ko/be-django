@@ -39,7 +39,7 @@ def send_verification_code(email: str) -> None:
 
 def get_verification_token(email: str, verification_code: str) -> str:
     _validate_verification_code(email, verification_code)
-    return _get_verification_token(email, verification_code)
+    return _get_verification_token(email)
 
 
 def verify_token(email: str, verification_token: str) -> None:
