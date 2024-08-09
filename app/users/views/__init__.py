@@ -93,10 +93,13 @@ class UsernameCheckAPIView(generics.GenericAPIView):
     serializer_class = serializers.UsernameSerializer
     get_serializer: Callable[..., Serializer]
 
-    @swagger_auto_schema(responses={
-        status.HTTP_200_OK: '사용자명이 사용가능한지 검사에 성공.',
-        status.HTTP_400_BAD_REQUEST: '잘못된 데이터 형식을 입력했을 경우.',
-    })
+    @swagger_auto_schema(
+        query_serializer=serializers.UsernameSerializer,
+        responses={
+            status.HTTP_200_OK: '사용자명이 사용가능한지 검사에 성공.',
+            status.HTTP_400_BAD_REQUEST: '잘못된 데이터 형식을 입력했을 경우.',
+        },
+    )
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
