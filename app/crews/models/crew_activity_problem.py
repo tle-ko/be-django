@@ -1,11 +1,18 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from crews.models.crew import Crew
 from crews.models.crew_activity import CrewActivity
 from problems.models.problem import Problem
 
 
 class CrewActivityProblem(models.Model):
+    crew = models.ForeignKey(
+        Crew,
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False,
+    )
     activity = models.ForeignKey(
         CrewActivity,
         on_delete=models.CASCADE,
@@ -27,6 +34,7 @@ class CrewActivityProblem(models.Model):
         # related fields
         SUBMISSIONS = 'submissions'
         # fields
+        CREW = 'crew'
         ACTIVITY = 'activity'
         PROBLEM = 'problem'
         ORDER = 'order'
