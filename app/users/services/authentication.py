@@ -5,6 +5,7 @@
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.request import Request
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User, UserEmailVerification, UserManager
 
@@ -40,3 +41,8 @@ def sign_in(request: Request, email: str, password: str) -> User:
 def sign_out(request: Request):
     """로그아웃"""
     logout(request)
+
+def get_user_jwt(user: User) -> str:
+    refresh_token: RefreshToken
+    refresh_token = RefreshToken.for_user(user)
+    return str(refresh_token.access_token)

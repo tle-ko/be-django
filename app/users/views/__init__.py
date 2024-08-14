@@ -28,23 +28,23 @@ class SignInAPIView(mixins.RetrieveModelMixin,
     serializer_class = serializers.SignInSerializer
     get_serializer: Callable[..., Serializer]
 
-    def get_object(self) -> User:
-        serializer = self.get_serializer(data=self.request.data)
-        serializer.is_valid(raise_exception=True)
-        return services.sign_in(
-            request=self.request,
-            email=serializer.validated_data['email'],
-            password=serializer.validated_data['password'],
-        )
-
     @swagger_auto_schema(responses={
         status.HTTP_200_OK: '로그인 성공',
         status.HTTP_401_UNAUTHORIZED: '로그인 실패',
     })
     def post(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = serializers.UserSerializer(instance)
-        return Response(serializer.data)
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        user = services.sign_in(
+            request=self.request,
+            email=serializer.validated_data['email'],
+            password=serializer.validated_data['password'],
+        )
+        token = services.get_user_jwt(user)
+        return Response(data={
+            **serializers.UserSerializer(user).data,
+            'token': token,
+        })
 
 
 class SignUpAPIView(generics.CreateAPIView):
@@ -130,7 +130,6 @@ class EmailCheckAPIView(generics.GenericAPIView):
             "email": email,
             "is_usable": services.is_email_usable(email),
         }, status=status.HTTP_200_OK)
-
 
 
 class EmailVerifyThrottle(throttling.AnonRateThrottle):
