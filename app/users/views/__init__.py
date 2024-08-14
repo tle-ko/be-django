@@ -24,6 +24,7 @@ class SignInAPIView(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     """사용자 로그인 API"""
 
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInSerializer
     get_serializer: Callable[..., Serializer]
@@ -54,6 +55,7 @@ class SignInAPIView(mixins.RetrieveModelMixin,
 class SignUpAPIView(generics.CreateAPIView):
     """사용자 등록(회원가입) API"""
 
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignUpSerializer
 
@@ -94,6 +96,8 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
 
 class UsernameCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
+
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UsernameSerializer
     get_serializer: Callable[..., Serializer]
@@ -121,6 +125,7 @@ class UsernameCheckAPIView(generics.GenericAPIView):
 class EmailCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
 
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.EmailSerializer
     get_serializer: Callable[..., Serializer]
@@ -152,6 +157,7 @@ class EmailVerifyThrottle(throttling.AnonRateThrottle):
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
 
+    authentication_classes = []
     throttle_classes = []
     permission_classes = [permissions.AllowAny]
     get_serializer: Callable[..., Serializer]
