@@ -41,10 +41,13 @@ class SignInAPIView(mixins.RetrieveModelMixin,
             password=serializer.validated_data['password'],
         )
         token = services.get_user_jwt(user)
-        return Response(data={
-            **serializers.UserSerializer(user).data,
-            'token': token,
-        })
+        return Response(
+            data={
+                **serializers.UserSerializer(user).data,
+                'token': token,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class SignUpAPIView(generics.CreateAPIView):
@@ -105,10 +108,13 @@ class UsernameCheckAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data['username']
-        return Response(data={
-            "username": username,
-            "is_usable": services.is_email_usable(username),
-        }, status=status.HTTP_200_OK)
+        return Response(
+            data={
+                "username": username,
+                "is_usable": services.is_email_usable(username),
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class EmailCheckAPIView(generics.GenericAPIView):
@@ -126,10 +132,13 @@ class EmailCheckAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
-        return Response(data={
-            "email": email,
-            "is_usable": services.is_email_usable(email),
-        }, status=status.HTTP_200_OK)
+        return Response(
+            data={
+                "email": email,
+                "is_usable": services.is_email_usable(email),
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class EmailVerifyThrottle(throttling.AnonRateThrottle):
@@ -163,7 +172,7 @@ class EmailVerifyAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
         services.send_verification_code(email)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
         responses={
@@ -176,7 +185,10 @@ class EmailVerifyAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
         code = serializer.validated_data['code']
-        return Response(data={
-            'email': email,
-            'token': services.get_verification_token(email, code),
-        }, status=status.HTTP_200_OK)
+        return Response(
+            data={
+                'email': email,
+                'token': services.get_verification_token(email, code),
+            },
+            status=status.HTTP_200_OK,
+        )
