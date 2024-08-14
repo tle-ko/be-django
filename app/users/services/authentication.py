@@ -35,7 +35,5 @@ def sign_out(request: Request):
     """로그아웃"""
     logout(request)
 
-def get_user_jwt(user: User) -> str:
-    refresh_token: RefreshToken
-    refresh_token = RefreshToken.for_user(user)
-    return str(refresh_token.access_token)
+def get_user_jwt(user: User) -> RefreshToken:
+    return RefreshToken.for_user(user)

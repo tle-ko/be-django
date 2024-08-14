@@ -44,7 +44,8 @@ class SignInAPIView(mixins.RetrieveModelMixin,
         return Response(
             data={
                 **serializers.UserSerializer(user).data,
-                'token': token,
+                'access_token': str(token.access_token),
+                'refresh_token': str(token.token),
             },
             status=status.HTTP_200_OK,
         )
@@ -85,7 +86,7 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
     """현재 로그인한 사용자 정보 API"""
 
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.SignUpSerializer
 
     def get_object(self) -> User:
         return self.request.user

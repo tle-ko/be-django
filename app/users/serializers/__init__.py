@@ -34,7 +34,7 @@ class SignInSerializer(serializers.Serializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    verification_token = serializers.CharField()
+    verification_token = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
