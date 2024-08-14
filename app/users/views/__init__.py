@@ -112,7 +112,7 @@ class UsernameCheckAPIView(generics.GenericAPIView):
         return Response(
             data={
                 "username": username,
-                "is_usable": services.is_email_usable(username),
+                "is_usable": services.is_username_usable(username),
             },
             status=status.HTTP_200_OK,
         )
