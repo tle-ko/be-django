@@ -52,23 +52,29 @@ class SignInAPIView(mixins.RetrieveModelMixin,
         )
 
 
-class SignUpAPIView(generics.CreateAPIView):
+class SignUpAPIView(generics.GenericAPIView):
     """사용자 등록(회원가입) API"""
 
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignUpSerializer
+    get_serializer: Callable[..., Serializer]
 
     @swagger_auto_schema(responses={
         status.HTTP_201_CREATED: '회원가입 성공',
         status.HTTP_400_BAD_REQUEST: '잘못 입력한 값이 존재',
     })
-    def perform_create(self, serializer: Serializer):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
         token = serializer.validated_data.pop('verification_token')
         services.verify_token(email, token)
         user = services.sign_up(**serializer.validated_data)
-        serializer.instance = user
+        return Response(
+            data=serializers.UserSerializer(instance=user).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class SignOutAPIView(APIView):
