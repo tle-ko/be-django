@@ -125,10 +125,13 @@ class EmailCheckAPIView(generics.GenericAPIView):
     serializer_class = serializers.EmailSerializer
     get_serializer: Callable[..., Serializer]
 
-    @swagger_auto_schema(responses={
-        status.HTTP_200_OK: '검사를 수행했을 경우, 사용가능 여부를 Boolean으로 반환함.',
-        status.HTTP_400_BAD_REQUEST: '잘못된 이메일 형식.',
-    })
+    @swagger_auto_schema(
+        query_serializer=serializers.EmailSerializer,
+        responses={
+            status.HTTP_200_OK: '검사를 수행했을 경우, 사용가능 여부를 Boolean으로 반환함.',
+            status.HTTP_400_BAD_REQUEST: '잘못된 이메일 형식.',
+        },
+    )
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
