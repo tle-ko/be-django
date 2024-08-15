@@ -179,3 +179,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DEFAULT_EXCEPTION_REPORTER = "config.reporters.NACLExceptionReporter"
 
 APPEND_SLASH = False
+
+# Swagger Settings (DRf-YASG)
+
+LOGIN_URL = "/api/v1/auth/signin"
