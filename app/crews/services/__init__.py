@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils import timezone
+from rest_framework import exceptions
 
 from crews import dto
 from crews import enums
@@ -45,8 +46,8 @@ def problem_statistics(crew: models.Crew) -> dto.ProblemStatistic:
 
 class crew:
     @staticmethod
-    def of_user_queryset(include_user: Optional[User] = None,
-                         exclude_user: Optional[User] = None) -> QuerySet[models.Crew]:
+    def of_user(include_user: Optional[User] = None,
+                exclude_user: Optional[User] = None) -> QuerySet[models.Crew]:
         """특정 사용자가 속하거나 속하지 않은 크루 목록을 조회하는 쿼리를 반환한다."""
         queryset = models.Crew.objects
         if include_user is not None:
@@ -61,6 +62,7 @@ class crew:
 
     @classmethod
     def tags(cls, crew: models.Crew) -> List[dto.CrewTag]:
+        assert isinstance(crew, models.Crew)
         # 태그의 나열 순서는 리스트에 선언한 순서를 따름.
         return [
             *cls._get_language_tags(crew),
@@ -70,6 +72,7 @@ class crew:
 
     @classmethod
     def _get_language_tags(cls, crew: models.Crew) -> Iterable[dto.CrewTag]:
+        assert isinstance(crew, models.Crew)
         submittable_languages = models.CrewSubmittableLanguage.objects.filter(**{
             models.CrewSubmittableLanguage.field_name.CREW: crew,
         })
@@ -112,12 +115,15 @@ class crew:
 
     @staticmethod
     def member_count(crew: models.Crew) -> int:
+        assert isinstance(crew, models.Crew)
         return models.CrewMember.objects.filter(**{
             models.CrewMember.field_name.CREW: crew,
         }).count()
 
     @classmethod
     def is_joinable(cls, crew: models.Crew, user: User) -> bool:
+        assert isinstance(crew, models.Crew)
+        assert isinstance(user, User)
         if not crew.is_recruiting:
             return False
         if cls.member_count(crew) >= crew.max_members:
@@ -133,10 +139,26 @@ class crew:
 
     @staticmethod
     def is_member(crew: models.Crew, user: User) -> bool:
+        assert isinstance(crew, models.Crew)
+        assert isinstance(user, User)
         return models.CrewMember.objects.filter(**{
             models.CrewMember.field_name.CREW: crew,
             models.CrewMember.field_name.USER: user,
         }).exists()
+
+    @staticmethod
+    def set_submittable_languages(crew: models.Crew, languages: List[str]):
+        assert isinstance(crew, models.Crew)
+        assert isinstance(languages, list)
+        entities = []
+        for lang in languages:
+            if not isinstance(lang, str) or lang not in enums.ProgrammingLanguageChoices:
+                raise exceptions.ValidationError(f'{lang}은 선택 가능한 언어가 아닙니다.')
+            entities.append(models.CrewSubmittableLanguage(**{
+                models.CrewSubmittableLanguage.field_name.CREW: crew,
+                models.CrewSubmittableLanguage.field_name.LANGUAGE: lang,
+            }))
+        models.CrewSubmittableLanguage.objects.bulk_create(entities)
 
 
 class crew_acitivity:

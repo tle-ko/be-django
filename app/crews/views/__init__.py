@@ -1,4 +1,5 @@
 from drf_yasg.utils import swagger_auto_schema
+from django.db.transaction import atomic
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -15,7 +16,16 @@ class CrewCreateAPIView(generics.CreateAPIView):
 
     queryset = models.Crew.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.RecruitingCrewSerializer
+    serializer_class = serializers.CrewCreateSerializer
+
+    def perform_create(self, serializer: serializers.CrewCreateSerializer):
+        languages = serializer.validated_data.pop('languages')
+        with atomic():
+            crew = serializer.save(**{
+                models.Crew.field_name.CREATED_BY: self.request.user,
+            })
+            services.crew.set_submittable_languages(crew, languages)
+        return crew
 
 
 class RecruitingCrewListAPIView(generics.ListAPIView):
@@ -26,7 +36,7 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         # 본인이 속한 크루는 제외.
-        queryset = services.crew.of_user_queryset(
+        queryset = services.crew.of_user(
             exclude_user=self.request.user,
         )
         return queryset.filter(**{
@@ -41,7 +51,7 @@ class MyCrewAPIView(generics.ListAPIView):
     serializer_class = serializers.MyCrewSerializer
 
     def get_queryset(self):
-        queryset = services.crew.of_user_queryset(
+        queryset = services.crew.of_user(
             include_user=self.request.user,
         )
         # 활동 종료된 크루는 뒤로 가도록 정렬
@@ -56,7 +66,7 @@ class CrewDashboardAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
 
     def get_queryset(self):
-        return services.crew.of_user_queryset(
+        return services.crew.of_user(
             include_user=self.request.user,
         )
 
@@ -67,7 +77,7 @@ class CrewStatisticsAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
 
     def get_queryset(self):
-        return services.crew.of_user_queryset(
+        return services.crew.of_user(
             include_user=self.request.user,
         )
 
@@ -83,7 +93,7 @@ class CrewActivityAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
 
     def get_queryset(self):
-        return services.crew.of_user_queryset(
+        return services.crew.of_user(
             include_user=self.request.user,
         )
 

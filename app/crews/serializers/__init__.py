@@ -1,11 +1,31 @@
 from rest_framework import serializers
 
+from crews import enums
 from crews import models
 from crews.serializers import fields
 from users.serializers import UserMinimalSerializer
 
 
 PK = 'id'
+
+
+class CrewCreateSerializer(serializers.ModelSerializer):
+    languages = serializers.MultipleChoiceField(choices=enums.ProgrammingLanguageChoices.choices)
+
+    class Meta:
+        model = models.Crew
+        fields = [
+            models.Crew.field_name.ICON,
+            models.Crew.field_name.NAME,
+            models.Crew.field_name.MAX_MEMBERS,
+            'languages',
+            models.Crew.field_name.MIN_BOJ_LEVEL,
+            models.Crew.field_name.CUSTOM_TAGS,
+            models.Crew.field_name.NOTICE,
+            models.Crew.field_name.IS_RECRUITING,
+            models.Crew.field_name.IS_ACTIVE,
+        ]
+        read_only_fields = ['__all__']
 
 
 class RecruitingCrewSerializer(serializers.ModelSerializer):
