@@ -2,14 +2,7 @@ from enum import Enum
 
 from django.db import models
 
-from crews.enums.emoji import Emoji
-
-
-__all__ = (
-    'CrewTagType',
-    'Emoji',
-    'ProgrammingLanguage',
-)
+from crews.enums.emoji import EmojiChoices
 
 
 class CrewTagType(Enum):

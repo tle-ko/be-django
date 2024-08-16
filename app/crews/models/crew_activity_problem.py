@@ -48,6 +48,10 @@ class CrewActivityProblem(models.Model):
         ]
         ordering = ['order']
 
+    def save(self, *args, **kwargs) -> None:
+        assert self.crew == self.activity.crew
+        return super().save(*args, **kwargs)
+
     def __repr__(self) -> str:
         return f'{self.activity.__repr__()} ← #{self.order} {self.problem.__repr__()}'
 

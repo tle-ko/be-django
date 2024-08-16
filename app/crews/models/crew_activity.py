@@ -33,12 +33,5 @@ class CrewActivity(models.Model):
         ordering = ['start_at']
         get_latest_by = ['end_at']
 
-    @classmethod
-    def opened_of_crew(cls, crew: Crew) -> models.QuerySet[CrewActivity]:
-        """활동 시작 전이거나 종료된 활동을 제외한 활동 목록을 반환합니다."""
-        return cls.objects.filter(crew=crew, start_at__lte=timezone.now(), end_at__gte=timezone.now())
-
-    @classmethod
-    def closed_of_crew(cls, crew: Crew) -> models.QuerySet[CrewActivity]:
-        """종료된 활동 목록을 반환합니다."""
-        return cls.objects.filter(crew=crew, end_at__lt=timezone.now())
+    def __str__(self) -> str:
+        return f"[{self.pk}: {self.name} ({self.start_at.date()} ~ {self.end_at.date()})]"

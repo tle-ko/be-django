@@ -1,8 +1,10 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 
-from crews.validators import EmojiValidator
-from users.models import User, UserBojLevelChoices
+from crews import enums
+from users.models import User
+from users.models import UserBojLevelChoices
 
 
 class Crew(models.Model):
@@ -11,12 +13,11 @@ class Crew(models.Model):
         unique=True,
         help_text='크루 이름을 입력해주세요. (최대 20자)',
     )
-    icon = models.CharField(
-        max_length=2,
-        validators=[EmojiValidator(message='이모지 형식이 아닙니다.')],
+    icon = models.TextField(
+        choices=enums.EmojiChoices.choices,
         null=False,
         blank=False,
-        default='🚢',
+        default=enums.EmojiChoices.U1F6A2,  # :ship:
         help_text='크루 아이콘을 입력해주세요. (이모지)',
     )
     max_members = models.IntegerField(
