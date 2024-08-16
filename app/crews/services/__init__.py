@@ -6,6 +6,7 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from crews import dto
+from crews import enums
 from crews import models
 from problems.models import ProblemAnalysis
 from problems.models import ProblemDifficultyChoices
@@ -14,6 +15,7 @@ from users.models import UserBojLevelChoices
 
 
 def problem_statistics(crew: models.Crew) -> dto.ProblemStatistic:
+    assert isinstance(crew, models.Crew)
     statistics = dto.ProblemStatistic()
     queryset = models.CrewActivityProblem.objects.filter(**{
         models.CrewActivityProblem.field_name.CREW: crew,
@@ -75,14 +77,15 @@ def crew_tags(crew: models.Crew) -> List[dto.CrewTag]:
 
 
 def _get_language_tags(crew: models.Crew) -> Iterable[dto.CrewTag]:
-    queryset = models.CrewSubmittableLanguage.objects.filter(**{
+    submittable_languages = models.CrewSubmittableLanguage.objects.filter(**{
         models.CrewSubmittableLanguage.field_name.CREW: crew,
     })
-    for language in queryset.all():
+    for submittable_language in submittable_languages.all():
+        programming_language = models.ProgrammingLanguageChoices(submittable_language)
         yield dto.CrewTag(
-            key=language.key,
-            name=language.name,
-            type=dto.CrewTagType.LANGUAGE,
+            key=programming_language.key,
+            name=programming_language.name,
+            type=enums.CrewTagType.LANGUAGE,
         )
 
 
