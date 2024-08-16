@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from problems.constants import Unit
 from problems import models
 from problems import services
+from problems.constants import Unit
 
 
 class MemoryLimitField(serializers.SerializerMethodField):
