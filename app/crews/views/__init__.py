@@ -19,13 +19,21 @@ class CrewCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.CrewCreateSerializer
 
     def perform_create(self, serializer: serializers.CrewCreateSerializer):
-        languages = serializer.validated_data.pop('languages')
+        languages = [*serializer.validated_data.pop('languages')]
         with atomic():
             crew = serializer.save(**{
                 models.Crew.field_name.CREATED_BY: self.request.user,
             })
             services.crew.set_submittable_languages(crew, languages)
         return crew
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        serializer = serializers.MyCrewSerializer(instance=instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class RecruitingCrewListAPIView(generics.ListAPIView):

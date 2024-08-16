@@ -149,7 +149,7 @@ class crew:
     @staticmethod
     def set_submittable_languages(crew: models.Crew, languages: List[str]):
         assert isinstance(crew, models.Crew)
-        assert isinstance(languages, list)
+        assert isinstance(languages, Iterable)
         entities = []
         for lang in languages:
             if not isinstance(lang, str) or lang not in enums.ProgrammingLanguageChoices:

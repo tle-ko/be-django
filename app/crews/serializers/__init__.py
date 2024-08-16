@@ -27,6 +27,11 @@ class CrewCreateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['__all__']
 
+    def save(self, **kwargs):
+        if 'langauges' in self.validated_data:
+            self.validated_data.pop('languages')
+        return super().save(**kwargs)
+
 
 class RecruitingCrewSerializer(serializers.ModelSerializer):
     """크루 목록"""
