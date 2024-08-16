@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from crews import models
 from crews.serializers import fields
+from users.serializers import UserMinimalSerializer
 
 
 PK = 'id'
@@ -89,3 +90,23 @@ class MyCrewDashboardAcitivySerializer(serializers.ModelSerializer):
             'problems',
         ]
         read_only_fields = ['__all__']
+
+
+class CrewApplicationSerializer(serializers.ModelSerializer):
+    user = UserMinimalSerializer(read_only=True)
+
+    class Meta:
+        model = models.CrewApplicant
+        fields = [
+            PK,
+            models.CrewApplicant.field_name.CREW,
+            models.CrewApplicant.field_name.MESSAGE,
+            models.CrewApplicant.field_name.USER,
+            models.CrewApplicant.field_name.IS_ACCEPTED,
+            models.CrewApplicant.field_name.CREATED_AT,
+        ]
+        read_only_fields = [
+            models.CrewApplicant.field_name.CREW,
+            models.CrewApplicant.field_name.IS_ACCEPTED,
+            models.CrewApplicant.field_name.CREATED_AT,
+        ]

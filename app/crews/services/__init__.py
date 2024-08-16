@@ -1,8 +1,11 @@
+from textwrap import dedent
 from typing import Iterable
 from typing import List
 from typing import Optional
 
+from django.core.mail import send_mail
 from django.db.models import QuerySet
+from django.db.transaction import atomic
 from django.utils import timezone
 
 from crews import dto
@@ -146,7 +149,8 @@ class crew_acitivity:
             models.CrewActivity.field_name.CREW: crew,
         }
         if exclude_future:
-            kwargs[models.CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
+            kwargs[models.CrewActivity.field_name.START_AT +
+                   '__lte'] = timezone.now()
         return models.CrewActivity.objects.filter(**kwargs).order_by(models.CrewActivity.field_name.START_AT)
 
     @staticmethod
@@ -174,3 +178,78 @@ class crew_acitivity:
             models.CrewActivity.field_name.CREW: activity.crew,
             models.CrewActivity.field_name.START_AT+'__lte': activity.start_at,
         }).count()
+
+
+class crew_applicant:
+    @staticmethod
+    def notify_captain(applicant: models.CrewApplicant):
+        assert isinstance(applicant, models.CrewApplicant)
+        captain = models.CrewMember.objects.get(**{
+            models.CrewMember.field_name.CREW: applicant.crew,
+            models.CrewMember.field_name.IS_CAPTAIN: True,
+        })
+        send_mail(
+            subject='[Time Limit Exceeded] 새로운 크루 가입 신청',
+            message=dedent(f"""
+                [{applicant.crew.icon} {applicant.crew.name}]에 새로운 가입 신청이 왔어요!
+
+                지원자의 메시지:
+                ```
+                {applicant.message}
+                ```
+
+                수락하시려면 [여기]를 클릭해주세요.
+            """),
+            from_email=None,
+            recipient_list=[captain.user.email],
+            fail_silently=False,
+        )
+
+    @staticmethod
+    def notify_accepted(applicant: models.CrewApplicant):
+        assert isinstance(applicant, models.CrewApplicant)
+        assert applicant.is_accepted
+        send_mail(
+            subject=f"""[Time Limit Exceeded] 크루 가입 신청이 승인되었습니다""",
+            message=dedent(f"""
+                [{applicant.crew.icon} {applicant.crew.name}]에 가입하신 것을 축하해요!
+
+                [여기]를 눌러 크루 대시보드로 바로가기
+            """),
+            from_email=None,
+            recipient_list=[applicant.user.email],
+            fail_silently=False,
+        )
+
+    @staticmethod
+    def notify_rejected(applicant: models.CrewApplicant):
+        assert isinstance(applicant, models.CrewApplicant)
+        assert not applicant.is_accepted
+        send_mail(
+            subject=f"""[Time Limit Exceeded] 크루 가입 신청이 거절되었습니다""",
+            message=dedent(f"""
+                [{applicant.crew.icon} {applicant.crew.name}]에 아쉽게도 가입하지 못했어요!
+            """),
+            from_email=None,
+            recipient_list=[applicant.user.email],
+            fail_silently=False,
+        )
+
+    @staticmethod
+    def accept(applicant: models.CrewApplicant, reviewed_by: User):
+        with atomic():
+            applicant.is_accepted = True
+            applicant.reviewed_at = timezone.now()
+            applicant.reviewed_by = reviewed_by
+            applicant.save()
+            models.CrewMember.objects.create(**{
+                models.CrewApplicant.field_name.CREW: applicant.crew,
+                models.CrewApplicant.field_name.USER: applicant.user,
+            })
+
+    @staticmethod
+    def reject(applicant: models.CrewApplicant, reviewed_by: User):
+        applicant.is_accepted = False
+        applicant.reviewed_at = timezone.now()
+        applicant.reviewed_by = reviewed_by
+        applicant.save()

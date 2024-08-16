@@ -1,5 +1,4 @@
-from django.db import models, transaction
-from django.utils import timezone
+from django.db import models
 
 from users.models import User
 from crews.models.crew import Crew
@@ -52,12 +51,6 @@ class CrewApplicant(models.Model):
         REVIEWED_BY = 'reviewed_by'
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['crew', 'user'],
-                name='unique_applicant_per_crew',
-            ),
-        ]
         ordering = ['reviewed_by', 'created_at']
 
     def __repr__(self) -> str:
@@ -67,28 +60,19 @@ class CrewApplicant(models.Model):
         return f'{self.pk} : {self.__repr__()}'
 
     def save(self, *args, **kwargs) -> None:
-        # 같은 크루에 여러 번 가입하는 것을 방지
-        if self.crew.members.filter(user=self.user).exists():
-            raise ValueError('이미 가입한 크루에 가입 신청을 할 수 없습니다.')
-        return super().save(*args, **kwargs)
-
-    def accept(self, commit=True) -> CrewMember:
-        """크루 가입 신청을 수락합니다."""
-        member = CrewMember(
-            crew=self.crew,
-            user=self.user,
-        )
-        self.is_accepted = True
-        self.reviewed_at = timezone.now()
-        if commit:
-            with transaction.atomic():
-                member.save()
-                self.save()
-        return member
-
-    def reject(self, commit=True):
-        """크루 가입 신청을 거절합니다."""
-        self.is_accepted = False
-        self.reviewed_at = timezone.now()
-        if commit:
-            self.save()
+        try:
+            # 같은 크루에 여러 번 가입하는 것을 방지
+            assert not CrewMember.objects.filter(**{
+                CrewMember.field_name.CREW: self.crew,
+                CrewMember.field_name.USER: self.user,
+            }).exclude(pk=self.pk).exists(), '이미 가입한 크루에 가입 신청을 할 수 없습니다.'
+            # 아직 검토되지 않은 신청이 있으면 가입 불가
+            assert not CrewApplicant.objects.filter(**{
+                CrewApplicant.field_name.CREW: self.crew,
+                CrewApplicant.field_name.USER: self.user,
+                CrewApplicant.field_name.REVIEWED_BY: None,
+            }).exclude(pk=self.pk).exists(), '크루에 아직 검토되지 않은 지원 이력이 있습니다.'
+        except AssertionError as e:
+            raise ValueError from e
+        else:
+            return super().save(*args, **kwargs)

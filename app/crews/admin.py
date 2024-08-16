@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.utils import timezone
+from django.db.models import QuerySet
+from django.http.request import HttpRequest
 
 from crews import models
 from crews import services
@@ -8,7 +9,6 @@ from users.models import User
 
 admin.site.register([
     models.CrewActivityProblem,
-    models.CrewApplicant,
 ])
 
 
@@ -122,3 +122,29 @@ class CrewSubmittableLanguageModelAdmin(admin.ModelAdmin):
         models.CrewSubmittableLanguage.field_name.CREW,
         models.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]
+
+
+@admin.register(models.CrewApplicant)
+class CrewApplicantModelAdmin(admin.ModelAdmin):
+    list_display = [
+        models.CrewApplicant.field_name.CREW,
+        models.CrewApplicant.field_name.USER,
+        models.CrewApplicant.field_name.IS_ACCEPTED,
+        models.CrewApplicant.field_name.REVIEWED_BY,
+    ]
+    actions = [
+        'accept',
+        'reject',
+    ]
+
+    @admin.action(description="Accept user")
+    def accept(self, request: HttpRequest, queryset: QuerySet[models.CrewApplicant]):
+        for applicant in queryset:
+            services.crew_applicant.accept(applicant, request.user)
+            services.crew_applicant.notify_accepted(applicant)
+
+    @admin.action(description="Reject user")
+    def reject(self, request: HttpRequest, queryset: QuerySet[models.CrewApplicant]):
+        for applicant in queryset:
+            services.crew_applicant.reject(applicant, request.user)
+            services.crew_applicant.notify_rejected(applicant)
