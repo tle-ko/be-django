@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from users.models import User
 from crews.models.crew import Crew
@@ -35,3 +37,14 @@ class CrewMember(models.Model):
             ),
         ]
         ordering = ['created_at']
+
+
+@receiver(post_save, sender=Crew)
+def auto_create_captain(sender, instance: Crew, created: bool, **kwargs):
+    """크루 생성 시 선장을 자동으로 생성합니다."""
+    if created:
+        CrewMember.objects.create(**{
+            CrewMember.field_name.CREW: instance,
+            CrewMember.field_name.USER: instance.created_by,
+            CrewMember.field_name.IS_CAPTAIN: True,
+        })
