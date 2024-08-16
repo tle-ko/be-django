@@ -1,11 +1,11 @@
 from django.db import models
 
-from crews.enums import ProgrammingLanguageChoices
-from crews.models import CrewActivityProblem
+from crews import enums
+from crews.models.crew_activity_problem import CrewActivityProblem
 from users.models import User
 
 
-class Submission(models.Model):
+class CrewActivitySubmission(models.Model):
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     problem = models.ForeignKey(
         CrewActivityProblem,
@@ -21,7 +21,7 @@ class Submission(models.Model):
         help_text='유저의 코드를 입력해주세요.',
     )
     language = models.TextField(
-        choices=ProgrammingLanguageChoices.choices,
+        choices=enums.ProgrammingLanguageChoices.choices,
         help_text='유저의 코드 언어를 입력해주세요.',
     )
     is_correct = models.BooleanField(

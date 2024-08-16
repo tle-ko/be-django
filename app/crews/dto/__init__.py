@@ -1,11 +1,11 @@
 from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field
-from typing import Counter
+from datetime import datetime
 from typing import List
 
-
-from crews.enums import CrewTagType
+from crews import enums
+from problems.models import ProblemDifficultyChoices
 
 
 @dataclass
@@ -29,9 +29,28 @@ class ProblemStatistic:
 class CrewTag:
     key: str
     name: str
-    type: CrewTagType
+    type: enums.CrewTagType
 
 
 @dataclass
 class CrewProblem:
-    id: int
+    problem_number: int
+    problem_id: int
+    problem_title: str
+    problem_difficulty: ProblemDifficultyChoices
+    is_submitted: bool
+    last_submitted_date: datetime
+
+
+@dataclass
+class SubmissionGraphNode:
+    problem_number: int
+    submitted_at: datetime
+    is_accepted: bool  # 정답인지 여부
+
+
+@dataclass
+class SubmissionGraph:
+    user_username: str
+    user_profile_image: str
+    submissions: List[SubmissionGraphNode]

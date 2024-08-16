@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from crews import dto
 from crews import models
 from crews import services
 from crews import utils
@@ -17,7 +18,7 @@ class LatestActivityField(serializers.SerializerMethodField):
                 "date_start_at": None,
                 "date_end_at": None,
             }
-        queryset = services.crew_activities_queryset(crew)
+        queryset = services.crew_acitivity.of_crew(crew)
         try:
             activity = queryset.latest()
         except models.CrewActivity.DoesNotExist:
@@ -59,7 +60,7 @@ class CrewMemberCountField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
         return {
-            "count": services.crew_member_count(crew),
+            "count": services.crew.member_count(crew),
             "max_count": crew.max_members,
         }
 
@@ -75,7 +76,7 @@ class CrewTagsField(serializers.SerializerMethodField):
                 'name': tag.name,
                 'type': tag.type.value,
             }
-            for tag in services.crew_tags(crew)
+            for tag in services.crew.tags(crew)
         ]
 
 
@@ -84,7 +85,7 @@ class CrewIsJoinableField(serializers.SerializerMethodField):
         user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
         assert isinstance(user, User)
-        return services.crew_is_joinable(crew, user)
+        return services.crew.is_joinable(crew, user)
 
 
 class CrewIsMemberField(serializers.SerializerMethodField):
@@ -92,13 +93,13 @@ class CrewIsMemberField(serializers.SerializerMethodField):
         user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
         assert isinstance(user, User)
-        return services.crew_is_member(crew, user)
+        return services.crew.is_member(crew, user)
 
 
 class CrewActivitiesField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        queryset = services.crew_activities_queryset(crew)
+        queryset = services.crew_acitivity.of_crew(crew)
         return [
             {
                 'id': activity.pk,
@@ -122,27 +123,30 @@ class CrewAcitivityProblemsField(serializers.SerializerMethodField):
         ]
 
 
-class ProblemStatisticsField(serializers.SerializerMethodField):
-    def to_representation(self, crew: models.Crew):
-        statistics = services.problem_statistics(crew)
-        return {
-            'difficulty': [
-                {
-                    'difficulty': difficulty,
-                    'problem_count': count,
-                    'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
-                }
-                for difficulty, count in statistics.difficulty.items()
-            ],
-            'tags': [
-                {
-                    'label': {
-                        'ko': tag.name_ko,
-                        'en': tag.name_en,
-                    },
-                    'problem_count': count,
-                    'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
-                }
-                for tag, count in statistics.tags.items()
-            ],
-        }
+class ProblemStatisticsDifficultyField(serializers.SerializerMethodField):
+    def to_representation(self, statistics: dto.ProblemStatistic):
+        assert isinstance(statistics, dto.ProblemStatistic)
+        return [
+            {
+                'difficulty': difficulty,
+                'problem_count': count,
+                'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
+            }
+            for difficulty, count in statistics.difficulty.items()
+        ]
+
+
+class ProblemStatisticsTagsField(serializers.SerializerMethodField):
+    def to_representation(self, statistics: dto.ProblemStatistic):
+        assert isinstance(statistics, dto.ProblemStatistic)
+        return [
+            {
+                'label': {
+                    'ko': tag.name_ko,
+                    'en': tag.name_en,
+                },
+                'problem_count': count,
+                'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
+            }
+            for tag, count in statistics.tags.items()
+        ]

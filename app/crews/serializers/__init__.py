@@ -46,7 +46,7 @@ class MyCrewSerializer(serializers.ModelSerializer):
         read_only_fields = ['__all__']
 
 
-class MyCrewDashboardSerializer(serializers.ModelSerializer):
+class CrewDashboardSerializer(serializers.ModelSerializer):
     """크루 대시보드
 
     -   공지사항
@@ -58,7 +58,6 @@ class MyCrewDashboardSerializer(serializers.ModelSerializer):
 
     tags = fields.CrewTagsField()
     members = fields.CrewMembersField()
-    statistics = fields.ProblemStatisticsField()
     activities = fields.CrewActivitiesField()
 
     class Meta:
@@ -70,10 +69,14 @@ class MyCrewDashboardSerializer(serializers.ModelSerializer):
             models.Crew.field_name.NOTICE,
             'tags',
             'members',
-            'statistics',
             'activities',
         ]
         read_only_fields = ['__all__']
+
+
+class CrewStatisticsSerializer(serializers.Serializer):
+    difficulty = fields.ProblemStatisticsDifficultyField()
+    tags = fields.ProblemStatisticsTagsField()
 
 
 class MyCrewDashboardAcitivySerializer(serializers.ModelSerializer):

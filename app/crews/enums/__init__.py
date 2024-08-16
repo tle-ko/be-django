@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 from enum import Enum
+
+from django.db import models
 
 from crews.enums.emoji import Emoji
 
@@ -17,27 +18,18 @@ class CrewTagType(Enum):
     CUSTOM = 'custom'
 
 
-class ProgrammingLanguage(Enum):
-    @dataclass
-    class Item:
-        key: str
-        name: str
-        extension: str
-
+class ProgrammingLanguageChoices(models.TextChoices):
     # TLE에서 허용중인 언어
-    NODE_JS = Item('nodejs', 'Node.js', '.js')
-    KOTLIN = Item('kotlin', 'Kotlin', '.kt')
-    SWIFT = Item('swift', 'Swift', '.swift')
-    CPP = Item('cpp', 'C++', '.cpp')
-    JAVA = Item('java', 'Java', '.java')
-    PYTHON = Item('python', 'Python', '.py')
-    C = Item('c', 'C', '.c')
+    NODE_JS = 'nodejs', 'Node.js'
+    KOTLIN = 'kotlin', 'Kotlin'
+    SWIFT = 'swift', 'Swift'
+    CPP = 'cpp', 'C++'
+    JAVA = 'java', 'Java'
+    PYTHON = 'python', 'Python'
+    C = 'c', 'C'
+    JAVASCRIPT = 'javascript', 'JavaScript'
 
     # 아직 지원하지 않는 언어
-    JAVASCRIPT = Item('javascript', 'JavaScript', '.js')
-    CSHARP = Item('csharp', 'C#', '.cs')
-    RUBY = Item('ruby', 'Ruby', '.rb')
-    PHP = Item('php', 'PHP', '.php')
-
-    def to_choice(self):
-        return self.value.key, self.value.name
+    CSHARP = 'csharp', 'C#'
+    RUBY = 'ruby', 'Ruby'
+    PHP = 'php', 'PHP'

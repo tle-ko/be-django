@@ -1,7 +1,7 @@
 from django.db import models
 
+from crews import enums
 from crews.models.crew import Crew
-from crews.models.choices import ProgrammingLanguageChoices
 
 
 class CrewSubmittableLanguage(models.Model):
@@ -10,7 +10,7 @@ class CrewSubmittableLanguage(models.Model):
         on_delete=models.CASCADE,
     )
     language = models.TextField(
-        choices=ProgrammingLanguageChoices.choices,
+        choices=enums.ProgrammingLanguageChoices.choices,
         help_text='언어 키를 입력해주세요. (최대 20자)',
     )
 

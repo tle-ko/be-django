@@ -40,123 +40,137 @@ def problem_statistics(crew: models.Crew) -> dto.ProblemStatistic:
     return statistics
 
 
-def crew_of_user_queryset(include_user: Optional[User] = None,
-                          exclude_user: Optional[User] = None) -> QuerySet[models.Crew]:
-    """특정 사용자가 속하거나 속하지 않은 크루 목록을 조회하는 쿼리를 반환한다."""
-    queryset = models.Crew.objects
-    if include_user is not None:
-        queryset = queryset.filter(pk__in=models.CrewMember.objects.filter(**{
-            models.CrewMember.field_name.USER: include_user,
-        }).values_list(models.CrewMember.field_name.CREW))
-    if exclude_user is not None:
-        queryset = queryset.exclude(pk__in=models.CrewMember.objects.filter(**{
-            models.CrewMember.field_name.USER: exclude_user,
-        }).values_list(models.CrewMember.field_name.CREW))
-    return queryset
+class crew:
+    @staticmethod
+    def of_user_queryset(include_user: Optional[User] = None,
+                         exclude_user: Optional[User] = None) -> QuerySet[models.Crew]:
+        """특정 사용자가 속하거나 속하지 않은 크루 목록을 조회하는 쿼리를 반환한다."""
+        queryset = models.Crew.objects
+        if include_user is not None:
+            queryset = queryset.filter(pk__in=models.CrewMember.objects.filter(**{
+                models.CrewMember.field_name.USER: include_user,
+            }).values_list(models.CrewMember.field_name.CREW))
+        if exclude_user is not None:
+            queryset = queryset.exclude(pk__in=models.CrewMember.objects.filter(**{
+                models.CrewMember.field_name.USER: exclude_user,
+            }).values_list(models.CrewMember.field_name.CREW))
+        return queryset
 
+    @classmethod
+    def tags(cls, crew: models.Crew) -> List[dto.CrewTag]:
+        # 태그의 나열 순서는 리스트에 선언한 순서를 따름.
+        return [
+            *cls._get_language_tags(crew),
+            *cls._get_level_tags(crew),
+            *cls._get_custom_tags(crew),
+        ]
 
-def crew_activities_queryset(crew: models.Crew, exclude_future=True) -> QuerySet[models.CrewActivity]:
-    """
-    exclude_future: 아직 공개되지 않은 활동도 포함할 지 여부.
-    """
-    kwargs = {
-        models.CrewActivity.field_name.CREW: crew,
-    }
-    if exclude_future:
-        kwargs[models.CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
-    return models.CrewActivity.objects.filter(**kwargs).order_by(models.CrewActivity.field_name.START_AT)
+    @classmethod
+    def _get_language_tags(cls, crew: models.Crew) -> Iterable[dto.CrewTag]:
+        submittable_languages = models.CrewSubmittableLanguage.objects.filter(**{
+            models.CrewSubmittableLanguage.field_name.CREW: crew,
+        })
+        for submittable_language in submittable_languages.all():
+            programming_language = enums.ProgrammingLanguageChoices(
+                submittable_language.language)
+            yield dto.CrewTag(
+                key=programming_language.value,
+                name=programming_language.label,
+                type=enums.CrewTagType.LANGUAGE,
+            )
 
-
-def crew_tags(crew: models.Crew) -> List[dto.CrewTag]:
-    # 태그의 나열 순서는 리스트에 선언한 순서를 따름.
-    return [
-        *_get_language_tags(crew),
-        *_get_level_tags(crew),
-        *_get_custom_tags(crew),
-    ]
-
-
-def _get_language_tags(crew: models.Crew) -> Iterable[dto.CrewTag]:
-    submittable_languages = models.CrewSubmittableLanguage.objects.filter(**{
-        models.CrewSubmittableLanguage.field_name.CREW: crew,
-    })
-    for submittable_language in submittable_languages.all():
-        programming_language = models.ProgrammingLanguageChoices(submittable_language)
-        yield dto.CrewTag(
-            key=programming_language.key,
-            name=programming_language.name,
-            type=enums.CrewTagType.LANGUAGE,
-        )
-
-
-def _get_level_tags(crew: models.Crew) -> Iterable[dto.CrewTag]:
-    yield dto.CrewTag(
-        key=None,
-        name=_get_bounded_level_name(UserBojLevelChoices(crew.min_boj_level)),
-        type=dto.CrewTagType.LEVEL,
-    )
-
-
-def _get_custom_tags(crew: models.Crew) -> Iterable[dto.CrewTag]:
-    for tag in crew.custom_tags:
+    @classmethod
+    def _get_level_tags(cls, crew: models.Crew) -> Iterable[dto.CrewTag]:
+        if crew.min_boj_level is not None:
+            min_boj_level = UserBojLevelChoices(crew.min_boj_level)
+        else:
+            min_boj_level = UserBojLevelChoices.U
+        # 보여질 문구를 결정
+        if min_boj_level == UserBojLevelChoices.U:
+            name = '티어 무관'
+        elif min_boj_level.get_tier() == 5:
+            name = f"{min_boj_level.get_division_name(lang='ko')} 이상"
+        else:
+            name = f"{min_boj_level.get_name(lang='ko', arabic=False)} 이상"
         yield dto.CrewTag(
             key=None,
-            name=tag,
-            type=dto.CrewTagType.CUSTOM,
+            name=name,
+            type=enums.CrewTagType.LEVEL,
         )
 
+    @classmethod
+    def _get_custom_tags(cls, crew: models.Crew) -> Iterable[dto.CrewTag]:
+        for tag in crew.custom_tags:
+            yield dto.CrewTag(
+                key=None,
+                name=tag,
+                type=enums.CrewTagType.CUSTOM,
+            )
 
-def _get_bounded_level_name(level: Optional[UserBojLevelChoices],
-                            bound_tier: int = 5,
-                            bound_msg: str = "이상",
-                            default_msg: str = "티어 무관",
-                            lang='ko',
-                            arabic=False) -> str:
-    """level에 대한 백준 난이도 태그 이름을 반환한다.
+    @staticmethod
+    def member_count(crew: models.Crew) -> int:
+        return models.CrewMember.objects.filter(**{
+            models.CrewMember.field_name.CREW: crew,
+        }).count()
 
-    bound_tier는 해당 랭크(브론즈,실버,...)를 모두 아우르는 마지막
-    티어(1,2,3,4,5)를 의미한다.
+    @classmethod
+    def is_joinable(cls, crew: models.Crew, user: User) -> bool:
+        if not crew.is_recruiting:
+            return False
+        if cls.member_count(crew) >= crew.max_members:
+            return False
+        if cls.is_member(crew, user):
+            return False
+        if crew.min_boj_level is not None:
+            return bool(
+                (user.boj_level is not None) and
+                (user.boj_level >= crew.min_boj_level)
+            )
+        return True
 
-    bound_msg는 "이상", 혹은 "이하"를 나타내는 제한 메시지이다.
-
-    만약 level의 티어가 bound_tier와
-    같다면 랭크만 출력하고,
-    같지않다면 랭크와 티어 모두 출력한다.
-
-    메시지의 마지막에는 bound_msg를 출력한다.
-    """
-    if level is None:
-        return default_msg
-    assert isinstance(level, UserBojLevelChoices)
-    if level.get_tier() == bound_tier:
-        return f'{level.get_division_name(lang=lang)} {bound_msg}'
-    else:
-        return f'{level.get_name(lang=lang, arabic=arabic)} {bound_msg}'
-
-
-def crew_member_count(crew: models.Crew) -> int:
-    return models.CrewMember.objects.filter(**{
-        models.CrewMember.field_name.CREW: crew,
-    }).count()
-
-
-def crew_is_joinable(crew: models.Crew, user: User) -> bool:
-    if not crew.is_recruiting:
-        return False
-    if crew_member_count(crew) >= crew.max_members:
-        return False
-    if crew_is_member(crew, user):
-        return False
-    if crew.min_boj_level is not None:
-        return bool(
-            (user.boj_level is not None) and
-            (user.boj_level >= crew.min_boj_level)
-        )
-    return True
+    @staticmethod
+    def is_member(crew: models.Crew, user: User) -> bool:
+        return models.CrewMember.objects.filter(**{
+            models.CrewMember.field_name.CREW: crew,
+            models.CrewMember.field_name.USER: user,
+        }).exists()
 
 
-def crew_is_member(crew: models.Crew, user: User) -> bool:
-    return models.CrewMember.objects.filter(**{
-        models.CrewMember.field_name.CREW: crew,
-        models.CrewMember.field_name.USER: user,
-    }).exists()
+class crew_acitivity:
+    @staticmethod
+    def of_crew(crew: models.Crew, exclude_future=True) -> QuerySet[models.CrewActivity]:
+        """
+        exclude_future: 아직 공개되지 않은 활동도 포함할 지 여부.
+        """
+        kwargs = {
+            models.CrewActivity.field_name.CREW: crew,
+        }
+        if exclude_future:
+            kwargs[models.CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
+        return models.CrewActivity.objects.filter(**kwargs).order_by(models.CrewActivity.field_name.START_AT)
+
+    @staticmethod
+    def is_opened(activity: models.CrewActivity) -> bool:
+        """활동이 진행 중인지 여부를 반환합니다."""
+        assert isinstance(activity, models.CrewActivity)
+        return activity.start_at <= timezone.now() <= activity.end_at
+
+    @staticmethod
+    def is_closed(activity: models.CrewActivity) -> bool:
+        """활동이 종료되었는지 여부를 반환합니다."""
+        assert isinstance(activity, models.CrewActivity)
+        return activity.end_at < timezone.now()
+
+    @staticmethod
+    def number(activity: models.CrewActivity) -> int:
+        assert isinstance(activity, models.CrewActivity)
+        """활동의 회차 번호를 반환합니다.
+
+        이 값은 1부터 시작합니다.
+        자신의 활동 시작일자보다 이전에 시작된 활동의 개수를 센 값에 1을
+        더한 값을 반환하므로, 고정된 값이 아닙니다.
+        """
+        return models.CrewActivity.objects.filter(**{
+            models.CrewActivity.field_name.CREW: activity.crew,
+            models.CrewActivity.field_name.START_AT+'__lte': activity.start_at,
+        }).count()

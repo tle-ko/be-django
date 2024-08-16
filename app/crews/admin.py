@@ -1,23 +1,18 @@
 from django.contrib import admin
+from django.utils import timezone
 
-from crews.models import (
-    Crew,
-    CrewActivity,
-    CrewActivityProblem,
-    CrewApplicant,
-    CrewMember,
-    CrewSubmittableLanguage,
-)
+from crews import models
+from crews import services
 from users.models import User
 
 
 admin.site.register([
-    CrewActivityProblem,
-    CrewApplicant,
+    models.CrewActivityProblem,
+    models.CrewApplicant,
 ])
 
 
-@admin.register(Crew)
+@admin.register(models.Crew)
 class CrewModelAdmin(admin.ModelAdmin):
     list_display = [
         'get_display_name',
@@ -25,93 +20,105 @@ class CrewModelAdmin(admin.ModelAdmin):
         'get_members',
         'get_applicants',
         'get_activities',
-        Crew.field_name.IS_ACTIVE,
-        Crew.field_name.IS_RECRUITING,
-        Crew.field_name.CREATED_AT,
+        models.Crew.field_name.IS_ACTIVE,
+        models.Crew.field_name.IS_RECRUITING,
+        models.Crew.field_name.CREATED_AT,
     ]
     search_fields = [
-        Crew.field_name.NAME,
-        Crew.field_name.CREATED_BY+'__'+User.field_name.USERNAME,
-        Crew.field_name.ICON,
+        models.Crew.field_name.NAME,
+        models.Crew.field_name.CREATED_BY+'__'+User.field_name.USERNAME,
+        models.Crew.field_name.ICON,
     ]
 
     @admin.display(description='Display Name')
-    def get_display_name(self, crew: Crew):
+    def get_display_name(self, crew: models.Crew):
         return f'{crew.icon} {crew.name}'
 
     @admin.display(description='Captain')
-    def get_captain(self, obj: Crew):
-        return CrewMember.objects.get(**{
-            CrewMember.field_name.CREW: obj,
-            CrewMember.field_name.IS_CAPTAIN: True,
+    def get_captain(self, obj: models.Crew):
+        return models.CrewMember.objects.get(**{
+            models.CrewMember.field_name.CREW: obj,
+            models.CrewMember.field_name.IS_CAPTAIN: True,
         })
 
     @admin.display(description='Members')
-    def get_members(self, crew: Crew):
-        members_count = CrewMember.objects.filter(**{
-            CrewMember.field_name.CREW: crew,
+    def get_members(self, crew: models.Crew):
+        members_count = models.CrewMember.objects.filter(**{
+            models.CrewMember.field_name.CREW: crew,
         }).count()
         return f'{members_count} / {crew.max_members}'
 
     @admin.display(description='Applicants')
-    def get_applicants(self, obj: Crew):
-        return CrewApplicant.objects.filter(**{
-            CrewApplicant.field_name.CREW: obj,
+    def get_applicants(self, obj: models.Crew):
+        return models.CrewApplicant.objects.filter(**{
+            models.CrewApplicant.field_name.CREW: obj,
         }).count()
 
     @admin.display(description='Activities')
-    def get_activities(self, obj: Crew):
-        return CrewActivity.objects.filter(**{
-            CrewActivity.field_name.CREW: obj,
+    def get_activities(self, obj: models.Crew):
+        return models.CrewActivity.objects.filter(**{
+            models.CrewActivity.field_name.CREW: obj,
         }).count()
 
 
-@admin.register(CrewMember)
+@admin.register(models.CrewMember)
 class CrewMemberModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewMember.field_name.USER,
-        CrewMember.field_name.CREW,
-        CrewMember.field_name.IS_CAPTAIN,
-        CrewMember.field_name.CREATED_AT,
+        models.CrewMember.field_name.USER,
+        models.CrewMember.field_name.CREW,
+        models.CrewMember.field_name.IS_CAPTAIN,
+        models.CrewMember.field_name.CREATED_AT,
     ]
     search_fields = [
-        CrewMember.field_name.CREW+'__'+Crew.field_name.NAME,
-        CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
+        models.CrewMember.field_name.CREW+'__'+models.Crew.field_name.NAME,
+        models.CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
     ]
     ordering = [
-        CrewMember.field_name.CREW,
-        CrewMember.field_name.IS_CAPTAIN,
+        models.CrewMember.field_name.CREW,
+        models.CrewMember.field_name.IS_CAPTAIN,
     ]
 
 
-@admin.register(CrewActivity)
+@admin.register(models.CrewActivity)
 class CrewActivityModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewActivity.field_name.CREW,
-        CrewActivity.field_name.NAME,
-        CrewActivity.field_name.START_AT,
-        CrewActivity.field_name.END_AT,
+        models.CrewActivity.field_name.CREW,
+        models.CrewActivity.field_name.NAME,
+        models.CrewActivity.field_name.START_AT,
+        models.CrewActivity.field_name.END_AT,
         'nth',
         'is_opened',
         'is_closed',
     ]
     search_fields = [
-        CrewActivity.field_name.CREW+'__'+Crew.field_name.NAME,
-        CrewActivity.field_name.NAME,
+        models.CrewActivity.field_name.CREW+'__'+models.Crew.field_name.NAME,
+        models.CrewActivity.field_name.NAME,
     ]
 
+    @admin.display(boolean=True, description='Is Opened')
+    def is_opened(self, obj: models.CrewActivity) -> bool:
+        return services.crew_acitivity.is_opened(obj)
 
-@admin.register(CrewSubmittableLanguage)
+    @admin.display(boolean=True, description='Is Closed')
+    def is_closed(self, obj: models.CrewActivity) -> bool:
+        return services.crew_acitivity.is_closed(obj)
+
+    @admin.display(description='N-th')
+    def nth(self, obj: models.CrewActivity) -> int:
+        return services.crew_acitivity.number(obj)
+
+
+@admin.register(models.CrewSubmittableLanguage)
 class CrewSubmittableLanguageModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewSubmittableLanguage.field_name.CREW,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        models.CrewSubmittableLanguage.field_name.CREW,
+        models.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]
     search_fields = [
-        CrewActivity.field_name.CREW+'__'+Crew.field_name.NAME,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        models.CrewActivity.field_name.CREW+'__'+models.Crew.field_name.NAME,
+        models.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]
     ordering = [
-        CrewSubmittableLanguage.field_name.CREW,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        models.CrewSubmittableLanguage.field_name.CREW,
+        models.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]

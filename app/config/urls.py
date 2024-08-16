@@ -37,6 +37,8 @@ urlpatterns = [
         path("crews/recruiting", crews.views.RecruitingCrewListAPIView.as_view()),
         path("crews/my", crews.views.MyCrewAPIView.as_view()),
         path("crews/<int:id>/dashboard", crews.views.CrewDashboardAPIView.as_view()),
+        path("crews/<int:id>/statistics", crews.views.CrewStatisticsAPIView.as_view()),
+        path("crews/<int:id>/activity", crews.views.CrewDashboardAPIView.as_view()),
         path("problems/", problems.views.ProblemCreateAPIView.as_view()),
         path("problems/search", problems.views.ProblemSearchListAPIView.as_view()),
         path("problems/<int:id>/detail", problems.views.ProblemDetailRetrieveUpdateDestroyAPIView.as_view()),
