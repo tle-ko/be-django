@@ -11,5 +11,6 @@ class ProgrammingLanguageChoices(models.TextChoices):
     SWIFT = enums.ProgrammingLanguage.SWIFT.to_choice()
     CPP = enums.ProgrammingLanguage.CPP.to_choice()
     JAVA = enums.ProgrammingLanguage.JAVA.to_choice()
+    JAVASCRIPT = enums.ProgrammingLanguage.JAVASCRIPT.to_choice()
     PYTHON = enums.ProgrammingLanguage.PYTHON.to_choice()
     C = enums.ProgrammingLanguage.C.to_choice()
