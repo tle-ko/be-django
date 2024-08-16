@@ -1,12 +1,13 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from problems.constants import Unit
-from problems.models import Problem, ProblemDifficultyChoices, ProblemTag
-from problems.serializers.mixins import ReadOnlyFieldMixin, AnalysisMixin
+from problems import models
+from problems import services
 
 
-class MemoryLimitField(ReadOnlyFieldMixin):
-    def to_representation(self, problem: Problem):
+class MemoryLimitField(serializers.SerializerMethodField):
+    def to_representation(self, problem: models.Problem):
+        assert isinstance(problem, models.Problem)
         return {
             "value": problem.memory_limit_megabyte,
             "unit": {
@@ -17,8 +18,9 @@ class MemoryLimitField(ReadOnlyFieldMixin):
         }
 
 
-class TimeLimitField(ReadOnlyFieldMixin):
-    def to_representation(self, problem: Problem):
+class TimeLimitField(serializers.SerializerMethodField):
+    def to_representation(self, problem: models.Problem):
+        assert isinstance(problem, models.Problem)
         return {
             "value": problem.time_limit_second,
             "unit": {
@@ -29,60 +31,50 @@ class TimeLimitField(ReadOnlyFieldMixin):
         }
 
 
-class DifficultyField(ReadOnlyFieldMixin, AnalysisMixin):
-    def to_representation(self, problem: Problem):
-        if (analysis := self.get_analysis(problem)) is None:
-            difficulty = ProblemDifficultyChoices.UNDER_ANALYSIS
-        else:
-            difficulty = ProblemDifficultyChoices(analysis.difficulty)
+class DifficultyField(serializers.SerializerMethodField):
+    def to_representation(self, problem: models.Problem):
+        assert isinstance(problem, models.Problem)
+        analysis = services.get_analysis(problem)
         return {
-            "name_ko": difficulty.get_name(lang='ko'),
-            "name_en": difficulty.get_name(lang='en'),
-            'value': difficulty.value,
+            "name_ko": analysis.difficulty.get_name(lang='ko'),
+            "name_en": analysis.difficulty.get_name(lang='en'),
+            'value': analysis.difficulty.value,
         }
 
 
-class AnalysisField(ReadOnlyFieldMixin, AnalysisMixin):
-    def to_representation(self, problem: Problem):
-        if (analysis := self.get_analysis(problem)) is None:
-            difficulty = ProblemDifficultyChoices.UNDER_ANALYSIS
+class AnalysisField(serializers.SerializerMethodField):
+    def to_representation(self, problem: models.Problem):
+        assert isinstance(problem, models.Problem)
+        analysis = services.get_analysis(problem)
+        is_analyzed = analysis.difficulty != models.ProblemDifficultyChoices.UNDER_ANALYSIS
+        tags_queryset = models.ProblemTag.objects.filter(**{
+            models.ProblemTag.field_name.KEY+'__in': analysis.tags,
+        })
+        if not is_analyzed:
             difficulty_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
-            time_complexity = ''
             time_complexity_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
-            hint = []
-            tags = []
-            is_analyzed = False
         else:
-            difficulty = ProblemDifficultyChoices(analysis.difficulty)
             difficulty_description = "기초적인 계산적 사고와 프로그래밍 문법만 있어도 해결 가능한 수준 [이 기능은 추가될 예정이 없습니다]"
-            time_complexity = analysis.time_complexity
             time_complexity_description = "선형시간에 풀이가 가능한 문제. N의 크기에 주의하세요. [이 기능은 추가될 예정이 없습니다]"
-            hint = analysis.hint
-            tags = ProblemTagSerializer(analysis.tags, many=True).data
-            is_analyzed = True
         return {
             'difficulty': {
-                "name_ko": difficulty.get_name(lang='ko'),
-                "name_en": difficulty.get_name(lang='en'),
-                'value': difficulty.value,
+                "name_ko": analysis.difficulty.get_name(lang='ko'),
+                "name_en": analysis.difficulty.get_name(lang='en'),
+                'value': analysis.difficulty.value,
                 'description': difficulty_description,
             },
             'time_complexity': {
-                'value': time_complexity,
+                'value': analysis.time_complexity,
                 'description': time_complexity_description,
             },
-            'hint': hint,
-            'tags': tags,
+            'hint': analysis.hint,
+            'tags': [
+                {
+                    'key': tag.key,
+                    'name_en': tag.name_en,
+                    'name_ko': tag.name_ko,
+                }
+                for tag in tags_queryset
+            ],
             'is_analyzed': is_analyzed,
         }
-
-
-class ProblemTagSerializer(ModelSerializer):
-    class Meta:
-        model = ProblemTag
-        fields = [
-            ProblemTag.field_name.KEY,
-            ProblemTag.field_name.NAME_KO,
-            ProblemTag.field_name.NAME_EN,
-        ]
-        read_only_fields = ['__all__']

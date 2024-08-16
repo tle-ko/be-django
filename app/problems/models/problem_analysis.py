@@ -1,16 +1,10 @@
-from typing import TYPE_CHECKING
-
 from django.db import models
 
 from problems.models.choices import ProblemDifficultyChoices
 from problems.models.problem import Problem
-from problems.models.problem_tag import ProblemTag
 
 
 class ProblemAnalysis(models.Model):
-    if TYPE_CHECKING:
-        tags: models.ManyToManyField[ProblemTag]
-
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
@@ -19,10 +13,6 @@ class ProblemAnalysis(models.Model):
     difficulty = models.IntegerField(
         help_text='문제 난이도를 입력해주세요.',
         choices=ProblemDifficultyChoices.choices,
-    )
-    tags = models.ManyToManyField(
-        ProblemTag,
-        help_text='문제의 DSA 태그를 입력해주세요.',
     )
     time_complexity = models.CharField(
         max_length=100,
@@ -53,7 +43,9 @@ class ProblemAnalysis(models.Model):
         CREATED_AT = 'created_at'
 
     class Meta:
-        verbose_name_plural = 'Problem Analyses'
+        verbose_name_plural = 'Problem analyses'
+        ordering = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return f'[Analyse of {self.problem}]'

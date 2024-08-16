@@ -1,21 +1,16 @@
-from problems.models.dto import ProblemDTO, ProblemAnalysisDTO
-
+from problems.models.choices import ProblemDifficultyChoices
 from problems.models.problem import Problem
 from problems.models.problem_analysis import ProblemAnalysis
-from problems.models.problem_analysis_queue import ProblemAnalysisQueue
+from problems.models.problem_analysis_tag import ProblemAnalysisTag
 from problems.models.problem_tag import ProblemTag
-
-from problems.models.choices import ProblemDifficultyChoices
+from problems.models.problem_tag_relation import ProblemTagRelation
 
 
 __all__ = (
-    'ProblemDTO',
-    'ProblemAnalysisDTO',
-
     'Problem',
     'ProblemAnalysis',
-    'ProblemAnalysisQueue',
-    'ProblemTag',
-
+    'ProblemAnalysisTag',
     'ProblemDifficultyChoices',
+    'ProblemTag',
+    'ProblemTagRelation',
 )

@@ -1,7 +1,4 @@
-from problems.models import (
-    ProblemDTO,
-    ProblemAnalysisDTO,
-)
+from problems import dto
 
 
 class ProblemAnalyser:
@@ -10,5 +7,5 @@ class ProblemAnalyser:
     문제 데이터를 받아와 문제의 분석 결과를 반환하는 analyze() 메소드를 구현해야 합니다.
     """
 
-    def analyze(self, problem: ProblemDTO) -> ProblemAnalysisDTO:
+    def analyze(self, problem: dto.ProblemDTO) -> dto.ProblemAnalysisDTO:
         raise NotImplementedError

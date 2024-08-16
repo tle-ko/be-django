@@ -2,13 +2,6 @@ from django.db import models
 
 
 class ProblemTag(models.Model):
-    parent = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        help_text='부모 알고리즘 태그를 입력해주세요.',
-        null=True,
-        blank=True,
-    )
     key = models.CharField(
         max_length=50,
         unique=True,
@@ -26,7 +19,6 @@ class ProblemTag(models.Model):
     )
 
     class field_name:
-        PARENT = 'parent'
         KEY = 'key'
         NAME_KO = 'name_ko'
         NAME_EN = 'name_en'
