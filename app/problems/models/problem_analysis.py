@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from problems.models.choices import ProblemDifficultyChoices
@@ -6,6 +8,9 @@ from problems.models.problem_tag import ProblemTag
 
 
 class ProblemAnalysis(models.Model):
+    if TYPE_CHECKING:
+        tags: models.ManyToManyField[ProblemTag]
+
     problem = models.OneToOneField(
         Problem,
         on_delete=models.CASCADE,
