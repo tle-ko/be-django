@@ -170,3 +170,5 @@ cython_debug/
 !**/migrations/__init__.py
 .static/
 .media/
+sync_db
+runserver
