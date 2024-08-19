@@ -30,7 +30,6 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'tle-kr.com',
     'timelimitexceeded.kr',
-    'localhost',
 ]
 
 # CORS
@@ -196,6 +195,11 @@ LOGGING = {
         },
     },
     "formatters": {
+        "standard": {
+            "()": "config.utils.ColorlessServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        },
         "django.server": {
             "()": "config.utils.ColorlessServerFormatter",
             "format": "[{server_time}] {message}",
@@ -208,6 +212,7 @@ LOGGING = {
             "filters": ["require_debug_true"],
             'class': 'logging.FileHandler',
             'filename': 'logs/console.log',
+            "formatter": "standard",
         },
         "django.server": {
             "level": "INFO",
@@ -222,6 +227,13 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'logs/mail_admins.log',
         },
+        "django.security.DisallowedHost": {
+            "level": "INFO",
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/django.security.DisallowedHost.log',
+            'when': 'D',
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -232,6 +244,11 @@ LOGGING = {
             "handlers": ["django.server"],
             "level": "INFO",
             "propagate": False,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['django.security.DisallowedHost'],
+            "level": "DEBUG",
+            'propagate': False,
         },
     },
 }
