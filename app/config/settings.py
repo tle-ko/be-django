@@ -176,7 +176,7 @@ MEDIA_ROOT = BASE_DIR / '.media'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-DEFAULT_EXCEPTION_REPORTER = "config.reporters.NACLExceptionReporter"
+DEFAULT_EXCEPTION_REPORTER = "config.utils.NACLExceptionReporter"
 
 APPEND_SLASH = False
 
