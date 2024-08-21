@@ -1,4 +1,5 @@
 import logging
+from sys import stderr
 from typing import Any
 
 from django.conf import settings
@@ -13,6 +14,15 @@ class ColorlessServerFormatter(ServerFormatter):
         self.style = no_style()
 
 
+class FileAndStreamHandler(logging.FileHandler):
+    """기본적으로 logging.FileHandler와 동일하나, STDERR에도 동일한 로그를 같이 출력해주는 Handler이다."""
+    def emit(self, record: logging.LogRecord) -> None:
+        self.stream, stream = stderr, self.stream
+        super().emit(record)
+        self.stream = stream
+        super().emit(record)
+
+
 class NACLExceptionReporter(debug.ExceptionReporter):
     def __init__(self, request, exc_type, exc_value, tb, is_email=False):
         self.logger = logging.getLogger('django.security.DisallowedHost')
@@ -23,7 +33,9 @@ class NACLExceptionReporter(debug.ExceptionReporter):
         if self._get_host() not in settings.ALLOWED_HOSTS:
             # IP, 혹은 AWS 도메인 주소 패턴을 이용하여 접속을 시도하는 악성 봇들에게
             # 환경변수나 기타 정보가 노출되지 않도록 함.
-            self.logger.info(f'Illegal access detected from client "{self._get_client_ip_addr()}" to host "{self._get_host()}"')
+            self.logger.info(
+                f'Illegal access detected from client "{self._get_client_ip_addr()}" to host "{self._get_host()}"'
+            )
             return {}
         return super().get_traceback_data()
 

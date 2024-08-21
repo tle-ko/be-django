@@ -210,9 +210,15 @@ LOGGING = {
         "console": {
             "level": "INFO",
             "filters": ["require_debug_true"],
-            'class': 'logging.FileHandler',
+            'class': 'config.utils.FileAndStreamHandler',
             'filename': 'logs/console.log',
             "formatter": "standard",
+        },
+        "django.mail": {
+            "level": "ERROR",
+            "filters": ["require_debug_true"],
+            'class': 'config.utils.FileAndStreamHandler',
+            'filename': 'logs/django.mail.log',
         },
         "django.server": {
             "level": "INFO",
