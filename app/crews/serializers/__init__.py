@@ -129,19 +129,19 @@ class CrewApplicationSerializer(serializers.ModelSerializer):
     user = UserMinimalSerializer(read_only=True)
 
     class Meta:
-        model = models.CrewApplicant
+        model = models.CrewApplication
         fields = [
             PK,
-            models.CrewApplicant.field_name.CREW,
-            models.CrewApplicant.field_name.MESSAGE,
-            models.CrewApplicant.field_name.USER,
-            models.CrewApplicant.field_name.IS_ACCEPTED,
-            models.CrewApplicant.field_name.CREATED_AT,
+            models.CrewApplication.field_name.CREW,
+            models.CrewApplication.field_name.MESSAGE,
+            models.CrewApplication.field_name.APPLICANT,
+            models.CrewApplication.field_name.IS_ACCEPTED,
+            models.CrewApplication.field_name.CREATED_AT,
         ]
         read_only_fields = [
-            models.CrewApplicant.field_name.CREW,
-            models.CrewApplicant.field_name.IS_ACCEPTED,
-            models.CrewApplicant.field_name.CREATED_AT,
+            models.CrewApplication.field_name.CREW,
+            models.CrewApplication.field_name.IS_ACCEPTED,
+            models.CrewApplication.field_name.CREATED_AT,
         ]
 
 

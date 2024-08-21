@@ -35,7 +35,7 @@ class IsMember(permissions.BasePermission):
 
 
 class IsCaptain(permissions.BasePermission):
-    def has_object_permission(self, request: Request, view, application: models.CrewApplicant) -> bool:
-        assert isinstance(application, models.CrewApplicant)
+    def has_object_permission(self, request: Request, view, application: models.CrewApplication) -> bool:
+        assert isinstance(application, models.CrewApplication)
         service = services.CrewService(application.crew)
         return service.is_captain(request.user)

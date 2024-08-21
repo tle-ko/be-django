@@ -8,17 +8,17 @@ from crews import models
 
 class CrewApplicantionService:
     @staticmethod
-    def create(crew: models.Crew, user: users.models.User, message: str) -> models.CrewApplicant:
-        instance = models.CrewApplicant(**{
-            models.CrewApplicant.field_name.CREW: crew,
-            models.CrewApplicant.field_name.USER: user,
-            models.CrewApplicant.field_name.MESSAGE: message,
+    def create(crew: models.Crew, user: users.models.User, message: str) -> models.CrewApplication:
+        instance = models.CrewApplication(**{
+            models.CrewApplication.field_name.CREW: crew,
+            models.CrewApplication.field_name.APPLICANT: user,
+            models.CrewApplication.field_name.MESSAGE: message,
         })
         instance.save()
         notifications.services.notify_crew_application_requested(instance)
 
-    def __init__(self, instance: models.CrewApplicant):
-        assert isinstance(instance, models.CrewApplicant)
+    def __init__(self, instance: models.CrewApplication):
+        assert isinstance(instance, models.CrewApplication)
         self.instance = instance
 
     def reject(self, reviewed_by: users.models.User):
@@ -35,7 +35,7 @@ class CrewApplicantionService:
         with atomic():
             self.instance.save()
             models.CrewMember.objects.create(**{
-                models.CrewApplicant.field_name.CREW: self.instance.crew,
-                models.CrewApplicant.field_name.USER: self.instance.user,
+                models.CrewApplication.field_name.CREW: self.instance.crew,
+                models.CrewApplication.field_name.APPLICANT: self.instance.applicant,
             })
         notifications.services.notify_crew_application_accepted(self.instance)

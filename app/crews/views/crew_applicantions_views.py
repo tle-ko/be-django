@@ -36,11 +36,11 @@ class CrewApplicantionCreateAPIView(generics.CreateAPIView):
 
 
 class CrewApplicantionAcceptAPIView(generics.GenericAPIView):
-    queryset = models.CrewApplicant
+    queryset = models.CrewApplication
     permission_classes = [IsAuthenticated & permissions.IsCaptain]
     serializer_class = serializers.NoInputSerializer
     lookup_field = 'id'
-    lookup_url_kwarg = 'applicantion_id'
+    lookup_url_kwarg = 'application_id'
 
     def put(self, request: Request, *args, **kwargs):
         instance = self.get_object()
@@ -51,11 +51,11 @@ class CrewApplicantionAcceptAPIView(generics.GenericAPIView):
 
 
 class CrewApplicantionRejectAPIView(generics.GenericAPIView):
-    queryset = models.CrewApplicant
+    queryset = models.CrewApplication
     permission_classes = [IsAuthenticated & permissions.IsCaptain]
     serializer_class = serializers.NoInputSerializer
     lookup_field = 'id'
-    lookup_url_kwarg = 'applicantion_id'
+    lookup_url_kwarg = 'application_id'
 
     def put(self, request: Request, *args, **kwargs):
         instance = self.get_object()

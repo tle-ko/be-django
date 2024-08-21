@@ -51,8 +51,8 @@ class CrewModelAdmin(admin.ModelAdmin):
 
     @admin.display(description='Applicants')
     def get_applicants(self, obj: models.Crew):
-        return models.CrewApplicant.objects.filter(**{
-            models.CrewApplicant.field_name.CREW: obj,
+        return models.CrewApplication.objects.filter(**{
+            models.CrewApplication.field_name.CREW: obj,
         }).count()
 
     @admin.display(description='Activities')
@@ -134,13 +134,13 @@ class CrewSubmittableLanguageModelAdmin(admin.ModelAdmin):
     ]
 
 
-@admin.register(models.CrewApplicant)
+@admin.register(models.CrewApplication)
 class CrewApplicantModelAdmin(admin.ModelAdmin):
     list_display = [
-        models.CrewApplicant.field_name.CREW,
-        models.CrewApplicant.field_name.USER,
-        models.CrewApplicant.field_name.IS_ACCEPTED,
-        models.CrewApplicant.field_name.REVIEWED_BY,
+        models.CrewApplication.field_name.CREW,
+        models.CrewApplication.field_name.APPLICANT,
+        models.CrewApplication.field_name.IS_ACCEPTED,
+        models.CrewApplication.field_name.REVIEWED_BY,
     ]
     actions = [
         'accept',
@@ -148,13 +148,13 @@ class CrewApplicantModelAdmin(admin.ModelAdmin):
     ]
 
     @admin.action(description="Accept user")
-    def accept(self, request: HttpRequest, queryset: QuerySet[models.CrewApplicant]):
+    def accept(self, request: HttpRequest, queryset: QuerySet[models.CrewApplication]):
         for applicant in queryset:
             services.crew_applicant.accept(applicant, request.user)
             services.crew_applicant.notify_accepted(applicant)
 
     @admin.action(description="Reject user")
-    def reject(self, request: HttpRequest, queryset: QuerySet[models.CrewApplicant]):
+    def reject(self, request: HttpRequest, queryset: QuerySet[models.CrewApplication]):
         for applicant in queryset:
             services.crew_applicant.reject(applicant, request.user)
             services.crew_applicant.notify_rejected(applicant)

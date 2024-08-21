@@ -5,16 +5,16 @@ from crews.models.crew import Crew
 from crews.models.crew_member import CrewMember
 
 
-class CrewApplicant(models.Model):
+class CrewApplication(models.Model):
     crew = models.ForeignKey[Crew](
         Crew,
         on_delete=models.CASCADE,
         help_text='크루를 입력해주세요.',
     )
-    user = models.ForeignKey[User](
+    applicant = models.ForeignKey[User](
         User,
         on_delete=models.CASCADE,
-        help_text='유저를 입력해주세요.',
+        help_text='지원자를 입력해주세요.',
     )
     message = models.TextField(
         help_text='가입 메시지를 입력해주세요.',
@@ -43,7 +43,7 @@ class CrewApplicant(models.Model):
 
     class field_name:
         CREW = 'crew'
-        USER = 'user'
+        APPLICANT = 'applicant'
         MESSAGE = 'message'
         IS_ACCEPTED = 'is_accepted'
         CREATED_AT = 'created_at'
@@ -54,7 +54,7 @@ class CrewApplicant(models.Model):
         ordering = ['reviewed_by', 'created_at']
 
     def __repr__(self) -> str:
-        return f'{self.crew.__repr__()} ← {self.user.__repr__()} : "{self.message}"'
+        return f'{self.crew.__repr__()} ← {self.applicant.__repr__()} : "{self.message}"'
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()}'
@@ -64,13 +64,13 @@ class CrewApplicant(models.Model):
             # 같은 크루에 여러 번 가입하는 것을 방지
             assert not CrewMember.objects.filter(**{
                 CrewMember.field_name.CREW: self.crew,
-                CrewMember.field_name.USER: self.user,
+                CrewMember.field_name.USER: self.applicant,
             }).exclude(pk=self.pk).exists(), '이미 가입한 크루에 가입 신청을 할 수 없습니다.'
             # 아직 검토되지 않은 신청이 있으면 가입 불가
-            assert not CrewApplicant.objects.filter(**{
-                CrewApplicant.field_name.CREW: self.crew,
-                CrewApplicant.field_name.USER: self.user,
-                CrewApplicant.field_name.REVIEWED_BY: None,
+            assert not CrewApplication.objects.filter(**{
+                CrewApplication.field_name.CREW: self.crew,
+                CrewApplication.field_name.APPLICANT: self.applicant,
+                CrewApplication.field_name.REVIEWED_BY: None,
             }).exclude(pk=self.pk).exists(), '크루에 아직 검토되지 않은 지원 이력이 있습니다.'
         except AssertionError as e:
             raise ValueError from e
