@@ -60,8 +60,18 @@ class CrewService:
             models.CrewSubmittableLanguage.field_name.CREW: self.instance,
         })
 
+    def query_applications(self) -> QuerySet[models.CrewApplication]:
+        return models.CrewApplication.objects.filter(**{
+            models.CrewApplication.field_name.CREW: self.instance,
+        })
+
     def query_activities(self) -> QuerySet[models.CrewActivity]:
         return CrewActivityService.query_all(self.instance)
+
+    def query_problems(self) -> QuerySet[models.CrewActivityProblem]:
+        return models.CrewActivityProblem.objects.filter(**{
+            models.CrewActivityProblem.field_name.CREW: self.instance,
+        })
 
     def statistics(self) -> dto.ProblemStatistic:
         stat = dto.ProblemStatistic()
@@ -105,6 +115,9 @@ class CrewService:
         return models.CrewActivityProblem.objects.filter(**{
             models.CrewActivityProblem.field_name.CREW: self.instance,
         }).values_list(models.CrewActivityProblem.field_name.PROBLEM, flat=True)
+
+    def display_name(self) -> str:
+        return f'{self.instance.icon} {self.instance.name}'
 
     def languages(self) -> List[enums.ProgrammingLanguageChoices]:
         languages = []
