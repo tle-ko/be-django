@@ -181,7 +181,11 @@ APPEND_SLASH = False
 
 # Swagger Settings (DRf-YASG)
 
-LOGIN_URL = "/api/v1/auth/signin"
+SWAGGER_SETTINGS = {
+    "LOGIN_URL": "/api/v1/auth/signin",
+    "LOGOUT_URL": "/api/v1/auth/signout",
+}
+
 
 LOGGING = {
     "version": 1,
