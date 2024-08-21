@@ -18,9 +18,8 @@ class LatestActivityField(serializers.SerializerMethodField):
                 "date_start_at": None,
                 "date_end_at": None,
             }
-        queryset = services.crew_acitivity.of_crew(crew)
         try:
-            activity = queryset.latest()
+            service = services.CrewActivityService.last_started(crew)
         except models.CrewActivity.DoesNotExist:
             return {
                 "name": "등록된 활동 없음",
@@ -29,9 +28,9 @@ class LatestActivityField(serializers.SerializerMethodField):
             }
         else:
             return {
-                "name": f"{queryset.count()}회차",
-                "date_start_at": activity.start_at,
-                "date_end_at": activity.end_at,
+                "name": f"{service.nth()}회차",
+                "date_start_at": service.instance.start_at,
+                "date_end_at": service.instance.end_at,
             }
 
 
@@ -40,9 +39,7 @@ class CrewMembersField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        queryset = models.CrewMember.objects.filter(**{
-            models.CrewMember.field_name.CREW: crew,
-        })
+        service = services.CrewService(crew)
         image_field = serializers.ImageField()
         return [
             {
@@ -50,7 +47,7 @@ class CrewMembersField(serializers.SerializerMethodField):
                 "profile_image": image_field.to_representation(member.user.profile_image),
                 "is_captain": member.is_captain,
             }
-            for member in queryset
+            for member in service.query_members()
         ]
 
 
@@ -59,8 +56,9 @@ class CrewMemberCountField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
+        service = services.CrewService(crew)
         return {
-            "count": services.crew.member_count(crew),
+            "count": service.query_members().count(),
             "max_count": crew.max_members,
         }
 
@@ -70,13 +68,14 @@ class CrewTagsField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
+        service = services.CrewService(crew)
         return [
             {
                 'key': tag.key,
                 'name': tag.name,
                 'type': tag.type.value,
             }
-            for tag in services.crew.tags(crew)
+            for tag in service.tags()
         ]
 
 
@@ -85,7 +84,8 @@ class CrewIsJoinableField(serializers.SerializerMethodField):
         user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
         assert isinstance(user, User)
-        return services.crew.is_joinable(crew, user)
+        service = services.CrewService(crew)
+        return service.validate_applicant(user)
 
 
 class CrewIsMemberField(serializers.SerializerMethodField):
@@ -93,19 +93,20 @@ class CrewIsMemberField(serializers.SerializerMethodField):
         user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
         assert isinstance(user, User)
-        return services.crew.is_member(crew, user)
+        service = services.CrewService(crew)
+        return service.is_member(user)
 
 
 class CrewActivitiesField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        queryset = services.crew_acitivity.of_crew(crew)
+        service = services.CrewService(crew)
         return [
             {
-                'id': activity.pk,
-                'name': f'{n}회차',
+                'activity_id': activity.activity_id,
+                'name': activity.name,
             }
-            for n, activity in enumerate(queryset, start=1)
+            for activity in service.activities()
         ]
 
 

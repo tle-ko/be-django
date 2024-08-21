@@ -4,13 +4,3 @@ from crews.models.crew_activity_problem import CrewActivityProblem
 from crews.models.crew_applicant import CrewApplicant
 from crews.models.crew_member import CrewMember
 from crews.models.crew_submittable_language import CrewSubmittableLanguage
-
-
-__all__ = (
-    'Crew',
-    'CrewActivity',
-    'CrewActivityProblem',
-    'CrewApplicant',
-    'CrewMember',
-    'CrewSubmittableLanguage',
-)

@@ -2,11 +2,16 @@ from rest_framework import serializers
 
 from crews import enums
 from crews import models
+from crews import services
 from crews.serializers import fields
 from users.serializers import UserMinimalSerializer
 
 
 PK = 'id'
+
+
+class NoInputSerializer(serializers.Serializer):
+    pass
 
 
 class CrewCreateSerializer(serializers.ModelSerializer):
@@ -25,12 +30,14 @@ class CrewCreateSerializer(serializers.ModelSerializer):
             models.Crew.field_name.IS_RECRUITING,
             models.Crew.field_name.IS_ACTIVE,
         ]
-        read_only_fields = ['__all__']
+        extra_kwargs = {
+            models.Crew.field_name.CUSTOM_TAGS: {
+                'default': list,
+            }
+        }
 
     def save(self, **kwargs):
-        if 'langauges' in self.validated_data:
-            self.validated_data.pop('languages')
-        return super().save(**kwargs)
+        return services.CrewService.create(**self.validated_data)
 
 
 class RecruitingCrewSerializer(serializers.ModelSerializer):
@@ -67,6 +74,7 @@ class MyCrewSerializer(serializers.ModelSerializer):
             PK,
             models.Crew.field_name.ICON,
             models.Crew.field_name.NAME,
+            models.Crew.field_name.IS_ACTIVE,
             'latest_activity',
         ]
         read_only_fields = ['__all__']
@@ -105,7 +113,7 @@ class CrewStatisticsSerializer(serializers.Serializer):
     tags = fields.ProblemStatisticsTagsField()
 
 
-class MyCrewDashboardAcitivySerializer(serializers.ModelSerializer):
+class CrewActivityDashboardSerializer(serializers.ModelSerializer):
     problems = fields.CrewAcitivityProblemsField()
 
     class Meta:
@@ -135,3 +143,7 @@ class CrewApplicationSerializer(serializers.ModelSerializer):
             models.CrewApplicant.field_name.IS_ACCEPTED,
             models.CrewApplicant.field_name.CREATED_AT,
         ]
+
+
+class CrewApplicationCreateSerializer(serializers.Serializer):
+    message = serializers.CharField()

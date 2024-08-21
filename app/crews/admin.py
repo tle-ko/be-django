@@ -15,6 +15,7 @@ admin.site.register([
 @admin.register(models.Crew)
 class CrewModelAdmin(admin.ModelAdmin):
     list_display = [
+        'id',
         'get_display_name',
         'get_captain',
         'get_members',
@@ -87,25 +88,34 @@ class CrewActivityModelAdmin(admin.ModelAdmin):
         models.CrewActivity.field_name.START_AT,
         models.CrewActivity.field_name.END_AT,
         'nth',
-        'is_opened',
-        'is_closed',
+        'is_in_progress',
+        'has_started',
+        'has_ended',
     ]
     search_fields = [
         models.CrewActivity.field_name.CREW+'__'+models.Crew.field_name.NAME,
         models.CrewActivity.field_name.NAME,
     ]
 
-    @admin.display(boolean=True, description='Is Opened')
-    def is_opened(self, obj: models.CrewActivity) -> bool:
-        return services.crew_acitivity.is_opened(obj)
-
-    @admin.display(boolean=True, description='Is Closed')
-    def is_closed(self, obj: models.CrewActivity) -> bool:
-        return services.crew_acitivity.is_closed(obj)
-
-    @admin.display(description='N-th')
+    @admin.display(description='회차 번호')
     def nth(self, obj: models.CrewActivity) -> int:
-        return services.crew_acitivity.number(obj)
+        service = services.CrewActivityService(obj)
+        return service.nth()
+
+    @admin.display(boolean=True, description='진행 중')
+    def is_in_progress(self, obj: models.CrewActivity) -> bool:
+        service = services.CrewActivityService(obj)
+        return service.is_in_progress()
+
+    @admin.display(boolean=True, description='시작 됨')
+    def has_started(self, obj: models.CrewActivity) -> bool:
+        service = services.CrewActivityService(obj)
+        return service.has_started()
+
+    @admin.display(boolean=True, description='종료 됨')
+    def has_ended(self, obj: models.CrewActivity) -> bool:
+        service = services.CrewActivityService(obj)
+        return service.has_ended()
 
 
 @admin.register(models.CrewSubmittableLanguage)

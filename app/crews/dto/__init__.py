@@ -43,6 +43,17 @@ class CrewProblem:
 
 
 @dataclass
+class CrewActivity:
+    activity_id: int
+    name: str
+    start_at: datetime
+    end_at: datetime
+    is_in_progress: bool
+    has_started: bool
+    has_ended: bool
+
+
+@dataclass
 class SubmissionGraphNode:
     problem_number: int
     submitted_at: datetime
