@@ -94,7 +94,7 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
     """현재 로그인한 사용자 정보 API"""
 
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.SignUpSerializer
+    serializer_class = serializers.UserSerializer
 
     def get_object(self) -> User:
         return self.request.user
