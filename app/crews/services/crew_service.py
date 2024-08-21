@@ -99,7 +99,7 @@ class CrewService:
         return models.CrewMember.objects.filter(**{
             models.CrewMember.field_name.CREW: self.instance,
             models.CrewMember.field_name.IS_CAPTAIN: True,
-        })
+        }).get()
 
     def problems(self) -> List[Problem]:
         return models.CrewActivityProblem.objects.filter(**{
