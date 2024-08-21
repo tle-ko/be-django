@@ -34,47 +34,37 @@ class TimeLimitField(serializers.SerializerMethodField):
 class DifficultyField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
-        analysis = services.get_analysis(problem)
+        service = services.ProblemAnalysisService.from_problem(problem)
         return {
-            "name_ko": analysis.difficulty.get_name(lang='ko'),
-            "name_en": analysis.difficulty.get_name(lang='en'),
-            'value': analysis.difficulty.value,
+            "name_ko": service.difficulty().get_name(lang='ko'),
+            "name_en": service.difficulty().get_name(lang='en'),
+            'value': service.difficulty().value,
         }
 
 
 class AnalysisField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
-        analysis = services.get_analysis(problem)
-        is_analyzed = analysis.difficulty != models.ProblemDifficultyChoices.UNDER_ANALYSIS
-        tags_queryset = models.ProblemTag.objects.filter(**{
-            models.ProblemTag.field_name.KEY+'__in': analysis.tags,
-        })
-        if not is_analyzed:
-            difficulty_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
-            time_complexity_description = "AI가 분석을 진행하고 있어요! [이 기능은 추가될 예정이 없습니다]"
-        else:
-            difficulty_description = "기초적인 계산적 사고와 프로그래밍 문법만 있어도 해결 가능한 수준 [이 기능은 추가될 예정이 없습니다]"
-            time_complexity_description = "선형시간에 풀이가 가능한 문제. N의 크기에 주의하세요. [이 기능은 추가될 예정이 없습니다]"
+        service = services.ProblemAnalysisService.from_problem(problem)
         return {
             'difficulty': {
-                "name_ko": analysis.difficulty.get_name(lang='ko'),
-                "name_en": analysis.difficulty.get_name(lang='en'),
-                'value': analysis.difficulty.value,
-                'description': difficulty_description,
+                "name_ko": service.difficulty().get_name(lang='ko'),
+                "name_en": service.difficulty().get_name(lang='en'),
+                'value': service.difficulty().value,
+                'description': service.difficulty_description(),
             },
             'time_complexity': {
-                'value': analysis.time_complexity,
-                'description': time_complexity_description,
+                'value': service.time_complexity(),
+                'description': service.time_complexity_description(),
             },
-            'hint': analysis.hint,
+            'hints': service.hints(),
             'tags': [
                 {
                     'key': tag.key,
                     'name_en': tag.name_en,
                     'name_ko': tag.name_ko,
                 }
-                for tag in tags_queryset
+                for tag in service.tags()
             ],
-            'is_analyzed': is_analyzed,
+            'is_analyzed': service.is_analyzed(),
         }
