@@ -9,7 +9,7 @@ import users.models
 
 SUBJECT_PREFIX = '[Time Limit Exceeded]'
 
-LOGGER = logging.getLogger('mail_admins')
+LOGGER = logging.getLogger('django.mail')
 
 
 def notify_crew_application_requested(applicant: crews.models.CrewApplicant):
