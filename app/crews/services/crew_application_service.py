@@ -22,16 +22,12 @@ class CrewApplicantionService:
         self.instance = instance
 
     def reject(self, reviewed_by: users.models.User):
-        self.instance.is_accepted = False
-        self.instance.reviewed_by = reviewed_by
-        self.instance.reviewed_at = timezone.now()
+        self._review(reviewed_by, accept=False)
         self.instance.save()
         notifications.services.notify_crew_application_rejected(self.instance)
 
     def accept(self, reviewed_by: users.models.User):
-        self.instance.is_accepted = True
-        self.instance.reviewed_by = reviewed_by
-        self.instance.reviewed_at = timezone.now()
+        self._review(reviewed_by, accept=True)
         with atomic():
             self.instance.save()
             models.CrewMember.objects.create(**{
@@ -39,3 +35,9 @@ class CrewApplicantionService:
                 models.CrewApplication.field_name.APPLICANT: self.instance.applicant,
             })
         notifications.services.notify_crew_application_accepted(self.instance)
+
+    def _review(self, by: users.models.User, accept: bool):
+        self.instance.is_pending = False
+        self.instance.is_accepted = accept
+        self.instance.reviewed_by = by
+        self.instance.reviewed_at = timezone.now()

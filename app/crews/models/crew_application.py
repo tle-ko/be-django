@@ -21,6 +21,10 @@ class CrewApplication(models.Model):
         null=True,
         blank=True,
     )
+    is_pending = models.BooleanField(
+        default=True,
+        help_text="아직 수락/거절 되지 않았다면 True.",
+    )
     is_accepted = models.BooleanField(
         default=False,
         help_text='수락 여부를 입력해주세요.',
@@ -45,12 +49,20 @@ class CrewApplication(models.Model):
         CREW = 'crew'
         APPLICANT = 'applicant'
         MESSAGE = 'message'
+        IS_PENDING = 'is_pending'
         IS_ACCEPTED = 'is_accepted'
         CREATED_AT = 'created_at'
         REVIEWED_AT = 'reviewed_at'
         REVIEWED_BY = 'reviewed_by'
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['crew', 'applicant'],
+                condition=models.Q(is_pending=True),
+                name='unique_pending_application',
+            ),
+        ]
         ordering = ['reviewed_by', 'created_at']
 
     def __repr__(self) -> str:
@@ -58,21 +70,3 @@ class CrewApplication(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()}'
-
-    def save(self, *args, **kwargs) -> None:
-        try:
-            # 같은 크루에 여러 번 가입하는 것을 방지
-            assert not CrewMember.objects.filter(**{
-                CrewMember.field_name.CREW: self.crew,
-                CrewMember.field_name.USER: self.applicant,
-            }).exclude(pk=self.pk).exists(), '이미 가입한 크루에 가입 신청을 할 수 없습니다.'
-            # 아직 검토되지 않은 신청이 있으면 가입 불가
-            assert not CrewApplication.objects.filter(**{
-                CrewApplication.field_name.CREW: self.crew,
-                CrewApplication.field_name.APPLICANT: self.applicant,
-                CrewApplication.field_name.REVIEWED_BY: None,
-            }).exclude(pk=self.pk).exists(), '크루에 아직 검토되지 않은 지원 이력이 있습니다.'
-        except AssertionError as e:
-            raise ValueError from e
-        else:
-            return super().save(*args, **kwargs)
