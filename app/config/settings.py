@@ -50,9 +50,11 @@ INSTALLED_APPS = [
 
     "corsheaders",
     "drf_yasg",
+    'background_task',
     "rest_framework",
     'rest_framework_simplejwt',
 
+    "boj",
     "users",
     "problems",
     "crews",
