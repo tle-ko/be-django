@@ -1,18 +1,18 @@
 from django.db import models
 
-from problems.models.choices import ProblemDifficultyChoices
+from problems import enums
 from problems.models.problem import Problem
 
 
 class ProblemAnalysis(models.Model):
-    problem = models.OneToOneField(
+    problem = models.ForeignKey(
         Problem,
         on_delete=models.CASCADE,
         help_text='문제를 입력해주세요.',
     )
     difficulty = models.IntegerField(
         help_text='문제 난이도를 입력해주세요.',
-        choices=ProblemDifficultyChoices.choices,
+        choices=enums.ProblemDifficulty.choices,
     )
     time_complexity = models.CharField(
         max_length=100,

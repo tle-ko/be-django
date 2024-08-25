@@ -23,8 +23,8 @@ class ProblemDetailSerializer(serializers.ModelSerializer):
             models.Problem.field_name.DESCRIPTION,
             models.Problem.field_name.INPUT_DESCRIPTION,
             models.Problem.field_name.OUTPUT_DESCRIPTION,
-            models.Problem.field_name.MEMORY_LIMIT_MEGABYTE,
-            models.Problem.field_name.TIME_LIMIT_SECOND,
+            models.Problem.field_name.MEMORY_LIMIT,
+            models.Problem.field_name.TIME_LIMIT,
             models.Problem.field_name.CREATED_AT,
             models.Problem.field_name.CREATED_BY,
             models.Problem.field_name.UPDATED_AT,
@@ -39,8 +39,8 @@ class ProblemDetailSerializer(serializers.ModelSerializer):
             models.Problem.field_name.UPDATED_AT,
         ]
         extra_kwargs = {
-            models.Problem.field_name.MEMORY_LIMIT_MEGABYTE: {'write_only': True},
-            models.Problem.field_name.TIME_LIMIT_SECOND: {'write_only': True},
+            models.Problem.field_name.MEMORY_LIMIT: {'write_only': True},
+            models.Problem.field_name.TIME_LIMIT: {'write_only': True},
         }
 
     def create(self, validated_data):

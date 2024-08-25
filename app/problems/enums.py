@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 
 
@@ -7,7 +9,16 @@ NAMES = {
 }
 
 
-class ProblemDifficultyChoices(models.IntegerChoices):
+class ProblemDifficulty(models.IntegerChoices):
+    @staticmethod
+    def from_label(label: str) -> ProblemDifficulty:
+        return {
+            'EASY': ProblemDifficulty.EASY,
+            'NORMAL': ProblemDifficulty.NORMAL,
+            'HARD': ProblemDifficulty.HARD,
+        }[label]
+
+
     UNDER_ANALYSIS = 0, '분석 중'
     EASY = 1, '쉬움'
     NORMAL = 2, '보통'
@@ -20,3 +31,8 @@ class ProblemDifficultyChoices(models.IntegerChoices):
                 f'choose from {NAMES.keys()}'
             )
         return NAMES[lang][self.value]
+
+
+class Unit(models.TextChoices):
+    MEGA_BYTE = 'MB', "메가 바이트"
+    SECOND = 's', "초"

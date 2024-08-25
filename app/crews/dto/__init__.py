@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List
 
 from crews import enums
-from problems.models import ProblemDifficultyChoices
+from problems.enums import ProblemDifficulty
 
 
 @dataclass
@@ -37,7 +37,7 @@ class CrewProblem:
     problem_number: int
     problem_id: int
     problem_title: str
-    problem_difficulty: ProblemDifficultyChoices
+    problem_difficulty: ProblemDifficulty
     is_submitted: bool
     last_submitted_date: datetime
 

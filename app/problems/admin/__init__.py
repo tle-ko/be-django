@@ -1,0 +1,5 @@
+from problems.admin.problem import ProblemModelAdmin
+from problems.admin.problem_analysis import ProblemAnalysisModelAdmin
+from problems.admin.problem_analysis_tag import ProblemAnalysisTagModelAdmin
+from problems.admin.problem_tag import ProblemTagModelAdmin
+from problems.admin.problem_tag_relation import ProblemTagRelationModelAdmin

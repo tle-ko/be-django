@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Tuple
 
-from problems import models
+from problems import enums
 
 
 @dataclass
@@ -15,9 +15,9 @@ class ProblemDTO:
     time_limit: float
 
 
-@dataclass(frozen=True)
+@dataclass
 class ProblemAnalysisDTO:
     time_complexity: str
-    difficulty: models.ProblemDifficultyChoices
+    difficulty: enums.ProblemDifficulty
     tags: Tuple[str] = field(default_factory=tuple)
-    hint: Tuple[str] = field(default_factory=tuple)
+    hints: Tuple[str] = field(default_factory=tuple)

@@ -5,3 +5,7 @@ djangorestframework
 djangorestframework-simplejwt
 Pillow
 drf-yasg
+# MODEL DEPENDENCY
+google-generativeai
+sympy
+antlr4-python3-runtime==4.11 # sympy dependency for latex parsing

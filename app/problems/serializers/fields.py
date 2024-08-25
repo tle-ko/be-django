@@ -1,19 +1,19 @@
 from rest_framework import serializers
 
+from problems import enums
 from problems import models
 from problems import services
-from problems.constants import Unit
 
 
 class MemoryLimitField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
+        unit = enums.Unit(problem.memory_limit_unit)
         return {
-            "value": problem.memory_limit_megabyte,
+            "value": problem.memory_limit,
             "unit": {
-                "name_ko": Unit.MEGA_BYTE.name_ko,
-                "name_en": Unit.MEGA_BYTE.name_en,
-                "abbr": Unit.MEGA_BYTE.abbr,
+                "name": unit.label,
+                "abbr": unit.value,
             },
         }
 
@@ -21,12 +21,12 @@ class MemoryLimitField(serializers.SerializerMethodField):
 class TimeLimitField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
+        unit = enums.Unit(problem.time_limit_unit)
         return {
-            "value": problem.time_limit_second,
+            "value": problem.time_limit,
             "unit": {
-                "name_ko": Unit.SECOND.name_ko,
-                "name_en": Unit.SECOND.name_en,
-                "abbr": Unit.SECOND.abbr,
+                "name": unit.label,
+                "abbr": unit.value,
             },
         }
 

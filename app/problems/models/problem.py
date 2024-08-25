@@ -1,5 +1,6 @@
 from django.db import models
 
+from problems import enums
 from users.models import User
 
 
@@ -25,12 +26,20 @@ class Problem(models.Model):
         help_text='문제 출력 설명을 입력해주세요.',
         blank=True,
     )
-    memory_limit_megabyte = models.FloatField(
+    memory_limit = models.FloatField(
         help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
     )
-    time_limit_second = models.FloatField(
+    memory_limit_unit = models.TextField(
+        choices=enums.Unit.choices,
+        default=enums.Unit.MEGA_BYTE,
+    )
+    time_limit = models.FloatField(
         help_text='문제 시간 제한을 입력해주세요. (초 단위)',
         default=1.0,
+    )
+    time_limit_unit = models.TextField(
+        choices=enums.Unit.choices,
+        default=enums.Unit.SECOND,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
@@ -47,8 +56,10 @@ class Problem(models.Model):
         DESCRIPTION = 'description'
         INPUT_DESCRIPTION = 'input_description'
         OUTPUT_DESCRIPTION = 'output_description'
-        MEMORY_LIMIT_MEGABYTE = 'memory_limit_megabyte'
-        TIME_LIMIT_SECOND = 'time_limit_second'
+        MEMORY_LIMIT = 'memory_limit'
+        MEMORY_LIMIT_UNIT = 'memory_limit_unit'
+        TIME_LIMIT = 'time_limit'
+        TIME_LIMIT_UNIT = 'time_limit_unit'
         CREATED_AT = 'created_at'
         CREATED_BY = 'created_by'
         UPDATED_AT = 'updated_at'
@@ -58,7 +69,3 @@ class Problem(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.pk} : {self.title}]'
-
-    def save(self, *args, **kwargs) -> None:
-        super().save(*args, **kwargs)
-        # TODO: Add to ProblemAnalysisQueue
