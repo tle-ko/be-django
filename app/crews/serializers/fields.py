@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from boj.services import get_boj_user_service
 from crews import dto
 from crews import models
 from crews import services
@@ -159,3 +160,21 @@ class ProblemStatisticsTagsField(serializers.SerializerMethodField):
             }
             for tag, count in statistics.tags.items()
         ]
+
+
+class CrewApplicationApplicantField(serializers.SerializerMethodField):
+    def to_representation(self, instance: models.CrewApplication):
+        assert isinstance(instance, models.CrewApplication)
+        service = get_boj_user_service(instance.applicant.boj_username)
+        level = service.level()
+        return {
+            "user_id": instance.applicant.pk,
+            "username": instance.applicant.username,
+            "profile_image": instance.applicant.profile_image,
+            "boj": {
+                "level": {
+                    "value": level.value,
+                    "name": level.get_name(lang="ko", arabic=False),
+                }
+            }
+        }
