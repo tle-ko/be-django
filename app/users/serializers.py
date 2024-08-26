@@ -98,6 +98,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             }
         }
 
+    def save(self, **kwargs):
+        instance: User = super().save(**kwargs)
+        if User.field_name.PASSWORD in self.validated_data:
+            instance.set_password(self.validated_data[User.field_name.PASSWORD])
+            instance.save()
+
 
 class UserMinimalSerializer(serializers.ModelSerializer):
     class Meta:
