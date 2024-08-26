@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 
-from users import serializers, services
+from users import serializers
+from users import services
 from users.models import User
 
 
@@ -23,7 +24,6 @@ __all__ = (
 class SignInAPIView(mixins.RetrieveModelMixin,
                     generics.GenericAPIView):
     """사용자 로그인 API"""
-
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInSerializer
@@ -52,34 +52,30 @@ class SignInAPIView(mixins.RetrieveModelMixin,
         )
 
 
-class SignUpAPIView(generics.GenericAPIView):
+class SignUpAPIView(generics.CreateAPIView):
     """사용자 등록(회원가입) API"""
-
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignUpSerializer
     get_serializer: Callable[..., Serializer]
 
-    @swagger_auto_schema(responses={
-        status.HTTP_201_CREATED: '회원가입 성공',
-        status.HTTP_400_BAD_REQUEST: '잘못 입력한 값이 존재',
-    })
-    def post(self, request, *args, **kwargs):
+    def create(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        serializer = serializers.UserSerializer(instance=serializer.instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer: serializers.SignUpSerializer):
         email = serializer.validated_data['email']
         token = serializer.validated_data.pop('verification_token')
         services.verify_token(email, token)
-        user = services.sign_up(**serializer.validated_data)
-        return Response(
-            data=serializers.UserSerializer(instance=user).data,
-            status=status.HTTP_201_CREATED,
-        )
+        serializer.instance = services.sign_up(**serializer.validated_data)
 
 
 class SignOutAPIView(APIView):
     """사용자 로그아웃 API"""
-
     permission_classes = [permissions.IsAuthenticated]
 
     @swagger_auto_schema(responses={
@@ -92,7 +88,6 @@ class SignOutAPIView(APIView):
 
 class CurrentUserAPIView(generics.RetrieveAPIView):
     """현재 로그인한 사용자 정보 API"""
-
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.UserSerializer
 
@@ -102,7 +97,6 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
 
 class UsernameCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
-
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UsernameSerializer
@@ -162,7 +156,6 @@ class EmailVerifyThrottle(throttling.AnonRateThrottle):
 
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
-
     authentication_classes = []
     throttle_classes = []
     permission_classes = [permissions.AllowAny]

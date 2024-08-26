@@ -17,13 +17,11 @@ class UserAdmin(BaseUserAdmin):
         User.field_name.USERNAME,
         User.field_name.EMAIL,
         User.field_name.BOJ_USERNAME,
-        User.field_name.BOJ_LEVEL,
         'get_crews',
         User.field_name.IS_ACTIVE,
         User.field_name.IS_STAFF,
         User.field_name.IS_SUPERUSER,
         User.field_name.CREATED_AT,
-        User.field_name.BOJ_LEVEL_UPDATED_AT,
     ]
 
     @admin.display(description='captains / members')

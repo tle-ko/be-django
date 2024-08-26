@@ -1,17 +1,15 @@
 from rest_framework import serializers
 
+from boj.serializers import BOJUserSerializer
+from boj.services import get_boj_user_service
 from users.models import User
-from users.serializers.mixins import ReadOnlySerializerMixin
 
 
-__all__ = (
-    'UserSignInSerializer',
-    'UserSignUpSerializer',
-    'UserDetailSerializer',
-    'UserMinimalSerializer',
-    'UserEmailSerializer',
-    'EmailCodeSerializer',
-)
+class UserBOJField(serializers.SerializerMethodField):
+    def to_representation(self, instance: User):
+        service = get_boj_user_service(instance.boj_username)
+        serializer = BOJUserSerializer(instance=service.instance)
+        return serializer.data
 
 
 class EmailSerializer(serializers.Serializer):
@@ -53,29 +51,25 @@ class UsernameSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            User.field_name.EMAIL,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.BOJ_USERNAME,
-            User.field_name.CREATED_AT,
-            User.field_name.LAST_LOGIN,
-        ]
+    boj = UserBOJField()
 
-
-class UserMinimalSerializer(serializers.ModelSerializer, ReadOnlySerializerMixin):
     class Meta:
         model = User
         fields = [
             'id',
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
+            'boj',
         ]
-        extra_kwargs = {
-            'id': {'read_only': True},
-            User.field_name.PROFILE_IMAGE: {'read_only': True},
-            User.field_name.USERNAME: {'read_only': True},
-        }
+        read_only_fields = ['__all__']
+
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
+        ]
+        read_only_fields = ['__all__']

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-from users.models.choices import UserBojLevelChoices
 from users.models.user_manager import UserManager
 
 
@@ -13,6 +13,16 @@ def get_profile_image_path(user: User, filename: str) -> str:
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(
+        verbose_name='username',
+        max_length=30,
+        unique=True,
+    )
+    email = models.EmailField(
+        verbose_name='email address',
+        max_length=255,
+        unique=True,
+    )
     profile_image = models.ImageField(
         help_text='프로필 이미지',
         upload_to=get_profile_image_path,
@@ -29,30 +39,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True,
     )
-    boj_level = models.IntegerField(
-        help_text='백준 티어',
-        choices=UserBojLevelChoices.choices,
-        null=True,
-        blank=True,
-        default=None,
-    )
-    boj_level_updated_at = models.DateTimeField(
-        help_text='백준 티어 갱신 시각',
-        null=True,
-        blank=True,
-        default=None,
-    )
-
-    username = models.CharField(
-        verbose_name='username',
-        max_length=30,
-        unique=True,
-    )
-    email = models.EmailField(
-        verbose_name='email address',
-        max_length=255,
-        unique=True,
-    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -68,8 +54,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     class field_name:
         PROFILE_IMAGE = 'profile_image'
         BOJ_USERNAME = 'boj_username'
-        BOJ_LEVEL = 'boj_level'
-        BOJ_LEVEL_UPDATED_AT = 'boj_level_updated_at'
         USERNAME = 'username'
         EMAIL = 'email'
         PASSWORD = 'password'
