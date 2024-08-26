@@ -17,7 +17,7 @@ class ProblemService:
     def query_analyses(self) -> QuerySet[models.ProblemAnalysis]:
         raise NotImplementedError
 
-    def query_tags(self) -> QuerySet[models.ProblemAnalysisTag]:
+    def query_tags(self) -> QuerySet[models.ProblemTag]:
         raise NotImplementedError
 
     def get_analysis(self) -> Optional[models.ProblemAnalysis]:
