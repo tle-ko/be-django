@@ -7,10 +7,10 @@ from users.models import User
 
 
 @receiver(pre_save, sender=User)
-def auto_wire_boj_user(sender, user: User, **kwargs):
-    assert user.boj_username
+def auto_wire_boj_user(sender, instance: User, **kwargs):
+    assert instance.boj_username
     boj_user, created = models.BOJUser.objects.get_or_create(**{
-        models.BOJUser.field_name.USERNAME: user.boj_username
+        models.BOJUser.field_name.USERNAME: instance.boj_username
     })
     if created:
         services.fetch(boj_user.username)
