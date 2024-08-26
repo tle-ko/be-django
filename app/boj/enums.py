@@ -62,4 +62,6 @@ class BOJLevel(IntegerChoices):
         return str(tier)
 
     def get_name(self, lang='en', arabic=True) -> str:
+        if self.value == 0:
+            return '사용자 정보를 불러오지 못함'
         return f'{self.get_division_name(lang=lang)} {self.get_tier_name(arabic=arabic)}'
