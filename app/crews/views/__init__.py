@@ -3,6 +3,7 @@ from crews.views.crew_views import MyCrewListAPIView
 from crews.views.crew_views import RecruitingCrewListAPIView
 from crews.views.crew_views import CrewStatisticsAPIView
 from crews.views.crew_views import CrewDashboardAPIView
+from crews.views.crew_views import CrewApplicationsListAPIView
 from crews.views.crew_applicantions_views import CrewApplicantionCreateAPIView
 from crews.views.crew_applicantions_views import CrewApplicantionAcceptAPIView
 from crews.views.crew_applicantions_views import CrewApplicantionRejectAPIView

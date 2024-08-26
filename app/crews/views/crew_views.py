@@ -72,3 +72,74 @@ class CrewStatisticsAPIView(generics.RetrieveAPIView):
         crew = super().get_object()
         service = services.CrewService(crew)
         return service.statistics()
+
+
+class CrewApplicationsListAPIView(generics.ListAPIView):
+    queryset = models.Crew
+    permission_classes = [IsAuthenticated & permissions.IsCaptain]
+    serializer_class = serializers.CrewStatisticsSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'crew_id'
+
+    def get_object(self) -> dto.ProblemStatistic:
+        crew = super().get_object()
+        service = services.CrewService(crew)
+        return service.statistics()
+
+    def list(self, request, *args, **kwargs):
+        return Response({
+            'count': 2,
+            'results': [
+                {
+                    "created_at": "2024-08-26T14:34:47",
+                    "message": "저 진짜 열심히 할 자신 어쩌구...",
+                    "is_pending": False,
+                    "is_accepted": True,
+                    "applicant": {
+                        "user_id": 1,
+                        "username": "인간 닉네임",
+                        "profile_image": "https://picsum.photos/250/250",
+                        "boj": {
+                            "level": {
+                                "value": 1,
+                                "name": "골드 4",
+                            }
+                        }
+                    },
+                },
+                {
+                    "created_at": "2024-08-26T14:34:47",
+                    "message": "저 진짜 열심히 할 자신 어쩌구...",
+                    "is_pending": False,
+                    "is_accepted": False,
+                    "applicant": {
+                        "user_id": 1,
+                        "username": "인간 닉네임",
+                        "profile_image": "https://picsum.photos/250/250",
+                        "boj": {
+                            "level": {
+                                "value": 1,
+                                "name": "골드 4",
+                            }
+                        }
+                    },
+                },
+                {
+                    "created_at": "2024-08-26T14:34:47",
+                    "message": "저 진짜 열심히 할 자신 어쩌구...",
+                    "is_pending": True,
+                    "is_accepted": False,
+                    "applicant": {
+                        "user_id": 1,
+                        "username": "인간 닉네임",
+                        "profile_image": "https://picsum.photos/250/250",
+                        "boj": {
+                            "level": {
+                                "value": 1,
+                                "name": "골드 4",
+                            }
+                        }
+                    },
+                },
+            ],
+        })
