@@ -170,7 +170,7 @@ class CrewApplicationApplicantField(serializers.SerializerMethodField):
         return {
             "user_id": instance.applicant.pk,
             "username": instance.applicant.username,
-            "profile_image": instance.applicant.profile_image,
+            "profile_image": instance.applicant.profile_image.url,
             "boj": {
                 "level": {
                     "value": level.value,

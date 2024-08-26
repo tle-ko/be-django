@@ -127,24 +127,20 @@ class CrewActivityDashboardSerializer(serializers.ModelSerializer):
         read_only_fields = ['__all__']
 
 
-class CrewApplicationSerializer(serializers.ModelSerializer):
-    user = UserMinimalSerializer(read_only=True)
+class CrewApplicationAboutApplicantSerializer(serializers.ModelSerializer):
+    applicant = fields.CrewApplicationApplicantField()
 
     class Meta:
         model = models.CrewApplication
         fields = [
             PK,
-            models.CrewApplication.field_name.CREW,
             models.CrewApplication.field_name.MESSAGE,
-            models.CrewApplication.field_name.APPLICANT,
+            models.CrewApplication.field_name.IS_PENDING,
             models.CrewApplication.field_name.IS_ACCEPTED,
             models.CrewApplication.field_name.CREATED_AT,
+            'applicant',
         ]
-        read_only_fields = [
-            models.CrewApplication.field_name.CREW,
-            models.CrewApplication.field_name.IS_ACCEPTED,
-            models.CrewApplication.field_name.CREATED_AT,
-        ]
+        read_only_fields = ['__all__']
 
 
 class CrewApplicationCreateSerializer(serializers.Serializer):

@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from rest_framework import exceptions
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -77,69 +79,15 @@ class CrewStatisticsAPIView(generics.RetrieveAPIView):
 class CrewApplicationsListAPIView(generics.ListAPIView):
     queryset = models.Crew
     permission_classes = [IsAuthenticated & permissions.IsCaptain]
-    serializer_class = serializers.CrewStatisticsSerializer
-    lookup_field = 'id'
+    serializer_class = serializers.CrewApplicationAboutApplicantSerializer
     lookup_url_kwarg = 'crew_id'
 
-    def get_object(self) -> dto.ProblemStatistic:
-        crew = super().get_object()
-        service = services.CrewService(crew)
-        return service.statistics()
-
-    def list(self, request, *args, **kwargs):
-        return Response({
-            'count': 2,
-            'results': [
-                {
-                    "created_at": "2024-08-26T14:34:47",
-                    "message": "저 진짜 열심히 할 자신 어쩌구...",
-                    "is_pending": False,
-                    "is_accepted": True,
-                    "applicant": {
-                        "user_id": 1,
-                        "username": "인간 닉네임",
-                        "profile_image": "https://picsum.photos/250/250",
-                        "boj": {
-                            "level": {
-                                "value": 1,
-                                "name": "골드 4",
-                            }
-                        }
-                    },
-                },
-                {
-                    "created_at": "2024-08-26T14:34:47",
-                    "message": "저 진짜 열심히 할 자신 어쩌구...",
-                    "is_pending": False,
-                    "is_accepted": False,
-                    "applicant": {
-                        "user_id": 1,
-                        "username": "인간 닉네임",
-                        "profile_image": "https://picsum.photos/250/250",
-                        "boj": {
-                            "level": {
-                                "value": 1,
-                                "name": "골드 4",
-                            }
-                        }
-                    },
-                },
-                {
-                    "created_at": "2024-08-26T14:34:47",
-                    "message": "저 진짜 열심히 할 자신 어쩌구...",
-                    "is_pending": True,
-                    "is_accepted": False,
-                    "applicant": {
-                        "user_id": 1,
-                        "username": "인간 닉네임",
-                        "profile_image": "https://picsum.photos/250/250",
-                        "boj": {
-                            "level": {
-                                "value": 1,
-                                "name": "골드 4",
-                            }
-                        }
-                    },
-                },
-            ],
+    def get_queryset(self):
+        crew_id = self.kwargs[self.lookup_url_kwarg]
+        try:
+            crew = models.Crew.objects.get(pk=crew_id)
+        except models.Crew.DoesNotExist:
+            raise exceptions.NotFound
+        return models.CrewApplication.objects.filter(**{
+            models.CrewApplication.field_name.CREW: crew,
         })

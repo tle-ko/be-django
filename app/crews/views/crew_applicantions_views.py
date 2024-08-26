@@ -26,7 +26,7 @@ class CrewApplicantionCreateAPIView(generics.CreateAPIView):
             message=serializer.validated_data['message'],
         )
         # output serializer
-        serializer = serializers.CrewApplicationSerializer(instance)
+        serializer = serializers.CrewApplicationAboutApplicantSerializer(instance)
         headers = self.get_success_headers(serializer.data)
         return Response(
             data=serializer.data,
@@ -46,7 +46,7 @@ class CrewApplicantionAcceptAPIView(generics.GenericAPIView):
         instance = self.get_object()
         service = services.CrewApplicantionService(instance)
         service.accept(reviewed_by=request.user)
-        serializer = serializers.CrewApplicationSerializer(instance)
+        serializer = serializers.CrewApplicationAboutApplicantSerializer(instance)
         return Response(serializer.data)
 
 
@@ -61,5 +61,5 @@ class CrewApplicantionRejectAPIView(generics.GenericAPIView):
         instance = self.get_object()
         service = services.CrewApplicantionService(instance)
         service.reject(reviewed_by=request.user)
-        serializer = serializers.CrewApplicationSerializer(instance)
+        serializer = serializers.CrewApplicationAboutApplicantSerializer(instance)
         return Response(serializer.data)
