@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+
+from boj.enums import BOJLevel
 from boj.serializers import BOJUserSerializer
 from boj.services import get_boj_user_service
 from users.models import User
@@ -7,9 +9,20 @@ from users.models import User
 
 class UserBOJField(serializers.SerializerMethodField):
     def to_representation(self, instance: User):
+        assert isinstance(instance, User)
         service = get_boj_user_service(instance.boj_username)
-        serializer = BOJUserSerializer(instance=service.instance)
-        return serializer.data
+        return BOJUserSerializer(service.instance).data
+
+
+class UserBOJLevelNameField(serializers.SerializerMethodField):
+    def to_representation(self, instance: User):
+        assert isinstance(instance, User)
+        service = get_boj_user_service(instance.boj_username)
+        level = BOJLevel(service.instance.level)
+        return {
+            'value': level.value,
+            'name': level.name,
+        }
 
 
 class EmailSerializer(serializers.Serializer):
@@ -57,11 +70,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id',
-            User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
+            User.field_name.PROFILE_IMAGE,
             'boj',
         ]
         read_only_fields = ['__all__']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    level = UserBOJLevelNameField()
+
+    class Meta:
+        model = User
+        fields = [
+            User.field_name.EMAIL,
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.USERNAME,
+            User.field_name.BOJ_USERNAME,
+            'level',
+        ]
 
 
 class UserMinimalSerializer(serializers.ModelSerializer):
