@@ -1,14 +1,16 @@
 from typing import Union
 
 from rest_framework import exceptions
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from crews import models
 from crews import services
 
 
-class IsJoinable(permissions.BasePermission):
+class IsJoinable(BasePermission):
     def has_object_permission(self, request: Request, view, crew: models.Crew):
         assert isinstance(crew, models.Crew)
         service = services.CrewService(crew)
@@ -20,7 +22,7 @@ class IsJoinable(permissions.BasePermission):
         return True
 
 
-class IsMember(permissions.BasePermission):
+class IsMember(BasePermission):
     def has_object_permission(self, request: Request, view, obj: Union[models.Crew, models.CrewActivity]):
         if isinstance(obj, models.Crew):
             crew = obj
@@ -34,7 +36,7 @@ class IsMember(permissions.BasePermission):
         return True
 
 
-class IsCaptain(permissions.BasePermission):
+class IsCaptain(BasePermission):
     def has_object_permission(self, request: Request, view, application: models.CrewApplication) -> bool:
         assert isinstance(application, models.CrewApplication)
         service = services.CrewService(application.crew)
