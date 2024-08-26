@@ -21,3 +21,13 @@ class ProblemAnalysisDTO:
     difficulty: enums.ProblemDifficulty
     tags: Tuple[str] = field(default_factory=tuple)
     hints: Tuple[str] = field(default_factory=tuple)
+
+
+@dataclass
+class ProblemTagDTO:
+    key: str
+    name_ko: str
+    name_en: str
+
+    def __hash__(self) -> int:
+        return self.key
