@@ -79,16 +79,15 @@ class ConcreteProblemService(ProblemService):
 def schedule_analyze(problem_id: int):
     logger.info(f'PK={problem_id} 문제의 분석 준비중.')
     problem = get_problem(problem_id)
-    problem_dto = get_problem_dto(problem)
-    problem_repr = f'PK={problem_id} ({problem_dto.title})'
+    problem_dto = dto.ProblemDTO.from_model(problem)
     logger.info('문제 분석기를 불러오는 중.')
     analyzer = get_analyzer()
-    logger.info(f'{problem_repr} 문제의 분석 시작.')
+    logger.info(f'{problem_dto} 문제의 분석 시작.')
     analysis_dto = analyzer.analyze(problem_dto)
-    logger.info(f'{problem_repr} 문제의 분석 완료.')
-    logger.info(f'{problem_repr} 문제의 분석 결과를 데이터베이스에 저장하는 중.')
+    logger.info(f'{problem_dto} 문제의 분석 완료.')
+    logger.info(f'{problem_dto} 문제의 분석 결과를 데이터베이스에 저장하는 중.')
     save_analysis(problem, analysis_dto)
-    logger.info(f'{problem_repr} 문제의 분석 결과를 데이터베이스에 저장 완료.')
+    logger.info(f'{problem_dto} 문제의 분석 결과를 데이터베이스에 저장 완료.')
 
 
 def get_analyzer() -> ProblemAnalyzer:
@@ -100,17 +99,6 @@ def get_problem(problem_id: int) -> models.Problem:
         return models.Problem.objects.get(pk=problem_id)
     except models.Problem.DoesNotExist:
         logger.warning(f'id가 {problem_id}인 문제를 찾을 수 없습니다.')
-
-
-def get_problem_dto(problem: models.Problem) -> dto.ProblemDTO:
-    return dto.ProblemDTO(
-        title=problem.title,
-        description=problem.description,
-        input_description=problem.input_description,
-        output_description=problem.output_description,
-        memory_limit=problem.memory_limit,
-        time_limit=problem.time_limit,
-    )
 
 
 def save_analysis(problem: models.Problem, analysis_dto: dto.ProblemAnalysisDTO) -> models.ProblemAnalysis:
