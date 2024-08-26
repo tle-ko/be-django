@@ -5,6 +5,7 @@ from django.db.models import QuerySet
 from django.db.transaction import atomic
 from rest_framework import exceptions
 
+from boj.services import get_boj_user_service
 from crews import dto
 from crews import enums
 from crews import models
@@ -196,9 +197,8 @@ class CrewService:
     def _validate_applicant_boj_level(self, applicant: User):
         if self.instance.min_boj_level is None:
             return
-        if applicant.boj_level is None:
-            raise exceptions.ValidationError('사용자의 백준 레벨을 가져올 수 없습니다.')
-        if applicant.boj_level < self.instance.min_boj_level:
+        service = get_boj_user_service(applicant.boj_username)
+        if service.instance.level < self.instance.min_boj_level:
             raise exceptions.ValidationError('최소 백준 레벨 요구조건을 달성하지 못하였습니다.')
 
     def tags(self) -> List[dto.CrewTag]:
