@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 
+from background_task import background
 from django.utils import timezone
-import background_task
 import requests
 
 from boj import dto
@@ -12,31 +14,38 @@ from boj import models
 logger = logging.getLogger('tle.boj')
 
 
-def get_object(username: str) -> models.BOJUser:
-    obj, created = models.BOJUser.objects.get_or_create(**{
-        models.BOJUser.field_name.USERNAME: username,
-    })
-    return obj
+def get_boj_user_service(boj_username: str) -> BOJUserService:
+    return BOJUserService(boj_username)
 
 
-def snapshot(obj: models.BOJUser) -> models.BOJUserSnapshot:
-    return models.BOJUserSnapshot(**{
-        models.BOJUserSnapshot.field_name.USER: obj,
-        models.BOJUserSnapshot.field_name.LEVEL: obj.level,
-        models.BOJUserSnapshot.field_name.RATING: obj.rating,
-        models.BOJUserSnapshot.field_name.CREATED_AT: obj.updated_at,
-    })
+class BOJUserService:
+    def __init__(self, username: str):
+        self.username = username
+        self.instance, created = models.BOJUser.objects.get_or_create(**{
+            models.BOJUser.field_name.USERNAME: username,
+        })
+
+    def update(self) -> None:
+        update_boj_user(self.username)
+
+    def create_snapshot(self) -> models.BOJUserSnapshot:
+        return models.BOJUserSnapshot(**{
+            models.BOJUserSnapshot.field_name.USER: self.instance,
+            models.BOJUserSnapshot.field_name.LEVEL: self.instance.level,
+            models.BOJUserSnapshot.field_name.RATING: self.instance.rating,
+            models.BOJUserSnapshot.field_name.CREATED_AT: self.instance.updated_at,
+        })
 
 
-@background_task.background()
-def fetch(username: str) -> None:
-    data = fetch_data(username)
-    obj = get_object(username)
-    obj.level = data.level.value
-    obj.rating = data.rating
-    obj.updated_at = timezone.now()
-    obj.save()
-    snapshot(obj).save()
+@background
+def update_boj_user(boj_username: str):
+    data = fetch_data(boj_username)
+    service = get_boj_user_service(boj_username)
+    service.instance.level = data.level.value
+    service.instance.rating = data.rating
+    service.instance.updated_at = timezone.now()
+    service.instance.save()
+    service.create_snapshot()
 
 
 def fetch_data(username: str) -> dto.BOJUserData:
