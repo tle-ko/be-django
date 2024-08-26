@@ -11,12 +11,16 @@ from problems import models
 
 @dataclass
 class ProblemDTO:
+    id: int
     title: str
     description: str
     input_description: str
     output_description: str
     memory_limit: float
     time_limit: float
+
+    def __str__(self) -> str:
+        return f'<ProblemDTO id={self.id} title="{self.title}">'
 
 
 @dataclass
