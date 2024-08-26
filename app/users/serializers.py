@@ -20,7 +20,7 @@ class UserBOJLevelNameField(serializers.SerializerMethodField):
         level = BOJLevel(service.instance.level)
         return {
             'value': level.value,
-            'name': level.get_name(),
+            'name': level.get_name(lang='ko', arabic=False),
         }
 
 
