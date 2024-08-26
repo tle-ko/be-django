@@ -34,6 +34,14 @@ class LatestActivityField(serializers.SerializerMethodField):
             }
 
 
+class IsCrewCaptainField(serializers.SerializerMethodField):
+    def to_representation(self, crew: models.Crew):
+        assert isinstance(crew, models.Crew)
+        user = serializers.CurrentUserDefault()(self)
+        service = services.CrewService(crew)
+        return service.is_captain(user)
+
+
 class CrewMembersField(serializers.SerializerMethodField):
     """나의 동료"""
 

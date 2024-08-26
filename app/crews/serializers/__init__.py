@@ -93,6 +93,7 @@ class CrewDashboardSerializer(serializers.ModelSerializer):
     tags = fields.CrewTagsField()
     members = fields.CrewMembersField()
     activities = fields.CrewActivitiesField()
+    is_captain = fields.IsCrewCaptainField()
 
     class Meta:
         model = models.Crew
@@ -101,6 +102,7 @@ class CrewDashboardSerializer(serializers.ModelSerializer):
             models.Crew.field_name.ICON,
             models.Crew.field_name.NAME,
             models.Crew.field_name.NOTICE,
+            'is_captain',
             'tags',
             'members',
             'activities',
