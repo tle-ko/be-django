@@ -5,6 +5,20 @@ from problems.serializers import fields
 from users.serializers import UserMinimalSerializer
 
 
+class ProblemCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Problem
+        fields = [
+            models.Problem.field_name.TITLE,
+            models.Problem.field_name.LINK,
+            models.Problem.field_name.DESCRIPTION,
+            models.Problem.field_name.INPUT_DESCRIPTION,
+            models.Problem.field_name.OUTPUT_DESCRIPTION,
+            models.Problem.field_name.MEMORY_LIMIT,
+            models.Problem.field_name.TIME_LIMIT,
+        ]
+
+
 class ProblemDetailSerializer(serializers.ModelSerializer):
     analysis = fields.AnalysisField(read_only=True)
     memory_limit = fields.MemoryLimitField(read_only=True)

@@ -1,5 +1,7 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
 
 from problems import models
 from problems import serializers
@@ -10,7 +12,22 @@ class ProblemCreateAPIView(generics.CreateAPIView):
 
     queryset = models.Problem.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.ProblemDetailSerializer
+    serializer_class = serializers.ProblemCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data[models.Problem.field_name.CREATED_BY] = request.user
+        self.perform_create(serializer)
+        serializer = serializers.ProblemDetailSerializer(
+            instance=serializer.instance,
+        )
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
 
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
