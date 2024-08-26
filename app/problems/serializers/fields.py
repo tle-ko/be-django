@@ -34,7 +34,7 @@ class TimeLimitField(serializers.SerializerMethodField):
 class DifficultyField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
-        service = services.ProblemAnalysisService.from_problem(problem)
+        service = services.get_problem_service(problem)
         return {
             "name_ko": service.difficulty().get_name(lang='ko'),
             "name_en": service.difficulty().get_name(lang='en'),
@@ -45,7 +45,7 @@ class DifficultyField(serializers.SerializerMethodField):
 class AnalysisField(serializers.SerializerMethodField):
     def to_representation(self, problem: models.Problem):
         assert isinstance(problem, models.Problem)
-        service = services.ProblemAnalysisService.from_problem(problem)
+        service = services.get_problem_service(problem)
         return {
             'difficulty': {
                 "name_ko": service.difficulty().get_name(lang='ko'),
@@ -64,7 +64,7 @@ class AnalysisField(serializers.SerializerMethodField):
                     'name_en': tag.name_en,
                     'name_ko': tag.name_ko,
                 }
-                for tag in service.tags()
+                for tag in service.query_tags()
             ],
             'is_analyzed': service.is_analyzed(),
         }
