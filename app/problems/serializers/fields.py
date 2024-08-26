@@ -51,11 +51,9 @@ class AnalysisField(serializers.SerializerMethodField):
                 "name_ko": service.difficulty().get_name(lang='ko'),
                 "name_en": service.difficulty().get_name(lang='en'),
                 'value': service.difficulty().value,
-                'description': service.difficulty_description(),
             },
             'time_complexity': {
                 'value': service.time_complexity(),
-                'description': service.time_complexity_description(),
             },
             'hints': service.hints(),
             'tags': [
