@@ -36,8 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     boj_username = models.CharField(
         help_text='백준 아이디',
         max_length=40,
-        null=True,
-        blank=True,
     )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
