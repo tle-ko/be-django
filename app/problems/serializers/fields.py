@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from problems import dto
 from problems import enums
 from problems import models
 from problems import services
@@ -66,3 +67,42 @@ class AnalysisField(serializers.SerializerMethodField):
             ],
             'is_analyzed': service.is_analyzed(),
         }
+
+
+class ProblemStatisticsDifficultyField(serializers.SerializerMethodField):
+    def to_representation(self, statistics: dto.ProblemStatisticDTO):
+        assert isinstance(statistics, dto.ProblemStatisticDTO)
+        try:
+            ratio_denominator = 1 / statistics.sample_count
+        except ZeroDivisionError:
+            ratio_denominator = 0
+        finally:
+            return [
+                {
+                    'difficulty': difficulty,
+                    'problem_count': count,
+                    'ratio': count * ratio_denominator,
+                }
+                for difficulty, count in statistics.difficulty.items()
+            ]
+
+
+class ProblemStatisticsTagsField(serializers.SerializerMethodField):
+    def to_representation(self, statistics: dto.ProblemStatisticDTO):
+        assert isinstance(statistics, dto.ProblemStatisticDTO)
+        try:
+            ratio_denominator = 1 / statistics.sample_count
+        except ZeroDivisionError:
+            ratio_denominator = 0
+        finally:
+            return [
+                {
+                    'label': {
+                        'ko': tag.name_ko,
+                        'en': tag.name_en,
+                    },
+                    'problem_count': count,
+                    'ratio': count * ratio_denominator,
+                }
+                for tag, count in statistics.tags.items()
+            ]

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from problems import dto
 from problems import models
 from problems.serializers import fields
 from users.serializers import UserMinimalSerializer
@@ -75,3 +76,12 @@ class ProblemMinimalSerializer(serializers.ModelSerializer):
             models.Problem.field_name.UPDATED_AT,
         ]
         read_only_fields = ['__all__']
+
+
+class ProblemStatisticSerializer(serializers.Serializer):
+    difficulty = fields.ProblemStatisticsDifficultyField()
+    tags = fields.ProblemStatisticsTagsField()
+
+    def __init__(self, instance: dto.ProblemStatisticDTO, **kwargs):
+        assert isinstance(instance, dto.ProblemStatisticDTO)
+        super().__init__(instance, **kwargs)
