@@ -36,6 +36,9 @@ class BOJUserService:
             models.BOJUserSnapshot.field_name.CREATED_AT: self.instance.updated_at,
         })
 
+    def level(self) -> enums.BOJLevel:
+        return enums.BOJLevel(self.instance.level)
+
 
 @background
 def update_boj_user(boj_username: str):
