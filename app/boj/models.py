@@ -44,3 +44,14 @@ class BOJUserSnapshot(models.Model):
         LEVEL = 'level'
         RATING = 'rating'
         CREATED_AT = 'created_at'
+
+
+class BOJProblem(models.Model):
+    title = models.TextField()
+    description = models.TextField()
+    input_description = models.TextField()
+    output_description = models.TextField()
+    memory_limit = models.FloatField()
+    time_limit = models.FloatField()
+    tags = models.JSONField(default=list)
+    level = models.IntegerField(choices=enums.BOJLevel.choices)
