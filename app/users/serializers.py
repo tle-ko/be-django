@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-
 from boj.enums import BOJLevel
 from boj.serializers import BOJUserSerializer
 from boj.services import get_boj_user_service
@@ -84,11 +83,20 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             User.field_name.EMAIL,
+            User.field_name.PASSWORD,
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
             User.field_name.BOJ_USERNAME,
             'level',
         ]
+        extra_kwargs = {
+            User.field_name.EMAIL: {
+                'read_only': True,
+            },
+            User.field_name.PASSWORD: {
+                'write_only': True,
+            }
+        }
 
 
 class UserMinimalSerializer(serializers.ModelSerializer):

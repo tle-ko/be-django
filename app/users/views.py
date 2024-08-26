@@ -1,55 +1,39 @@
-from typing import Callable
-
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, mixins, permissions, status, throttling
+from rest_framework import generics
+from rest_framework import status
+from rest_framework import throttling
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
-from rest_framework.views import APIView
 
+from users import models
+from users import permissions
 from users import serializers
 from users import services
-from users.models import User
 
 
-__all__ = (
-    'SignUpAPIView',
-    'SignInAPIView',
-    'SignOutAPIView',
-    'CurrentUserAPIView',
-    'EmailVerification',
-)
-
-
-class SignInAPIView(mixins.RetrieveModelMixin,
-                    generics.GenericAPIView):
+class SignInAPIView(generics.RetrieveAPIView):
     """사용자 로그인 API"""
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInSerializer
-    get_serializer: Callable[..., Serializer]
 
-    @swagger_auto_schema(responses={
-        status.HTTP_200_OK: '로그인 성공',
-        status.HTTP_401_UNAUTHORIZED: '로그인 실패',
-    })
-    def post(self, request, *args, **kwargs):
+    def get_object(self) -> models.User:
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-        user = services.sign_in(
+        return services.sign_in(
             request=self.request,
             email=serializer.validated_data['email'],
             password=serializer.validated_data['password'],
         )
-        token = services.get_user_jwt(user)
-        return Response(
-            data={
-                **serializers.UserSerializer(user).data,
-                'access_token': str(token.access_token),
-                'refresh_token': str(token.token),
-            },
-            status=status.HTTP_200_OK,
-        )
+
+    def retrieve(self, request: Request, *args, **kwargs):
+        instance = self.get_object()
+        token = services.get_user_jwt(instance)
+        return Response({
+            **serializers.UserSerializer(instance).data,
+            'access_token': str(token.access_token),
+            'refresh_token': str(token.token),
+        })
 
 
 class SignUpAPIView(generics.CreateAPIView):
@@ -57,7 +41,6 @@ class SignUpAPIView(generics.CreateAPIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignUpSerializer
-    get_serializer: Callable[..., Serializer]
 
     def create(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -74,7 +57,7 @@ class SignUpAPIView(generics.CreateAPIView):
         serializer.instance = services.sign_up(**serializer.validated_data)
 
 
-class SignOutAPIView(APIView):
+class SignOutAPIView(generics.GenericAPIView):
     """사용자 로그아웃 API"""
     permission_classes = [permissions.IsAuthenticated]
 
@@ -86,21 +69,11 @@ class SignOutAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CurrentUserAPIView(generics.RetrieveAPIView):
-    """현재 로그인한 사용자 정보 API"""
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.UserSerializer
-
-    def get_object(self) -> User:
-        return self.request.user
-
-
 class UsernameCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UsernameSerializer
-    get_serializer: Callable[..., Serializer]
 
     @swagger_auto_schema(
         query_serializer=serializers.UsernameSerializer,
@@ -128,7 +101,6 @@ class EmailCheckAPIView(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.EmailSerializer
-    get_serializer: Callable[..., Serializer]
 
     @swagger_auto_schema(
         query_serializer=serializers.EmailSerializer,
@@ -159,7 +131,6 @@ class EmailVerifyAPIView(generics.GenericAPIView):
     authentication_classes = []
     throttle_classes = []
     permission_classes = [permissions.AllowAny]
-    get_serializer: Callable[..., Serializer]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -201,3 +172,12 @@ class EmailVerifyAPIView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class CurrentUserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    """현재 로그인한 사용자 정보를 조회/수정하는 API"""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.UserUpdateSerializer
+
+    def get_object(self) -> models.User:
+        return self.request.user

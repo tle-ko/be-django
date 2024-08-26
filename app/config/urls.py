@@ -45,7 +45,7 @@ urlpatterns = [
         path("problems", problems.views.ProblemSearchListAPIView.as_view()),
         path("problem", problems.views.ProblemCreateAPIView.as_view()),
         path("problem/<int:id>/detail", problems.views.ProblemDetailRetrieveUpdateDestroyAPIView.as_view()),
-        path("users/current", users.views.CurrentUserAPIView.as_view()),
+        path("user/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),
         path("submissions/<int:id>", submissions.views.CreateCodeReview.as_view()),
     ])),
     path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
