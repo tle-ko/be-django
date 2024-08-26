@@ -14,7 +14,7 @@ from problems.services.analyzers import ProblemAnalyzer
 from problems.services.analyzers import GeminiProblemAnalyzer
 
 
-logger = getLogger('django.server')
+logger = getLogger('problems.services')
 
 
 class ConcreteProblemService(ProblemService):

@@ -233,6 +233,13 @@ LOGGING = {
             'when': 'D',
             "formatter": "django.server",
         },
+        "problems": {
+            "level": "INFO",
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/problems.log',
+            'when': 'D',
+            "formatter": "standard",
+        },
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
@@ -261,6 +268,10 @@ LOGGING = {
             'handlers': ['django.security.DisallowedHost'],
             "level": "DEBUG",
             'propagate': False,
+        },
+        "problems": {
+            "handlers": ["problems"],
+            "level": "INFO",
         },
     },
 }

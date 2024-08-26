@@ -9,7 +9,7 @@ from sympy.parsing.latex import parse_latex
 from problems.models import ProblemTag
 
 
-logger = getLogger('django.server')
+logger = getLogger('problems.analyzers.gemini.parsers')
 
 
 @cache
