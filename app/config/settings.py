@@ -275,3 +275,8 @@ LOGGING = {
         },
     },
 }
+
+
+#Django Background Tasks
+
+BACKGROUND_TASK_ASYNC_THREADS = 1
