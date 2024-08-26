@@ -11,26 +11,24 @@ from users import serializers
 from users import services
 
 
-class SignInAPIView(generics.RetrieveAPIView):
+class SignInAPIView(generics.GenericAPIView):
     """사용자 로그인 API"""
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SignInSerializer
 
-    def get_object(self) -> models.User:
-        serializer = self.get_serializer(data=self.request.data)
+    def post(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return services.sign_in(
+        user = services.sign_in(
             request=self.request,
             email=serializer.validated_data['email'],
             password=serializer.validated_data['password'],
         )
-
-    def retrieve(self, request: Request, *args, **kwargs):
-        instance = self.get_object()
-        token = services.get_user_jwt(instance)
+        token = services.get_user_jwt(user)
+        serializer = serializers.UserSerializer(instance=user)
         return Response({
-            **serializers.UserSerializer(instance).data,
+            **serializer.data,
             'access_token': str(token.access_token),
             'refresh_token': str(token.token),
         })
