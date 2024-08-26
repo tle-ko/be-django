@@ -140,6 +140,7 @@ class CrewApplicantModelAdmin(admin.ModelAdmin):
         models.CrewApplication.field_name.CREW,
         models.CrewApplication.field_name.APPLICANT,
         models.CrewApplication.field_name.IS_ACCEPTED,
+        models.CrewApplication.field_name.IS_PENDING,
         models.CrewApplication.field_name.REVIEWED_BY,
     ]
     actions = [
