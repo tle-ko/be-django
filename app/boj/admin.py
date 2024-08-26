@@ -15,13 +15,14 @@ class BOJUserModelAdmin(admin.ModelAdmin):
         models.BOJUser.field_name.UPDATED_AT,
     ]
     actions = [
-        'fetch',
+        'update',
     ]
 
-    @admin.action(description="Fetch data from solved.ac API of selected BOJ users.")
-    def fetch(self, request: HttpRequest, queryset: QuerySet[models.BOJUser]):
+    @admin.action(description="Update selected BOJ user data. (via solved.ac API)")
+    def update(self, request: HttpRequest, queryset: QuerySet[models.BOJUser]):
         for obj in queryset:
-            services.fetch(obj.username)
+            service = services.get_boj_user_service(obj.username)
+            service.update()
 
 
 @admin.register(models.BOJUserSnapshot)
