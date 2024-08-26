@@ -1,8 +1,12 @@
+from __future__ import annotations
+
+from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Tuple
 
 from problems import enums
+from problems import models
 
 
 @dataclass
@@ -31,3 +35,10 @@ class ProblemTagDTO:
 
     def __hash__(self) -> int:
         return self.key
+
+
+@dataclass
+class ProblemStatisticDTO:
+    sample_count: int = field(default=0)
+    difficulty: Counter[int] = field(default_factory=Counter)
+    tags: Counter[ProblemTagDTO] = field(default_factory=Counter)
