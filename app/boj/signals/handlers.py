@@ -13,5 +13,5 @@ def auto_wire_boj_user(sender, instance: User, **kwargs):
         models.BOJUser.field_name.USERNAME: instance.boj_username
     })
     if created:
-        service = services.get_boj_user_service(instance.username)
+        service = services.get_boj_user_service(instance.boj_username)
         service.update()
