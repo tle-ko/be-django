@@ -5,9 +5,9 @@ from google import generativeai as genai
 
 from problems.dto import ProblemDTO
 from problems.dto import ProblemAnalysisDTO
-from problems.services.analysers.base import ProblemAnalyzer
-from problems.services.analysers.gemini import prompts
-from problems.services.analysers.gemini import parsers
+from problems.services.analyzers.base import ProblemAnalyzer
+from problems.services.analyzers.gemini import prompts
+from problems.services.analyzers.gemini import parsers
 
 
 # TODO: replace log channel

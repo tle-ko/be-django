@@ -10,8 +10,8 @@ from problems import dto
 from problems import enums
 from problems import models
 from problems.services.base import ProblemService
-from problems.services.analysers import ProblemAnalyzer
-from problems.services.analysers import GeminiProblemAnalyzer
+from problems.services.analyzers import ProblemAnalyzer
+from problems.services.analyzers import GeminiProblemAnalyzer
 
 
 logger = getLogger('django.server')
