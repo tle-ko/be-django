@@ -6,7 +6,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-import crews.views
+import crews.urls
 import problems.urls
 import users.views
 import submissions.views
@@ -33,17 +33,7 @@ urlpatterns = [
         path("auth/username/check", users.views.UsernameCheckAPIView.as_view()),
         path("auth/email/check", users.views.EmailCheckAPIView.as_view()),
         path("auth/email/verify", users.views.EmailVerifyAPIView.as_view()),
-        path("crews/my", crews.views.MyCrewListAPIView.as_view()),
-        path("crews/recruiting", crews.views.RecruitingCrewListAPIView.as_view()),
-        path("crew", crews.views.CrewCreateAPIView.as_view()),
-        path("crew/<int:crew_id>/dashboard", crews.views.CrewDashboardAPIView.as_view()),
-        path("crew/<int:crew_id>/statistics", crews.views.CrewStatisticsAPIView.as_view()),
-        path("crew/<int:crew_id>/apply", crews.views.CrewApplicantionCreateAPIView.as_view()),
-        path("crew/<int:crew_id>/applications", crews.views.CrewApplicationListAPIView.as_view()),
-        path("crew/applications/my", crews.views.CrewApplicantionRejectAPIView.as_view()),
-        path("crew/application/<int:application_id>/accept", crews.views.CrewApplicantionAcceptAPIView.as_view()),
-        path("crew/application/<int:application_id>/reject", crews.views.CrewApplicantionRejectAPIView.as_view()),
-        path("crew/activities/<int:activity_id>/dashboard", crews.views.CrewDashboardActivityAPIView.as_view()),
+        *crews.urls.urlpatterns,
         *problems.urls.urlpatterns,
         path("user/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),
         path("submissions/<int:id>", submissions.views.CreateCodeReview.as_view()),
