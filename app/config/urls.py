@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 import crews.views
-import problems.views
+import problems.urls
 import users.views
 import submissions.views
 
@@ -44,9 +44,7 @@ urlpatterns = [
         path("crew/application/<int:application_id>/accept", crews.views.CrewApplicantionAcceptAPIView.as_view()),
         path("crew/application/<int:application_id>/reject", crews.views.CrewApplicantionRejectAPIView.as_view()),
         path("crew/activities/<int:activity_id>/dashboard", crews.views.CrewDashboardActivityAPIView.as_view()),
-        path("problems", problems.views.ProblemSearchListAPIView.as_view()),
-        path("problem", problems.views.ProblemCreateAPIView.as_view()),
-        path("problem/<int:id>/detail", problems.views.ProblemDetailRetrieveUpdateDestroyAPIView.as_view()),
+        *problems.urls.urlpatterns,
         path("user/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),
         path("submissions/<int:id>", submissions.views.CreateCodeReview.as_view()),
     ])),
