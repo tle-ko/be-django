@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "boj",
     "users",
     "problems",
+    "problems.analyses",
 ]
 
 MIDDLEWARE = [

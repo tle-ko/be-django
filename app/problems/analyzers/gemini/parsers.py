@@ -6,7 +6,7 @@ import re
 from sympy import latex
 from sympy.parsing.latex import parse_latex
 
-from problems.models import ProblemTag
+from problems.analyses.models import ProblemTag
 
 
 logger = getLogger('problems.analyzers.gemini.parsers')

@@ -1,5 +1,5 @@
 from problems import dto
-from problems.services.analyzers.base import ProblemAnalyzer
+from problems.analyzers.base import ProblemAnalyzer
 
 
 class GPTProblemAnalyzer(ProblemAnalyzer):

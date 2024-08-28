@@ -1,7 +1,7 @@
 from textwrap import dedent
 
-from problems.dto import ProblemDTO
-from problems.dto import ProblemAnalysisDTO
+from problems.analyzers.base import ProblemDTO
+from problems.analyzers.base import ProblemAnalysisDTO
 
 
 def get_difficulty_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisDTO) -> str:

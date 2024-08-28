@@ -1,6 +1,7 @@
 from django.db import models
 
-from problems import enums
+from problems.dto import ProblemDTO
+from problems.enums import Unit
 from users.models import User
 
 
@@ -30,16 +31,16 @@ class Problem(models.Model):
         help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
     )
     memory_limit_unit = models.TextField(
-        choices=enums.Unit.choices,
-        default=enums.Unit.MEGA_BYTE,
+        choices=Unit.choices,
+        default=Unit.MEGA_BYTE,
     )
     time_limit = models.FloatField(
         help_text='문제 시간 제한을 입력해주세요. (초 단위)',
         default=1.0,
     )
     time_limit_unit = models.TextField(
-        choices=enums.Unit.choices,
-        default=enums.Unit.SECOND,
+        choices=Unit.choices,
+        default=Unit.SECOND,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
@@ -69,3 +70,14 @@ class Problem(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.pk} : {self.title}]'
+
+    def as_dto(self) -> ProblemDTO:
+        return ProblemDTO(
+            id=self.pk,
+            title=self.title,
+            description=self.description,
+            input_description=self.input_description,
+            output_description=self.output_description,
+            memory_limit=self.memory_limit,
+            time_limit=self.time_limit,
+        )
