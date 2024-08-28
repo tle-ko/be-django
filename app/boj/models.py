@@ -43,6 +43,16 @@ class BOJUser(models.Model):
         return f'{self.username}'
 
 
+class BOJUserSnapshotManager(models.BaseManager):
+    def create_snapshot_of(self, boj_user: BOJUser) -> BOJUserSnapshot:
+        return self.create(**{
+            BOJUserSnapshot.field_name.USER: boj_user,
+            BOJUserSnapshot.field_name.LEVEL: boj_user.level,
+            BOJUserSnapshot.field_name.RATING: boj_user.rating,
+            BOJUserSnapshot.field_name.CREATED_AT: boj_user.updated_at,
+        })
+
+
 class BOJUserSnapshot(models.Model):
     user = models.ForeignKey(
         BOJUser,
@@ -51,6 +61,8 @@ class BOJUserSnapshot(models.Model):
     level = models.IntegerField(choices=BOJLevel.choices)
     rating = models.IntegerField()
     created_at = models.DateTimeField()
+
+    objects: _BOJUserSnapshotManager = BOJUserSnapshotManager()
 
     class field_name:
         USER = 'user'
@@ -71,3 +83,5 @@ class BOJProblem(models.Model):
 
 
 _BOJUserManager = Union[BOJUserManager, models.BaseManager[BOJUser]]
+_BOJUserSnapshotManager = Union[BOJUserSnapshotManager,
+                                models.BaseManager[BOJUserSnapshot]]
