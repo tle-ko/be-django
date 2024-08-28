@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from django.http.request import HttpRequest
 
 from boj import models
-from boj import services
+from boj.signals import update_boj_user_data
 
 
 @admin.register(models.BOJUser)
@@ -21,8 +21,7 @@ class BOJUserModelAdmin(admin.ModelAdmin):
     @admin.action(description="Update selected BOJ user data. (via solved.ac API)")
     def update(self, request: HttpRequest, queryset: QuerySet[models.BOJUser]):
         for obj in queryset:
-            service = services.get_boj_user_service(obj.username)
-            service.update()
+            update_boj_user_data(obj.username)
 
 
 @admin.register(models.BOJUserSnapshot)
