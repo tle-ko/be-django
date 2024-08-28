@@ -1,7 +1,32 @@
-from django.db.models import TextChoices
+from enum import Enum
+
+from django.db import models
 
 
-class EmojiChoices(TextChoices):
+class CrewTagType(Enum):
+    LANGUAGE = 'language'
+    LEVEL = 'level'
+    CUSTOM = 'custom'
+
+
+class ProgrammingLanguageChoices(models.TextChoices):
+    # TLE에서 허용중인 언어
+    NODE_JS = 'nodejs', 'Node.js'
+    KOTLIN = 'kotlin', 'Kotlin'
+    SWIFT = 'swift', 'Swift'
+    CPP = 'cpp', 'C++'
+    JAVA = 'java', 'Java'
+    PYTHON = 'python', 'Python'
+    C = 'c', 'C'
+    JAVASCRIPT = 'javascript', 'JavaScript'
+
+    # 아직 지원하지 않는 언어
+    CSHARP = 'csharp', 'C#'
+    RUBY = 'ruby', 'Ruby'
+    PHP = 'php', 'PHP'
+
+
+class EmojiChoices(models.TextChoices):
     U1F947 = "🥇", "🥇 (:1st_place_medal:)"
     U1F948 = "🥈", "🥈 (:2nd_place_medal:)"
     U1F949 = "🥉", "🥉 (:3rd_place_medal:)"
