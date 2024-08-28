@@ -1,8 +1,19 @@
 from __future__ import annotations
 
+from typing import Union
+
 from django.db import models
 
-from boj import enums
+from boj.enums import BOJLevel
+from users.models import User
+
+
+class BOJUserManager(models.BaseManager):
+    def user(self, user: User) -> _BOJUserManager:
+        return self.filter(**{BOJUser.field_name.USERNAME: user.boj_username})
+
+    def username(self, username: str) -> BOJUser:
+        return self.get_or_create(**{BOJUser.field_name.USERNAME: username})[0]
 
 
 class BOJUser(models.Model):
@@ -12,13 +23,15 @@ class BOJUser(models.Model):
         unique=True,
     )
     level = models.IntegerField(
-        choices=enums.BOJLevel.choices,
-        default=enums.BOJLevel.U,
+        choices=BOJLevel.choices,
+        default=BOJLevel.U,
     )
     rating = models.IntegerField(
         default=0,
     )
     updated_at = models.DateTimeField(auto_now_add=True)
+
+    objects: _BOJUserManager = BOJUserManager()
 
     class field_name:
         USERNAME = 'username'
@@ -35,7 +48,7 @@ class BOJUserSnapshot(models.Model):
         BOJUser,
         on_delete=models.CASCADE,
     )
-    level = models.IntegerField(choices=enums.BOJLevel.choices)
+    level = models.IntegerField(choices=BOJLevel.choices)
     rating = models.IntegerField()
     created_at = models.DateTimeField()
 
@@ -54,4 +67,7 @@ class BOJProblem(models.Model):
     memory_limit = models.FloatField()
     time_limit = models.FloatField()
     tags = models.JSONField(default=list)
-    level = models.IntegerField(choices=enums.BOJLevel.choices)
+    level = models.IntegerField(choices=BOJLevel.choices)
+
+
+_BOJUserManager = Union[BOJUserManager, models.BaseManager[BOJUser]]
