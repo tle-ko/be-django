@@ -16,20 +16,18 @@ logger = getLogger('django.server')
 
 @receiver(post_save, sender=User)
 def auto_create_boj_user(sender, instance: User, created: bool, **kwargs):
-    if created and not BOJUser.objects.user(instance).exists():
-        BOJUser.objects.create(
-            **{BOJUser.field_name.USERNAME: instance.boj_username})
+    update_boj_user_data(instance.username)
 
 
 @receiver(post_save, sender=BOJUser)
-def auto_create_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
+def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
     if created:
         update_boj_user_data(instance.username)
 
 
 @background
 def update_boj_user_data(username: str):
-    instance = BOJUser.objects.username(username)
+    instance = BOJUser.objects.get_by_username(username)
     url = f'https://solved.ac/api/v3/user/show?handle={username}'
     data = requests.get(url).json()
     try:
