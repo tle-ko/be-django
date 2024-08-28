@@ -6,10 +6,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-import crews.urls
 import problems.urls
-import users.views
-import submissions.views
+import users.urls
 
 
 schema_view = get_schema_view(
@@ -27,16 +25,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include([
-        path("auth/signin", users.views.SignInAPIView.as_view()),
-        path("auth/signup", users.views.SignUpAPIView.as_view()),
-        path("auth/signout", users.views.SignOutAPIView.as_view()),
-        path("auth/username/check", users.views.UsernameCheckAPIView.as_view()),
-        path("auth/email/check", users.views.EmailCheckAPIView.as_view()),
-        path("auth/email/verify", users.views.EmailVerifyAPIView.as_view()),
-        *crews.urls.urlpatterns,
+        *users.urls.urlpatterns,
         *problems.urls.urlpatterns,
-        path("user/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),
-        path("submissions/<int:id>", submissions.views.CreateCodeReview.as_view()),
     ])),
     path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path(r'swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
