@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import Union
 
 from django.db import models
+from django.db.models import Manager
 
 from boj.enums import BOJLevel
 from users.models import User
 
 
-class BOJUserManager(models.BaseManager):
+class BOJUserManager(Manager):
     def user(self, user: User) -> _BOJUserManager:
         return self.filter(**{BOJUser.field_name.USERNAME: user.boj_username})
 
@@ -43,7 +44,7 @@ class BOJUser(models.Model):
         return f'{self.username}'
 
 
-class BOJUserSnapshotManager(models.BaseManager):
+class BOJUserSnapshotManager(Manager):
     def create_snapshot_of(self, boj_user: BOJUser) -> BOJUserSnapshot:
         return self.create(**{
             BOJUserSnapshot.field_name.USER: boj_user,
@@ -82,6 +83,6 @@ class BOJProblem(models.Model):
     level = models.IntegerField(choices=BOJLevel.choices)
 
 
-_BOJUserManager = Union[BOJUserManager, models.BaseManager[BOJUser]]
+_BOJUserManager = Union[BOJUserManager, Manager[BOJUser]]
 _BOJUserSnapshotManager = Union[BOJUserSnapshotManager,
-                                models.BaseManager[BOJUserSnapshot]]
+                                Manager[BOJUserSnapshot]]
