@@ -6,6 +6,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+import crews.urls
 import problems.urls
 import users.urls
 
@@ -25,6 +26,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include([
+        *crews.urls.urlpatterns,
         *users.urls.urlpatterns,
         *problems.urls.urlpatterns,
     ])),

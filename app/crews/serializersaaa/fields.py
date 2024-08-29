@@ -1,9 +1,12 @@
+from typing import List
+
 from rest_framework import serializers
 
 from boj.services import get_boj_user_service
-from crews import dto
+from app.crews.servicesa import dto
+from crews import enums
 from crews import models
-from crews import services
+from crews import servicesa
 from crews import utils
 from users.models import User
 
@@ -20,7 +23,8 @@ class LatestActivityField(serializers.SerializerMethodField):
                 "date_end_at": None,
             }
         try:
-            service = services.CrewActivityService.last_started(crew)
+            service = servicesa.get_crew_service(crew)
+            activity = service.query_activities_published().latest()
         except models.CrewActivity.DoesNotExist:
             return {
                 "name": "등록된 활동 없음",
@@ -29,17 +33,17 @@ class LatestActivityField(serializers.SerializerMethodField):
             }
         else:
             return {
-                "name": f"{service.nth()}회차",
-                "date_start_at": service.instance.start_at,
-                "date_end_at": service.instance.end_at,
+                "name": activity.name,
+                "date_start_at": activity.start_at,
+                "date_end_at": activity.end_at,
             }
 
 
 class IsCrewCaptainField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
+        service = servicesa.get_crew_service(crew)
         user = serializers.CurrentUserDefault()(self)
-        service = services.CrewService(crew)
         return service.is_captain(user)
 
 
@@ -48,7 +52,7 @@ class CrewMembersField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
         image_field = serializers.ImageField()
         return [
             {
@@ -65,7 +69,7 @@ class CrewMemberCountField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
         return {
             "count": service.query_members().count(),
             "max_count": crew.max_members,
@@ -77,7 +81,7 @@ class CrewTagsField(serializers.SerializerMethodField):
 
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
         return [
             {
                 'key': tag.key,
@@ -90,32 +94,30 @@ class CrewTagsField(serializers.SerializerMethodField):
 
 class CrewIsJoinableField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
-        user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
-        assert isinstance(user, User)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
+        user = serializers.CurrentUserDefault()(self)
         return service.validate_applicant(user)
 
 
 class CrewIsMemberField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
-        user = serializers.CurrentUserDefault()(self)
         assert isinstance(crew, models.Crew)
-        assert isinstance(user, User)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
+        user = serializers.CurrentUserDefault()(self)
         return service.is_member(user)
 
 
 class CrewActivitiesField(serializers.SerializerMethodField):
     def to_representation(self, crew: models.Crew):
         assert isinstance(crew, models.Crew)
-        service = services.CrewService(crew)
+        service = servicesa.get_crew_service(crew)
         return [
             {
                 'activity_id': activity.activity_id,
                 'name': activity.name,
             }
-            for activity in service.activities()
+            for activity in service.query_activities()
         ]
 
 
@@ -130,35 +132,6 @@ class CrewAcitivityProblemsField(serializers.SerializerMethodField):
                 'is_solved': problem,
             }
             for problem in queryset
-        ]
-
-
-class ProblemStatisticsDifficultyField(serializers.SerializerMethodField):
-    def to_representation(self, statistics: dto.ProblemStatistic):
-        assert isinstance(statistics, dto.ProblemStatistic)
-        return [
-            {
-                'difficulty': difficulty,
-                'problem_count': count,
-                'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
-            }
-            for difficulty, count in statistics.difficulty.items()
-        ]
-
-
-class ProblemStatisticsTagsField(serializers.SerializerMethodField):
-    def to_representation(self, statistics: dto.ProblemStatistic):
-        assert isinstance(statistics, dto.ProblemStatistic)
-        return [
-            {
-                'label': {
-                    'ko': tag.name_ko,
-                    'en': tag.name_en,
-                },
-                'problem_count': count,
-                'ratio': utils.divide_by_zero_handler(count, statistics.sample_count),
-            }
-            for tag, count in statistics.tags.items()
         ]
 
 

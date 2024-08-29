@@ -1,10 +1,10 @@
+from django.db.transaction import atomic
 from rest_framework import serializers
 
 from crews import enums
 from crews import models
-from crews import services
-from crews.serializers import fields
-from users.serializers import UserMinimalSerializer
+from crews import servicesa
+from crews.serializersaaa import fields
 
 
 PK = 'id'
@@ -14,8 +14,19 @@ class NoInputSerializer(serializers.Serializer):
     pass
 
 
+# Crew Serializers
+
 class CrewCreateSerializer(serializers.ModelSerializer):
-    languages = serializers.MultipleChoiceField(choices=enums.ProgrammingLanguageChoices.choices)
+    created_by = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
+    custom_tags = serializers.ListField(
+        default=list,
+        child=serializers.CharField(),
+    )
+    languages = serializers.MultipleChoiceField(
+        choices=enums.ProgrammingLanguageChoices.choices,
+    )
 
     class Meta:
         model = models.Crew
@@ -29,15 +40,16 @@ class CrewCreateSerializer(serializers.ModelSerializer):
             models.Crew.field_name.NOTICE,
             models.Crew.field_name.IS_RECRUITING,
             models.Crew.field_name.IS_ACTIVE,
+            models.Crew.field_name.CREATED_BY,
         ]
-        extra_kwargs = {
-            models.Crew.field_name.CUSTOM_TAGS: {
-                'default': list,
-            }
-        }
 
     def save(self, **kwargs):
-        return services.CrewService.create(**self.validated_data)
+        languages = self.validated_data.pop('languages')
+        with atomic():
+            instance = super().save(**kwargs)
+            service = servicesa.get_crew_service(instance)
+            service.set_languages(languages)
+        return instance
 
 
 class RecruitingCrewSerializer(serializers.ModelSerializer):
@@ -143,5 +155,17 @@ class CrewApplicationAboutApplicantSerializer(serializers.ModelSerializer):
         read_only_fields = ['__all__']
 
 
-class CrewApplicationCreateSerializer(serializers.Serializer):
+class CrewApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CrewApplication
+
+
+class CrewApplicationCreateSerializer(serializers.ModelSerializer):
     message = serializers.CharField()
+
+    class Meta:
+        model = models.CrewApplication
+        fields = [
+            models.CrewApplication.field_name.MESSAGE,
+        ]
+        read_only_fields = ['__all__']

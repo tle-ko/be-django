@@ -6,10 +6,10 @@ from django.db.transaction import atomic
 from rest_framework import exceptions
 
 from boj.services import get_boj_user_service
-from crews import dto
+from app.crews.servicesa import dto
 from crews import enums
 from crews import models
-from crews.services.crew_activity_service import CrewActivityService
+from crews.servicesa.crew_activity_service import CrewActivityService
 from problems.models import Problem
 from problems.services import ProblemService
 from users.models import User

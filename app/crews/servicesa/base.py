@@ -3,7 +3,7 @@ from typing import List
 from django.db.models import QuerySet
 
 from boj.enums import BOJLevel
-from crews import dto
+from app.crews.servicesa import dto
 from crews import enums
 from crews import models
 from problems.dto import ProblemStatisticDTO
@@ -79,49 +79,4 @@ class CrewService:
 
     def apply(self, applicant: User, message: str) -> models.CrewApplication:
         """지원자가 자격요건을 갖추지 못했다면 ValidationError를 발생시킬 수 있다."""
-        ...
-
-
-class CrewActivityService:
-    def __init__(self, instance: models.CrewActivity) -> None:
-        assert isinstance(instance, models.CrewActivity)
-        self.instance = instance
-
-    def query_previous_activities(self) -> QuerySet[models.CrewActivity]:
-        ...
-
-    def nth(self) -> int:
-        """활동의 회차 번호를 반환합니다.
-
-        이 값은 1부터 시작합니다.
-        자신의 활동 시작일자보다 이전에 시작된 활동의 개수를 센 값에 1을
-        더한 값을 반환하므로, 고정된 값이 아닙니다.
-
-        느린 연산입니다.
-        한 번에 여러 회차 번호들을 조회하기 위해 이 함수를 사용하는 것은 권장하지 않습니다.
-        """
-        ...
-
-    def is_in_progress(self) -> bool:
-        """활동이 진행 중인지 여부를 반환합니다."""
-        ...
-
-    def has_started(self) -> bool:
-        """활동이 열린적이 있는지 여부를 반환합니다.."""
-        ...
-
-    def has_ended(self) -> bool:
-        """활동이 종료되었는지 여부를 반환합니다."""
-        ...
-
-
-class CrewApplicantionService:
-    def __init__(self, instance: models.CrewApplication):
-        assert isinstance(instance, models.CrewApplication)
-        self.instance = instance
-
-    def reject(self, reviewed_by: User):
-        ...
-
-    def accept(self, reviewed_by: User):
         ...

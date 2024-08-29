@@ -1,8 +1,19 @@
+from __future__ import annotations
+
+from typing import Union
+
 from django.db import models
 
+from crews.models import Crew
 from users.models import User
-from crews.models.crew import Crew
-from crews.models.crew_member import CrewMember
+
+
+class CrewApplicationManager(models.Manager):
+    def crew(self, crew: Crew) -> _CrewApplicationManager:
+        return self.filter(**{CrewApplication.field_name.CREW: crew})
+
+    def applicant(self, user: User) -> _CrewApplicationManager:
+        return self.filter(**{CrewApplication.field_name.APPLICANT: user})
 
 
 class CrewApplication(models.Model):
@@ -45,6 +56,8 @@ class CrewApplication(models.Model):
         default=None,
     )
 
+    objects: _CrewApplicationManager = CrewApplicationManager()
+
     class field_name:
         CREW = 'crew'
         APPLICANT = 'applicant'
@@ -70,3 +83,7 @@ class CrewApplication(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()}'
+
+
+_CrewApplicationManager = Union[CrewApplicationManager,
+                                models.Manager[CrewApplication]]
