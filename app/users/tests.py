@@ -1,6 +1,8 @@
 from django.test import TestCase
 from rest_framework import status
 
+from users.models import UserEmailVerification
+
 
 class SignInTest(TestCase):
     fixtures = ['user.sample.json']
@@ -27,3 +29,39 @@ class SignInTest(TestCase):
             }
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class SignUpTest(TestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+        cls.sample_object = UserEmailVerification.objects.create(**{
+            UserEmailVerification.field_name.EMAIL: "test@example.com",
+            UserEmailVerification.field_name.VERIFICATION_TOKEN: 'sample_token',
+        })
+
+    def test_회원가입_성공(self):
+        res = self.client.post(
+            "/api/v1/auth/signup",
+            {
+                "email": self.sample_object.email,
+                "username": "test",
+                "password": "passw0rd@test",
+                "boj_username": "test",
+                "verification_token": self.sample_object.verification_token,
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_인증토큰_불일치(self):
+        res = self.client.post(
+            "/api/v1/auth/signup",
+            {
+                "email": self.sample_object.email,
+                "username": "test",
+                "password": "passw0rd@test",
+                "boj_username": "test",
+                "verification_token": 'this_token_must_not_match_the_sample...',
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
