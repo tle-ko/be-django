@@ -65,3 +65,19 @@ class SignUpTest(TestCase):
             }
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class SignOutTest(TestCase):
+    fixtures = ['user.sample.json']
+
+    def setUp(self) -> None:
+        # authenticate() 함수에서는 email을 username으로 바꾸어서 전달하기 때문에 아래와 같이 설정함.
+        logged_in = self.client.login(**{
+            "username": "test@example.com",
+            "password": "passw0rd@test",
+        })
+        self.assertTrue(logged_in)
+
+    def test_로그아웃_성공(self):
+        res = self.client.get("/api/v1/auth/signout")
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
