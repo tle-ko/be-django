@@ -81,3 +81,27 @@ class SignOutTest(TestCase):
     def test_로그아웃_성공(self):
         res = self.client.get("/api/v1/auth/signout")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class UsernameCheckTest(TestCase):
+    fixtures = ['user.sample.json']
+
+    def test_사용_가능한_사용자명(self):
+        res = self.client.get("/api/v1/auth/username/check", {
+            "username": "unique",
+        })
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "username": "unique",
+            "is_usable": True,
+        })
+
+    def test_사용_불가능한_사용자명(self):
+        res = self.client.get("/api/v1/auth/username/check", {
+            "username": "test",
+        })
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "username": "test",
+            "is_usable": False,
+        })
