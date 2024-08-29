@@ -25,8 +25,14 @@ def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
         update_boj_user_data(instance.username)
 
 
-@background
 def update_boj_user_data(username: str):
+    assert username.strip().isidentifier()
+    _update_boj_user_data(username)
+
+
+@background
+def _update_boj_user_data(username: str):
+    assert username.strip().isidentifier()
     instance = BOJUser.objects.get_by_username(username)
     url = f'https://solved.ac/api/v3/user/show?handle={username}'
     data = requests.get(url).json()
