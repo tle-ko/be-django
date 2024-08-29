@@ -66,7 +66,7 @@ class IsCaptainField(serializers.SerializerMethodField):
     def get_attribute(self, instance: Crew):
         assert isinstance(instance, Crew)
         user = self.__class__.current_user(self)
-        return CrewMember.objects.crew(instance).user(user).captains().exists()
+        return CrewMember.objects.filter(crew=instance, user=user, is_captain=True).exists()
 
 
 class MemberField(serializers.SerializerMethodField):
@@ -75,7 +75,7 @@ class MemberField(serializers.SerializerMethodField):
         self.include_member_details = include_member_details
 
     def to_representation(self, crew: Crew):
-        members = CrewMember.objects.crew(crew)
+        members = CrewMember.objects.filter(crew=crew)
         data = {
             "count": members.count(),
             "max_count": crew.max_members,

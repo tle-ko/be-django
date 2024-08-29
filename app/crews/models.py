@@ -6,6 +6,7 @@ from typing import Union
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.contrib.auth.models import AnonymousUser
 
 from boj.enums import BOJLevel
 from crews.dto import CrewTagDTO
@@ -32,16 +33,16 @@ class CrewManager(models.Manager):
         if as_member is not None:
             assert isinstance(as_member, User)
             queryset = queryset.filter(pk__in=self._ids_as_member(as_member))
-        if not_as_member is not None:
+        if not_as_member is not None and not isinstance(not_as_member, AnonymousUser):
             assert isinstance(not_as_member, User)
             queryset = queryset.exclude(pk__in=self._ids_as_member(not_as_member))
         return queryset
 
     def _ids_as_captain(self, user: User) -> List[int]:
-        return CrewMember.objects.user(user).captains().values_list(CrewMember.field_name.CREW, flat=True)
+        return CrewMember.objects.filter(user=user, is_captain=True).values_list(CrewMember.field_name.CREW, flat=True)
 
     def _ids_as_member(self, user: User) -> List[int]:
-        return CrewMember.objects.user(user).values_list(CrewMember.field_name.CREW, flat=True)
+        return CrewMember.objects.filter(user=user).values_list(CrewMember.field_name.CREW, flat=True)
 
 
 class Crew(models.Model):
@@ -182,17 +183,6 @@ class CrewMemberManager(models.Manager):
 
     def get_captain(self, crew: Crew) -> CrewMember:
         return self.filter(crew=crew, is_captain=True).get()
-
-    # TODO: 아래의 메소드들이 체인이 가능한지 검사.
-
-    def captains(self) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.IS_CAPTAIN: True})
-
-    def crew(self, crew: Crew) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.CREW: crew})
-
-    def user(self, user: User) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.USER: user})
 
 
 class CrewMember(models.Model):
