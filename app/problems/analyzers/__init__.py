@@ -1,7 +1,8 @@
 from logging import getLogger
 
 from background_task import background
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from problems.analyses.dto import ProblemAnalysisDTO
 from problems.analyses.models import ProblemAnalysis
@@ -17,6 +18,12 @@ logger = getLogger('problems.analyzers')
 
 def get_analyzer() -> ProblemAnalyzer:
     return GeminiProblemAnalyzer.get_instance()
+
+
+@receiver(post_save, sender=Problem)
+def auto_analyze(sender, instance: Problem, created: bool, **kwargs):
+    if created:
+        schedule_analyze(instance.pk)
 
 
 @background
