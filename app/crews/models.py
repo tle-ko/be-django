@@ -6,7 +6,6 @@ from typing import Union
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.dispatch import receiver
 
 from boj.enums import BOJLevel
 from crews.dto import CrewTagDTO
@@ -146,16 +145,16 @@ class Crew(models.Model):
             tags.append(tag_dto)
         return tags
 
-
-@receiver(models.signals.post_save, sender=Crew)
-def auto_create_captain(sender, instance: Crew, created: bool, **kwargs):
-    """크루 생성 시 선장을 자동으로 생성합니다."""
-    if created:
-        CrewMember.objects.create(**{
-            CrewMember.field_name.CREW: instance,
-            CrewMember.field_name.USER: instance.created_by,
-            CrewMember.field_name.IS_CAPTAIN: True,
-        })
+    def save(self, *args, **kwargs) -> None:
+        retval = super().save(*args, **kwargs)
+        if not CrewMember.objects.filter(crew=self, is_captain=True).exists():
+            # 크루 생성 시 선장을 자동으로 생성합니다.
+            CrewMember.objects.create(**{
+                CrewMember.field_name.CREW: self,
+                CrewMember.field_name.USER: self.created_by,
+                CrewMember.field_name.IS_CAPTAIN: True,
+            })
+        return retval
 
 
 class CrewMemberManager(models.Manager):
