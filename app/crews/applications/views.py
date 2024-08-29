@@ -26,7 +26,7 @@ class CrewApplicationForCrewListAPIView(generics.ListAPIView):
     def get_crew(self) -> Crew:
         crew_id = self.kwargs[self.lookup_url_kwarg]
         try:
-            return Crew.objects.as_captain(self.request.user).get(pk=crew_id)
+            return Crew.objects.filter(as_captain=self.request.user).get(pk=crew_id)
         except Crew.DoesNotExist:
             raise ValidationError("크루가 존재하지 않거나, 권한이 없습니다.")
 

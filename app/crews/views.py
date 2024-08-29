@@ -19,7 +19,10 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
     serializer_class = RecruitingCrewSerializer
 
     def get_queryset(self):
-        return Crew.objects.recruiting().not_as_member(self.request.user)
+        return Crew.objects.filter(
+            not_as_member=self.request.user,
+            is_recruiting=True,
+        )
 
 
 class MyCrewListAPIView(generics.ListAPIView):
@@ -28,7 +31,7 @@ class MyCrewListAPIView(generics.ListAPIView):
     serializer_class = MyCrewSerializer
 
     def get_queryset(self):
-        return Crew.objects.as_member(self.request.user).order_by(
+        return Crew.objects.filter(as_member=self.request.user).order_by(
             Crew.field_name.IS_ACTIVE,
             Crew.field_name.UPDATED_AT,
         ).reverse()

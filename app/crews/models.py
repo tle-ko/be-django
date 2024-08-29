@@ -16,17 +16,26 @@ from users.models import User
 
 
 class CrewManager(models.Manager):
-    def as_captain(self, user: User) -> _CrewManager:
-        return self.filter(pk__in=self._ids_as_captain(user))
-
-    def as_member(self, user: User) -> _CrewManager:
-        return self.filter(pk__in=self._ids_as_member(user))
-
-    def not_as_member(self, user: User) -> _CrewManager:
-        return self.exclude(pk__in=self._ids_as_member(user))
-
-    def recruiting(self) -> _CrewManager:
-        return self.filter(**{Crew.field_name.IS_RECRUITING: True})
+    def filter(self,
+               as_captain: User = None,
+               as_member: User = None,
+               not_as_member: User = None,
+               is_recruiting: bool = None,
+               *args,
+               **kwargs) -> models.QuerySet[Crew]:
+        if is_recruiting is not None:
+            kwargs[Crew.field_name.IS_RECRUITING] = is_recruiting
+        queryset = super().filter(*args, **kwargs)
+        if as_captain is not None:
+            assert isinstance(as_captain, User)
+            queryset = queryset.filter(pk__in=self._ids_as_captain(as_captain))
+        if as_member is not None:
+            assert isinstance(as_member, User)
+            queryset = queryset.filter(pk__in=self._ids_as_member(as_member))
+        if not_as_member is not None:
+            assert isinstance(not_as_member, User)
+            queryset = queryset.exclude(pk__in=self._ids_as_member(not_as_member))
+        return queryset
 
     def _ids_as_captain(self, user: User) -> List[int]:
         return CrewMember.objects.user(user).captains().values_list(CrewMember.field_name.CREW, flat=True)
@@ -94,7 +103,7 @@ class Crew(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects: _CrewManager = CrewManager()
+    objects: CrewManager = CrewManager()
 
     class field_name:
         NAME = 'name'
@@ -269,7 +278,6 @@ class CrewSubmittableLanguage(models.Model):
         return f'[{self.pk} : #{self.language}]'
 
 
-_CrewManager = Union[CrewManager, models.Manager[Crew]]
 _CrewMemberManager = Union[CrewMemberManager, models.Manager[CrewMember]]
 _CrewSubmittableLanguageManager = Union[CrewSubmittableLanguageManager,
                                         models.Manager[CrewSubmittableLanguage]]
