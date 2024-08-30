@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
@@ -83,11 +84,8 @@ class SignOutAPIView(generics.GenericAPIView):
     """사용자 로그아웃 API"""
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses={
-        status.HTTP_204_NO_CONTENT: '로그아웃 성공',
-    })
     def get(self, request, *args, **kwargs):
-        services.sign_out(request)
+        logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
