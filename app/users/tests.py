@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 
+from users.models import User
 from users.models import UserEmailVerification
 
 
@@ -71,12 +72,8 @@ class SignOutTest(TestCase):
     fixtures = ['user.sample.json']
 
     def setUp(self) -> None:
-        # authenticate() 함수에서는 email을 username으로 바꾸어서 전달하기 때문에 아래와 같이 설정함.
-        logged_in = self.client.login(**{
-            "username": "test@example.com",
-            "password": "passw0rd@test",
-        })
-        self.assertTrue(logged_in)
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
 
     def test_로그아웃_성공(self):
         res = self.client.get("/api/v1/auth/signout")
