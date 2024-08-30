@@ -21,7 +21,7 @@ class CrewApplicationForCrewListAPIView(generics.ListAPIView):
     lookup_url_kwarg = 'crew_id'
 
     def get_queryset(self):
-        return CrewApplication.objects.crew(self.get_crew())
+        return CrewApplication.objects.filter(crew=self.get_crew())
 
     def get_crew(self) -> Crew:
         crew_id = self.kwargs[self.lookup_url_kwarg]
@@ -36,7 +36,7 @@ class CrewApplicationForUserListAPIView(generics.ListAPIView):
     serializer_class = serializers.CrewApplicationSerializer
 
     def get_queryset(self):
-        return CrewApplication.objects.applicant(self.request.user)
+        return CrewApplication.objects.filter(applicant=self.request.user)
 
 
 class CrewApplicantionCreateAPIView(generics.CreateAPIView):

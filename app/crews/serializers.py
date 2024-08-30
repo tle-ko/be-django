@@ -121,7 +121,7 @@ class LatestActivityField(CrewActivitySerializer):
         assert isinstance(instance, Crew)
         try:
             assert instance.is_active
-            return CrewActivity.objects.crew(instance).has_started().latest()
+            return CrewActivity.objects.filter(crew=instance, has_started=True).latest()
         except CrewActivity.DoesNotExist:
             return CrewActivity(**{
                 CrewActivity.field_name.CREW: instance,
@@ -144,7 +144,7 @@ class ActivitiesField(CrewActivitySerializer):
 
     def get_attribute(self, instance: Crew) -> QuerySet[CrewActivity]:
         assert isinstance(instance, Crew)
-        return CrewActivity.objects.crew(instance)
+        return CrewActivity.objects.filter(crew=instance)
 
 
 # Crew Serializers

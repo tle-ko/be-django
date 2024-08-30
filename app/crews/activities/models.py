@@ -15,26 +15,19 @@ from users.models import User
 class CrewActivityManager(models.Manager):
     def filter(self,
                crew: Crew = None,
+               has_started: bool = None,
+               in_progress: bool = None,
                *args,
                **kwargs) -> models.QuerySet[CrewActivity]:
         if crew is not None:
             assert isinstance(crew, Crew)
             kwargs[CrewActivity.field_name.CREW] = crew
+        if has_started is not None:
+            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
+        if in_progress is not None:
+            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
+            kwargs[CrewActivity.field_name.END_AT + '__gt'] = timezone.now()
         return super().filter(*args, **kwargs)
-
-    def crew(self, crew: Crew) -> _CrewActivityManager:
-        return self.filter(**{CrewActivity.field_name.CREW: crew})
-
-    def in_progress(self) -> _CrewActivityManager:
-        return self.filter(**{
-            CrewActivity.field_name.START_AT + '__lte': timezone.now(),
-            CrewActivity.field_name.END_AT + '__gt': timezone.now(),
-        })
-
-    def has_started(self) -> _CrewActivityManager:
-        return self.filter(**{
-            CrewActivity.field_name.START_AT + '__lte': timezone.now(),
-        })
 
 
 class CrewActivity(models.Model):
