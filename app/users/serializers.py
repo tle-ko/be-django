@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
+from django.core.validators import EmailValidator
 from django.http.request import HttpRequest
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
@@ -82,6 +83,10 @@ class SignInSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             PK: {'read_only': True},
+            User.field_name.EMAIL: {
+                'write_only': True,
+                'validators': [EmailValidator],
+            },
             User.field_name.PASSWORD: {
                 'write_only': True,
                 'style': {'input_type': 'password'},
@@ -92,19 +97,15 @@ class SignInSerializer(serializers.ModelSerializer):
             User.field_name.REFRESH_TOKEN: {'read_only': True},
         }
 
-    def create(self, validated_data):
-        # 여기서는 모델을 생성하진 않고.. 로그인을 한다!
-        # P.S. self.instance = None 인 경우 이 곳으로 온다는 점을 이용하였다.
+    def save(self, **kwargs):
+        # 여기서는 사용자의 액세스 토큰 외의 정보를 수정하지는 않는다.
         request: HttpRequest = self.context['request']
-        user: Optional[User] = authenticate(request=request, **validated_data)
-        if user is None:
-            raise AuthenticationFailed('Invalid email or password')
+        user: Optional[User]
+        if (user := authenticate(request=request, **self.validated_data)) is None:
+            raise AuthenticationFailed(f'Invalid email or password {self.validated_data}')
+        login(request, user)
         user.rotate_token()
-        login(request=request, user=user)
-        return user
-
-    def update(self, instance, validated_data):
-        raise NotImplementedError
+        self.instance = user
 
 
 class SignUpSerializer(serializers.ModelSerializer):
