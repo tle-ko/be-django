@@ -10,14 +10,13 @@ from users.models import User
 
 
 class BOJUserManager(Manager):
-    def username(self, username: str) -> _BOJUserManager:
-        return self.filter(**{BOJUser.field_name.USERNAME: username})
-
-    def get_by_user(self, user: User) -> BOJUser:
-        return self.username(user.boj_username).get_or_create()[0]
+    def filter(self, username: Optional[str] = None, *args, **kwargs) -> models.QuerySet[BOJUser]:
+        if username is not None:
+            kwargs[User.field_name.USERNAME] = username
+        return super().filter(*args, **kwargs)
 
     def get_by_username(self, username: str) -> BOJUser:
-        return self.username(username).get_or_create()[0]
+        return self.filter(username=username).get_or_create()[0]
 
 
 class BOJUser(models.Model):

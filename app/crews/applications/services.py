@@ -27,7 +27,7 @@ def apply(crew: Crew, applicant: User, message: str) -> CrewApplication:
 
 def is_valid_applicant(crew: Crew, applicant: User, raise_exception=False) -> bool:
     try:
-        boj_user = BOJUser.objects.get_by_user(applicant)
+        boj_user = BOJUser.objects.get_by_username(applicant.boj_username)
         assert crew.is_recruiting, (
             "'크루가 현재 크루원을 모집하고 있지 않습니다."
         )
