@@ -26,6 +26,18 @@ class IsEmailUsableSerializer(serializers.Serializer):
     is_usable = IsEmailUsableField(read_only=True)
 
 
+class IsUsernameUsableField(serializers.BooleanField):
+    def get_attribute(self, instance):
+        assert 'username' in instance, instance
+        assert isinstance(instance['username'], str)
+        return not User.objects.filter(username=instance['username']).exists()
+
+
+class IsUsernameUsableSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    is_usable = IsUsernameUsableField()
+
+
 class EmailCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.CharField()

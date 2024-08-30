@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from users import models
 from users.serializers import IsEmailUsableSerializer
+from users.serializers import IsUsernameUsableSerializer
 from users import serializers
 from users import services
 
@@ -21,6 +22,19 @@ class EmailCheckAPIView(generics.GenericAPIView):
     serializer_class = IsEmailUsableSerializer
 
     @swagger_auto_schema(query_serializer=IsEmailUsableSerializer)
+    def get(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
+
+
+class UsernameCheckAPIView(generics.GenericAPIView):
+    """이메일이 사용가능한지 검사 API"""
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    serializer_class = IsUsernameUsableSerializer
+
+    @swagger_auto_schema(query_serializer=IsUsernameUsableSerializer)
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -81,32 +95,6 @@ class SignOutAPIView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         services.sign_out(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class UsernameCheckAPIView(generics.GenericAPIView):
-    """이메일이 사용가능한지 검사 API"""
-    authentication_classes = []
-    permission_classes = [AllowAny]
-    serializer_class = serializers.UsernameSerializer
-
-    @swagger_auto_schema(
-        query_serializer=serializers.UsernameSerializer,
-        responses={
-            status.HTTP_200_OK: '사용자명이 사용가능한지 검사에 성공.',
-            status.HTTP_400_BAD_REQUEST: '잘못된 데이터 형식을 입력했을 경우.',
-        },
-    )
-    def get(self, request: Request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data['username']
-        return Response(
-            data={
-                "username": username,
-                "is_usable": services.is_username_usable(username),
-            },
-            status=status.HTTP_200_OK,
-        )
 
 
 class EmailVerifyThrottle(throttling.AnonRateThrottle):
