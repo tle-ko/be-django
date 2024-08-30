@@ -18,7 +18,7 @@ class SignInTest(TestCase):
                 "password": "passw0rd@test",
             },
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK, res.json())
 
     def test_비밀번호_불일치(self):
         res = self.client.post(
@@ -28,7 +28,7 @@ class SignInTest(TestCase):
                 "password": "password@test",
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN, res.json())
 
 
 class SignUpTest(TestCase):
@@ -51,7 +51,7 @@ class SignUpTest(TestCase):
                 "verification_token": self.sample_object.verification_token,
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED, res.json())
 
     def test_인증토큰_불일치(self):
         res = self.client.post(
@@ -64,7 +64,7 @@ class SignUpTest(TestCase):
                 "verification_token": 'this_token_must_not_match_the_sample...',
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST, res.json())
 
 
 class SignOutTest(TestCase):
@@ -80,7 +80,7 @@ class SignOutTest(TestCase):
 
     def test_로그아웃_성공(self):
         res = self.client.get("/api/v1/auth/signout")
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT, res.json())
 
 
 class UsernameCheckTest(TestCase):
@@ -93,7 +93,7 @@ class UsernameCheckTest(TestCase):
                 "username": "unique",
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK, res.json())
         self.assertDictEqual(res.json(), {
             "username": "unique",
             "is_usable": True,
@@ -106,7 +106,7 @@ class UsernameCheckTest(TestCase):
                 "username": "test",
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK, res.json())
         self.assertDictEqual(res.json(), {
             "username": "test",
             "is_usable": False,
@@ -123,7 +123,7 @@ class EmailCheckTest(TestCase):
                 "email": "unique@notexample.com",
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK, res.json())
         self.assertDictEqual(res.json(), {
             "email": "unique@notexample.com",
             "is_usable": True,
@@ -136,7 +136,7 @@ class EmailCheckTest(TestCase):
                 "email": "test@example.com",
             }
         )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK, res.json())
         self.assertDictEqual(res.json(), {
             "email": "test@example.com",
             "is_usable": False,
