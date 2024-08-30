@@ -35,7 +35,9 @@ class CrewManager(models.Manager):
             queryset = queryset.filter(pk__in=self._ids_as_member(as_member))
         if not_as_member is not None and not isinstance(not_as_member, AnonymousUser):
             assert isinstance(not_as_member, User)
-            queryset = queryset.exclude(pk__in=self._ids_as_member(not_as_member))
+            queryset = queryset.exclude(
+                pk__in=self._ids_as_member(not_as_member),
+            )
         return queryset
 
     def _ids_as_captain(self, user: User) -> List[int]:
@@ -147,11 +149,19 @@ class Crew(models.Model):
             tag_name = f"{min_level.get_division_name(lang='ko')} 이상"
         else:
             tag_name = f"{min_level.get_name(lang='ko', arabic=False)} 이상"
-        tag_dto = CrewTagDTO(key=None, name=tag_name, type=CrewTagType.LEVEL)
+        tag_dto = CrewTagDTO(
+            key=None,
+            name=tag_name,
+            type=CrewTagType.LEVEL,
+        )
         tags.append(tag_dto)
         # 커스텀 태그
         for tag_name in self.custom_tags:
-            tag_dto = CrewTagDTO(key=None, name=tag_name, type=CrewTagType.CUSTOM)
+            tag_dto = CrewTagDTO(
+                key=None,
+                name=tag_name,
+                type=CrewTagType.CUSTOM,
+            )
             tags.append(tag_dto)
         return tags
 
