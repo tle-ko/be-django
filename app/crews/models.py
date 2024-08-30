@@ -133,7 +133,7 @@ class Crew(models.Model):
     def tags(self) -> List[CrewTagDTO]:
         tags = []
         # 사용 가능 언어
-        for language_value in CrewSubmittableLanguage.objects.crew(self).values_list(CrewSubmittableLanguage.field_name.LANGUAGE, flat=True):
+        for language_value in CrewSubmittableLanguage.objects.filter(crew=self).values_list(CrewSubmittableLanguage.field_name.LANGUAGE, flat=True):
             language = ProgrammingLanguageChoices(language_value)
             tag_dto = CrewTagDTO(
                 key=language.value,
@@ -234,8 +234,13 @@ class CrewMember(models.Model):
 
 
 class CrewSubmittableLanguageManager(models.Manager):
-    def crew(self, crew: Crew) -> _CrewSubmittableLanguageManager:
-        return self.filter(**{CrewSubmittableLanguage.field_name.CREW: crew})
+    def filter(self,
+               crew: Crew = None,
+               *args,
+               **kwargs) -> models.QuerySet[CrewSubmittableLanguage]:
+        if crew is not None:
+            kwargs[CrewSubmittableLanguage.field_name.CREW] = crew
+        return super().filter(*args, **kwargs)
 
     def bulk_create_from_languages(self, crew: Crew, languages: List[Union[str, ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
         assert isinstance(crew, Crew)
@@ -248,7 +253,7 @@ class CrewSubmittableLanguageManager(models.Manager):
             else:
                 raise ValueError(f'{language}은 선택 가능한 언어가 아닙니다.')
             entity = CrewSubmittableLanguage(**{
-                CrewSubmittableLanguage.field_name.CREW: self.instance,
+                CrewSubmittableLanguage.field_name.CREW: crew,
                 CrewSubmittableLanguage.field_name.LANGUAGE: language,
             })
             entities.append(entity)

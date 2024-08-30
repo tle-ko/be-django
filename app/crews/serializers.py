@@ -196,7 +196,7 @@ class CrewCreateSerializer(serializers.ModelSerializer):
         languages = self.validated_data.pop('languages')
         with atomic():
             crew = super().save(**kwargs)
-            CrewSubmittableLanguage.objects.crew(crew).delete()
+            CrewSubmittableLanguage.objects.filter(crew=crew).delete()
             CrewSubmittableLanguage.objects.bulk_create_from_languages(
                 crew=crew,
                 languages=languages,
