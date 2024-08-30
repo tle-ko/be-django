@@ -150,13 +150,15 @@ class ActivitiesField(CrewActivitySerializer):
 # Crew Serializers
 
 class CrewCreateSerializer(serializers.ModelSerializer):
-    created_by = UserMinimalSerializer()
+    created_by = UserMinimalSerializer(read_only=True)
     custom_tags = serializers.ListField(
         default=list,
         child=serializers.CharField(),
     )
     languages = serializers.MultipleChoiceField(
         choices=ProgrammingLanguageChoices.choices,
+        default=list,
+        write_only=True,
     )
 
     class Meta:
@@ -176,32 +178,24 @@ class CrewCreateSerializer(serializers.ModelSerializer):
             Crew.field_name.CUSTOM_TAGS,
         ]
         extra_kwargs = {
-            PK: {
-                'read_only': True,
-            },
-            'languages': {
-                'write_only': True,
-                'default': list,
-            },
-            Crew.field_name.CREATED_AT: {
-                'read_only': True,
-            },
-            Crew.field_name.CREATED_BY: {
-                'read_only': True,
-                'default': serializers.CurrentUserDefault(),
-            },
+            PK: {'read_only': True},
+            Crew.field_name.CREATED_AT: {'read_only': True},
         }
 
     def save(self, **kwargs):
         languages = self.validated_data.pop('languages')
         with atomic():
-            crew = super().save(**kwargs)
-            CrewSubmittableLanguage.objects.filter(crew=crew).delete()
+            self.instance = Crew.objects.create(**{
+                Crew.field_name.CREATED_BY: serializers.CurrentUserDefault()(self),
+                **self.validated_data,
+                **kwargs,
+            })
+            CrewSubmittableLanguage.objects.filter(crew=self.instance).delete()
             CrewSubmittableLanguage.objects.bulk_create_from_languages(
-                crew=crew,
+                crew=self.instance,
                 languages=languages,
             )
-        return crew
+        return self.instance
 
 
 class RecruitingCrewSerializer(serializers.ModelSerializer):
