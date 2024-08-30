@@ -1,22 +1,16 @@
-import logging
-
 from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
 
 from users.models import User
 
 
-logger = logging.getLogger(__name__)
-
-
 class UserAuthBackend(ModelBackend):
     def authenticate(self, request: HttpRequest, username=None, password=None, **kwargs):
-        """username 필드지만 email로 인증하도록 오버라이드 되어있음."""
         try:
-            user = User.objects.get(email=username)
+            user = User.objects.filter(username=username).get()
         except User.DoesNotExist:
             return None
+        if user.check_password(password):
+            return user
         else:
-            if user.check_password(password):
-                return user
-        return None
+            return None
