@@ -139,7 +139,6 @@ class ProblemAnalysis(models.Model):
     class field_name:
         PROBLEM = 'problem'
         DIFFICULTY = 'difficulty'
-        TAGS = 'tags'
         TIME_COMPLEXITY = 'time_complexity'
         HINT = 'hint'
         CREATED_AT = 'created_at'

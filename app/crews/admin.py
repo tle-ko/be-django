@@ -41,11 +41,11 @@ class CrewModelAdmin(admin.ModelAdmin):
 
     @admin.display(description='Applicants')
     def get_applicants(self, obj: Crew):
-        return CrewApplication.objects.crew(obj).count()
+        return CrewApplication.objects.filter(crew=obj).count()
 
     @admin.display(description='Activities')
     def get_activities(self, obj: Crew):
-        return CrewActivity.objects.crew(obj).count()
+        return CrewActivity.objects.filter(crew=obj).count()
 
 
 @admin.register(CrewMember)

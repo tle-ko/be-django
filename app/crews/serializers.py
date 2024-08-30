@@ -1,12 +1,15 @@
+from typing import List
+from typing import Union
+
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from rest_framework import serializers
 
-from crews import enums
-from crews import models
 from crews.activities.models import CrewActivity
 from crews.activities.serializers import CrewActivitySerializer
 from crews.applications.services import is_valid_applicant
+from crews.dto import CrewTagDTO
+from crews.enums import ProgrammingLanguageChoices
 from crews.models import Crew
 from crews.models import CrewMember
 from crews.models import CrewSubmittableLanguage
@@ -19,18 +22,31 @@ PK = 'id'
 
 # Crew Tag Serializer
 
+class CrewTagTypeField(serializers.SerializerMethodField):
+    def to_representation(self, value):
+        return value
+
+    def get_attribute(self, instance: CrewTagDTO) -> str:
+        assert isinstance(instance, CrewTagDTO)
+        return instance.type.value
+
+
 class CrewTagSerializer(serializers.Serializer):
     key = serializers.CharField()
     name = serializers.CharField()
-    type = serializers.CharField()
+    type = CrewTagTypeField()
 
 
 # Crew Member Serializer
 
 class CrewMemberSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source=CrewMember.field_name.USER)
-    username = serializers.CharField(source=CrewMember.field_name.USER+'__'+User.field_name.USERNAME)
-    profile_image = serializers.ImageField(source=CrewMember.field_name.USER+'__'+User.field_name.PROFILE_IMAGE)
+    username = serializers.CharField(
+        source=CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
+    )
+    profile_image = serializers.ImageField(
+        source=CrewMember.field_name.USER+'__'+User.field_name.PROFILE_IMAGE,
+    )
 
     class Meta:
         model = CrewMember
@@ -53,8 +69,8 @@ class IsJoinableField(serializers.SerializerMethodField):
 
     def get_attribute(self, instance: Crew):
         assert isinstance(instance, Crew)
-        user = self.__class__.current_user(self)
-        return is_valid_applicant(instance, user, raise_exception=False)
+        user: User = self.__class__.current_user(self)
+        return user.is_authenticated and is_valid_applicant(instance, user, raise_exception=False)
 
 
 class IsCaptainField(serializers.SerializerMethodField):
@@ -66,7 +82,7 @@ class IsCaptainField(serializers.SerializerMethodField):
     def get_attribute(self, instance: Crew):
         assert isinstance(instance, Crew)
         user = self.__class__.current_user(self)
-        return CrewMember.objects.crew(instance).user(user).captains().exists()
+        return CrewMember.objects.filter(crew=instance, user=user, is_captain=True).exists()
 
 
 class MemberField(serializers.SerializerMethodField):
@@ -75,7 +91,7 @@ class MemberField(serializers.SerializerMethodField):
         self.include_member_details = include_member_details
 
     def to_representation(self, crew: Crew):
-        members = CrewMember.objects.crew(crew)
+        members = CrewMember.objects.filter(crew=crew)
         data = {
             "count": members.count(),
             "max_count": crew.max_members,
@@ -89,21 +105,31 @@ class MemberField(serializers.SerializerMethodField):
         return instance
 
 
-class TagsField(CrewTagSerializer):
-    def __init__(self, **kwargs):
-        super().__init__(many=True, **kwargs)
+class TagsField(serializers.ListSerializer):
+    child = CrewTagSerializer()
 
-    def get_attribute(self, instance: Crew):
-        assert isinstance(instance, Crew)
-        return instance.tags()
+    def to_representation(self, instance: Union[Crew, List[CrewTagDTO]]):
+        if isinstance(instance, Crew):
+            return super().to_representation(instance.tags())
+        if isinstance(instance, list):
+            return super().to_representation(instance)
+        raise ValueError
 
 
 class LatestActivityField(CrewActivitySerializer):
     def get_attribute(self, instance: Crew) -> CrewActivity:
         assert isinstance(instance, Crew)
         try:
-            return CrewActivity.objects.crew(instance).has_started().latest()
-        except:
+            assert instance.is_active
+            return CrewActivity.objects.filter(crew=instance, has_started=True).latest()
+        except CrewActivity.DoesNotExist:
+            return CrewActivity(**{
+                CrewActivity.field_name.CREW: instance,
+                CrewActivity.field_name.NAME: '등록된 활동 없음',
+                CrewActivity.field_name.START_AT: None,
+                CrewActivity.field_name.END_AT: None,
+            })
+        except AssertionError:
             return CrewActivity(**{
                 CrewActivity.field_name.CREW: instance,
                 CrewActivity.field_name.NAME: '활동 종료',
@@ -118,7 +144,7 @@ class ActivitiesField(CrewActivitySerializer):
 
     def get_attribute(self, instance: Crew) -> QuerySet[CrewActivity]:
         assert isinstance(instance, Crew)
-        return CrewActivity.objects.crew(instance)
+        return CrewActivity.objects.filter(crew=instance)
 
 
 # Crew Serializers
@@ -130,7 +156,7 @@ class CrewCreateSerializer(serializers.ModelSerializer):
         child=serializers.CharField(),
     )
     languages = serializers.MultipleChoiceField(
-        choices=enums.ProgrammingLanguageChoices.choices,
+        choices=ProgrammingLanguageChoices.choices,
     )
 
     class Meta:
@@ -186,12 +212,12 @@ class RecruitingCrewSerializer(serializers.ModelSerializer):
     latest_activity = LatestActivityField()
 
     class Meta:
-        model = models.Crew
+        model = Crew
         fields = [
             PK,
-            models.Crew.field_name.ICON,
-            models.Crew.field_name.NAME,
-            models.Crew.field_name.IS_ACTIVE,
+            Crew.field_name.ICON,
+            Crew.field_name.NAME,
+            Crew.field_name.IS_ACTIVE,
             'is_joinable',
             'members',
             'tags',
@@ -205,12 +231,12 @@ class MyCrewSerializer(serializers.ModelSerializer):
     latest_activity = LatestActivityField()
 
     class Meta:
-        model = models.Crew
+        model = Crew
         fields = [
             PK,
-            models.Crew.field_name.ICON,
-            models.Crew.field_name.NAME,
-            models.Crew.field_name.IS_ACTIVE,
+            Crew.field_name.ICON,
+            Crew.field_name.NAME,
+            Crew.field_name.IS_ACTIVE,
             'latest_activity',
         ]
         read_only_fields = ['__all__']
@@ -232,12 +258,12 @@ class CrewDashboardSerializer(serializers.ModelSerializer):
     is_captain = IsCaptainField()
 
     class Meta:
-        model = models.Crew
+        model = Crew
         fields = [
             PK,
-            models.Crew.field_name.ICON,
-            models.Crew.field_name.NAME,
-            models.Crew.field_name.NOTICE,
+            Crew.field_name.ICON,
+            Crew.field_name.NAME,
+            Crew.field_name.NOTICE,
             'is_captain',
             'tags',
             'members',

@@ -31,10 +31,10 @@ def is_valid_applicant(crew: Crew, applicant: User, raise_exception=False) -> bo
         assert crew.is_recruiting, (
             "'크루가 현재 크루원을 모집하고 있지 않습니다."
         )
-        assert CrewMember.objects.crew(crew).count() < crew.max_members, (
+        assert CrewMember.objects.filter(crew=crew).count() < crew.max_members, (
             "크루의 최대 정원을 초과하였습니다."
         )
-        assert not CrewMember.objects.crew(crew).user(applicant).exists(), (
+        assert not CrewMember.objects.filter(crew=crew, user=applicant).exists(), (
             "이미 가입한 크루입니다."
         )
         assert (crew.min_boj_level is None) or (crew.min_boj_level <= boj_user.level), (
@@ -81,7 +81,7 @@ def notify_on_reviewed(sender, instance: CrewApplication, **kwargs):
 
 
 def notify_application_recieved(instance: CrewApplication):
-    captain = CrewMember.objects.crew(instance.crew).captains().get()
+    captain = CrewMember.objects.filter(crew=instance.crew, is_captain=True).get()
     boj_user = BOJUser.objects.get(username=instance.applicant.boj_username)
     subject = '[Time Limit Exceeded] 새로운 크루 가입 신청이 도착했습니다'
     message = dedent(f"""

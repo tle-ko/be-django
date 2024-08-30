@@ -9,11 +9,18 @@ from users.models import User
 
 
 class CrewApplicationManager(models.Manager):
-    def crew(self, crew: Crew) -> _CrewApplicationManager:
-        return self.filter(**{CrewApplication.field_name.CREW: crew})
-
-    def applicant(self, user: User) -> _CrewApplicationManager:
-        return self.filter(**{CrewApplication.field_name.APPLICANT: user})
+    def filter(self,
+               crew: Crew = None,
+               applicant: User = None,
+               *args,
+               **kwargs) -> models.QuerySet[CrewApplication]:
+        if crew is not None:
+            assert isinstance(crew, Crew)
+            kwargs[CrewApplication.field_name.CREW] = crew
+        if applicant is not None:
+            assert isinstance(applicant, Crew)
+            kwargs[CrewApplication.field_name.APPLICANT] = applicant
+        return super().filter(*args, **kwargs)
 
 
 class CrewApplication(models.Model):

@@ -6,7 +6,7 @@ from typing import Union
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.dispatch import receiver
+from django.contrib.auth.models import AnonymousUser
 
 from boj.enums import BOJLevel
 from crews.dto import CrewTagDTO
@@ -17,23 +17,32 @@ from users.models import User
 
 
 class CrewManager(models.Manager):
-    def as_captain(self, user: User) -> _CrewManager:
-        return self.filter(pk__in=self._ids_as_captain(user))
-
-    def as_member(self, user: User) -> _CrewManager:
-        return self.filter(pk__in=self._ids_as_member(user))
-
-    def not_as_member(self, user: User) -> _CrewManager:
-        return self.exclude(pk__in=self._ids_as_member(user))
-
-    def recruiting(self) -> _CrewManager:
-        return self.filter(**{Crew.field_name.IS_RECRUITING: True})
+    def filter(self,
+               as_captain: User = None,
+               as_member: User = None,
+               not_as_member: User = None,
+               is_recruiting: bool = None,
+               *args,
+               **kwargs) -> models.QuerySet[Crew]:
+        if is_recruiting is not None:
+            kwargs[Crew.field_name.IS_RECRUITING] = is_recruiting
+        queryset = super().filter(*args, **kwargs)
+        if as_captain is not None:
+            assert isinstance(as_captain, User)
+            queryset = queryset.filter(pk__in=self._ids_as_captain(as_captain))
+        if as_member is not None:
+            assert isinstance(as_member, User)
+            queryset = queryset.filter(pk__in=self._ids_as_member(as_member))
+        if not_as_member is not None and not isinstance(not_as_member, AnonymousUser):
+            assert isinstance(not_as_member, User)
+            queryset = queryset.exclude(pk__in=self._ids_as_member(not_as_member))
+        return queryset
 
     def _ids_as_captain(self, user: User) -> List[int]:
-        return CrewMember.objects.user(user).captains().values_list(CrewMember.field_name.CREW, flat=True)
+        return CrewMember.objects.filter(user=user, is_captain=True).values_list(CrewMember.field_name.CREW, flat=True)
 
     def _ids_as_member(self, user: User) -> List[int]:
-        return CrewMember.objects.user(user).values_list(CrewMember.field_name.CREW, flat=True)
+        return CrewMember.objects.filter(user=user).values_list(CrewMember.field_name.CREW, flat=True)
 
 
 class Crew(models.Model):
@@ -95,7 +104,7 @@ class Crew(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects: _CrewManager = CrewManager()
+    objects: CrewManager = CrewManager()
 
     class field_name:
         NAME = 'name'
@@ -146,16 +155,16 @@ class Crew(models.Model):
             tags.append(tag_dto)
         return tags
 
-
-@receiver(models.signals.post_save, sender=Crew)
-def auto_create_captain(sender, instance: Crew, created: bool, **kwargs):
-    """크루 생성 시 선장을 자동으로 생성합니다."""
-    if created:
-        CrewMember.objects.create(**{
-            CrewMember.field_name.CREW: instance,
-            CrewMember.field_name.USER: instance.created_by,
-            CrewMember.field_name.IS_CAPTAIN: True,
-        })
+    def save(self, *args, **kwargs) -> None:
+        retval = super().save(*args, **kwargs)
+        if not CrewMember.objects.filter(crew=self, is_captain=True).exists():
+            # 크루 생성 시 선장을 자동으로 생성합니다.
+            CrewMember.objects.create(**{
+                CrewMember.field_name.CREW: self,
+                CrewMember.field_name.USER: self.created_by,
+                CrewMember.field_name.IS_CAPTAIN: True,
+            })
+        return retval
 
 
 class CrewMemberManager(models.Manager):
@@ -174,17 +183,6 @@ class CrewMemberManager(models.Manager):
 
     def get_captain(self, crew: Crew) -> CrewMember:
         return self.filter(crew=crew, is_captain=True).get()
-
-    # TODO: 아래의 메소드들이 체인이 가능한지 검사.
-
-    def captains(self) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.IS_CAPTAIN: True})
-
-    def crew(self, crew: Crew) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.CREW: crew})
-
-    def user(self, user: User) -> _CrewMemberManager:
-        return self.filter(**{CrewMember.field_name.USER: user})
 
 
 class CrewMember(models.Model):
@@ -270,7 +268,6 @@ class CrewSubmittableLanguage(models.Model):
         return f'[{self.pk} : #{self.language}]'
 
 
-_CrewManager = Union[CrewManager, models.Manager[Crew]]
 _CrewMemberManager = Union[CrewMemberManager, models.Manager[CrewMember]]
 _CrewSubmittableLanguageManager = Union[CrewSubmittableLanguageManager,
                                         models.Manager[CrewSubmittableLanguage]]
