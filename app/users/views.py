@@ -2,11 +2,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
 from rest_framework import throttling
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from users import models
-from users import permissions
 from users import serializers
 from users import services
 
@@ -14,7 +15,7 @@ from users import services
 class SignInAPIView(generics.GenericAPIView):
     """사용자 로그인 API"""
     authentication_classes = []
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = serializers.SignInSerializer
 
     def post(self, request: Request, *args, **kwargs):
@@ -37,7 +38,7 @@ class SignInAPIView(generics.GenericAPIView):
 class SignUpAPIView(generics.CreateAPIView):
     """사용자 등록(회원가입) API"""
     authentication_classes = []
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = serializers.SignUpSerializer
 
     def create(self, request: Request, *args, **kwargs):
@@ -57,7 +58,7 @@ class SignUpAPIView(generics.CreateAPIView):
 
 class SignOutAPIView(generics.GenericAPIView):
     """사용자 로그아웃 API"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={
         status.HTTP_204_NO_CONTENT: '로그아웃 성공',
@@ -70,7 +71,7 @@ class SignOutAPIView(generics.GenericAPIView):
 class UsernameCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
     authentication_classes = []
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = serializers.UsernameSerializer
 
     @swagger_auto_schema(
@@ -97,7 +98,7 @@ class EmailCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
 
     authentication_classes = []
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = serializers.EmailSerializer
 
     @swagger_auto_schema(
@@ -128,7 +129,7 @@ class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
     authentication_classes = []
     throttle_classes = []
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -174,7 +175,7 @@ class EmailVerifyAPIView(generics.GenericAPIView):
 
 class CurrentUserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     """현재 로그인한 사용자 정보를 조회/수정하는 API"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.UserUpdateSerializer
 
     def get_object(self) -> models.User:
