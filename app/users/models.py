@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from hashlib import sha256
+from random import randint
+from typing import Optional
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
@@ -130,7 +133,7 @@ class UserEmailVerification(models.Model):
         null=True,
         blank=True,
     )
-    expires_at = models.DateTimeField(default=default_expires_at_factory)
+    expires_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class field_name:
@@ -142,3 +145,15 @@ class UserEmailVerification(models.Model):
 
     def is_expired(self) -> bool:
         return self.expires_at < timezone.now()
+
+    def rotate_code(self, code_len: int = 6):
+        self.verification_code = self._create_code(code_len)
+        self.expires_at = timezone.now() + timedelta(minutes=5)
+
+    def rotate_token(self, seed: Optional[str] = None):
+        if seed is None:
+            seed = self._create_code(code_len=16)
+        return sha256(seed.encode()).hexdigest()
+
+    def _create_code(self, code_len: int) -> str:
+        return ''.join(chr(randint(ord('A'), ord('Z'))) for _ in range(code_len))
