@@ -7,14 +7,11 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 def get_profile_image_path(user: User, filename: str) -> str:
     return f'user/profile/{user.pk}/{filename}'
-
-
-def default_expires_at_factory():
-    return timezone.now() + timedelta(minutes=5)
 
 
 class UserManager(BaseUserManager):
@@ -31,23 +28,16 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def get_by_username(self, username: str) -> User:
-        return self.get(**{User.field_name.BOJ_USERNAME: username})
-
-    def create_user(self, email: str, username: str, password: str, **extra_fields):
-        user = self.model(
-            email=email,
-            username=username,
-            **extra_fields
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create(email, username, password, **extra_fields)
+    def filter(self,
+               email: Optional[str] = None,
+               username: Optional[str] = None,
+               *args,
+               **kwargs) -> models.QuerySet[User]:
+        if email is None:
+            kwargs[User.field_name.EMAIL] = email
+        if username is None:
+            kwargs[User.field_name.USERNAME] = username
+        return super().filter(*args, **kwargs)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -75,6 +65,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text='백준 아이디',
         max_length=40,
     )
+    token = models.CharField(null=True, blank=True, default=None)
+    refresh_token = models.CharField(null=True, blank=True, default=None)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -89,10 +81,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class field_name:
         PROFILE_IMAGE = 'profile_image'
-        BOJ_USERNAME = 'boj_username'
         USERNAME = 'username'
         EMAIL = 'email'
         PASSWORD = 'password'
+        BOJ_USERNAME = 'boj_username'
+        TOKEN = 'token'
+        REFRESH_TOKEN = 'refresh_token'
         IS_ACTIVE = 'is_active'
         IS_STAFF = 'is_staff'
         IS_SUPERUSER = 'is_superuser'
@@ -113,6 +107,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+    def rotate_token(self):
+        token: RefreshToken = RefreshToken.for_user(self)
+        self.token = str(token.access_token)
+        self.refresh_token = str(token.token)
+        self.save()
 
 
 class UserEmailVerification(models.Model):
