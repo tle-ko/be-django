@@ -1,4 +1,10 @@
+from typing import Optional
+
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.http.request import HttpRequest
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 
 from boj.models import BOJUser
 from boj.serializers import BOJUserSerializer
@@ -48,9 +54,57 @@ class EmailTokenSerializer(serializers.Serializer):
     token = serializers.CharField()
 
 
-class SignInSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(style={'input_type': 'password'})
+# User Serializers
+
+class BOJField(serializers.SerializerMethodField):
+    def to_representation(self, value: BOJUser):
+        return BOJUserSerializer(value).data
+
+    def get_attribute(self, instance: User) -> BOJUser:
+        assert isinstance(instance, User)
+        return BOJUser.objects.get_by_username(instance.boj_username)
+
+
+class SignInSerializer(serializers.ModelSerializer):
+    boj = BOJField()
+
+    class Meta:
+        model = User
+        fields = [
+            PK,
+            User.field_name.EMAIL,
+            User.field_name.PASSWORD,
+            User.field_name.USERNAME,
+            User.field_name.PROFILE_IMAGE,
+            User.field_name.TOKEN,
+            User.field_name.REFRESH_TOKEN,
+            'boj',
+        ]
+        extra_kwargs = {
+            PK: {'read_only': True},
+            User.field_name.PASSWORD: {
+                'write_only': True,
+                'style': {'input_type': 'password'},
+            },
+            User.field_name.USERNAME: {'read_only': True},
+            User.field_name.PROFILE_IMAGE: {'read_only': True},
+            User.field_name.TOKEN: {'read_only': True},
+            User.field_name.REFRESH_TOKEN: {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        # 여기서는 모델을 생성하진 않고.. 로그인을 한다!
+        # P.S. self.instance = None 인 경우 이 곳으로 온다는 점을 이용하였다.
+        request: HttpRequest = self.context['request']
+        user: Optional[User] = authenticate(request=request, **validated_data)
+        if user is None:
+            raise AuthenticationFailed('Invalid email or password')
+        user.rotate_token()
+        login(request=request, user=user)
+        return user
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError
 
 
 class SignUpSerializer(serializers.ModelSerializer):

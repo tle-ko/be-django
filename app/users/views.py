@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from users import models
 from users.serializers import IsEmailUsableSerializer
 from users.serializers import IsUsernameUsableSerializer
+from users.serializers import SignInSerializer
 from users import serializers
 from users import services
 
@@ -45,23 +46,16 @@ class SignInAPIView(generics.GenericAPIView):
     """사용자 로그인 API"""
     authentication_classes = []
     permission_classes = [AllowAny]
-    serializer_class = serializers.SignInSerializer
+    serializer_class = SignInSerializer
 
     def post(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = services.sign_in(
-            request=self.request,
-            email=serializer.validated_data['email'],
-            password=serializer.validated_data['password'],
-        )
-        token = services.get_user_jwt(user)
-        serializer = serializers.UserSerializer(instance=user)
-        return Response({
-            **serializer.data,
-            'access_token': str(token.access_token),
-            'refresh_token': str(token.token),
-        })
+        self.perform_login(serializer)
+        return Response(serializer.data)
+
+    def perform_login(self, serializer: SignInSerializer):
+        serializer.save()
 
 
 class SignUpAPIView(generics.CreateAPIView):
