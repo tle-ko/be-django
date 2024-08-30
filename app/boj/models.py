@@ -16,7 +16,7 @@ class BOJUserManager(Manager):
         return super().filter(*args, **kwargs)
 
     def get_by_username(self, username: str) -> BOJUser:
-        return self.filter(username=username).get_or_create()[0]
+        return self.get_or_create(**{BOJUser.field_name.USERNAME: username})[0]
 
 
 class BOJUser(models.Model):
