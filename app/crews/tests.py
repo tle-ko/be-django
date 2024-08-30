@@ -100,3 +100,19 @@ class CrewAPITest(TestCase):
                 }
             },
         ])
+
+    def test_크루_생성(self):
+        res = self.client.post("/api/v1/crew", {
+            "icon": "🥇",
+            "name": "임시로 생성해본 크루",
+            "max_members": 3,
+            "languages": [
+                "java",
+            ],
+            "min_boj_level": 0,
+            "custom_tags": ['tag1'],
+            "notice": "string",
+            "is_recruiting": True,
+            "is_active": True
+        })
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED, res.json())
