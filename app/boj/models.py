@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
+from typing import Optional
 
 from django.db import models
 from django.db.models import Manager
@@ -34,7 +34,7 @@ class BOJUser(models.Model):
     )
     updated_at = models.DateTimeField(auto_now_add=True)
 
-    objects: _BOJUserManager = BOJUserManager()
+    objects: BOJUserManager = BOJUserManager()
 
     class field_name:
         USERNAME = 'username'
@@ -65,7 +65,7 @@ class BOJUserSnapshot(models.Model):
     rating = models.IntegerField()
     created_at = models.DateTimeField()
 
-    objects: _BOJUserSnapshotManager = BOJUserSnapshotManager()
+    objects: BOJUserSnapshotManager = BOJUserSnapshotManager()
 
     class field_name:
         USER = 'user'
@@ -83,8 +83,3 @@ class BOJProblem(models.Model):
     time_limit = models.FloatField()
     tags = models.JSONField(default=list)
     level = models.IntegerField(choices=BOJLevel.choices)
-
-
-_BOJUserManager = Union[BOJUserManager, Manager[BOJUser]]
-_BOJUserSnapshotManager = Union[BOJUserSnapshotManager,
-                                Manager[BOJUserSnapshot]]
