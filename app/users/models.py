@@ -68,8 +68,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text='백준 아이디',
         max_length=40,
     )
-    token = models.CharField(null=True, blank=True, default=None)
-    refresh_token = models.CharField(null=True, blank=True, default=None)
+    token = models.TextField(null=True, blank=True, default=None)
+    refresh_token = models.TextField(null=True, blank=True, default=None)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
