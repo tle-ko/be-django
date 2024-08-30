@@ -6,10 +6,12 @@ from django.core.validators import EmailValidator
 from django.http.request import HttpRequest
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import ValidationError
 
 from boj.models import BOJUser
 from boj.serializers import BOJUserSerializer
 from users.models import User
+from users.models import UserEmailVerification
 
 
 PK = 'id'
@@ -109,11 +111,12 @@ class SignInSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    verification_token = serializers.CharField()
+    verification_token = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
         fields = [
+            PK,
             User.field_name.EMAIL,
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
@@ -121,6 +124,22 @@ class SignUpSerializer(serializers.ModelSerializer):
             User.field_name.BOJ_USERNAME,
             'verification_token',
         ]
+        extra_kwargs = {
+            PK: {'read_only': True},
+            User.field_name.EMAIL: {'write_only': True},
+            User.field_name.PASSWORD: {'write_only': True, 'style': {'input_type': 'password'}},
+        }
+
+    def create(self, validated_data: dict):
+        email = validated_data.get('email')
+        verification_token = validated_data.pop('verification_token')
+        try:
+            email_verification = UserEmailVerification.objects.get(email=email)
+        except UserEmailVerification.DoesNotExist:
+            raise ValidationError('이메일 인증 토큰이 발급되지 않았습니다.')
+        if email_verification.verification_token != verification_token:
+            raise ValidationError('이메일 인증 토큰이 올바르지 않습니다.')
+        return super().create(validated_data)
 
 
 class UsernameSerializer(serializers.Serializer):

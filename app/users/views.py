@@ -12,6 +12,7 @@ from users import models
 from users.serializers import IsEmailUsableSerializer
 from users.serializers import IsUsernameUsableSerializer
 from users.serializers import SignInSerializer
+from users.serializers import SignUpSerializer
 from users import serializers
 from users import services
 
@@ -63,21 +64,7 @@ class SignUpAPIView(generics.CreateAPIView):
     """사용자 등록(회원가입) API"""
     authentication_classes = []
     permission_classes = [AllowAny]
-    serializer_class = serializers.SignUpSerializer
-
-    def create(self, request: Request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        serializer = serializers.UserSerializer(instance=serializer.instance)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    def perform_create(self, serializer: serializers.SignUpSerializer):
-        email = serializer.validated_data['email']
-        token = serializer.validated_data.pop('verification_token')
-        services.verify_token(email, token)
-        serializer.instance = services.sign_up(**serializer.validated_data)
+    serializer_class = SignUpSerializer
 
 
 class SignOutAPIView(generics.GenericAPIView):
