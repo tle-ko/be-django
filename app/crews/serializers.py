@@ -120,8 +120,16 @@ class LatestActivityField(CrewActivitySerializer):
     def get_attribute(self, instance: Crew) -> CrewActivity:
         assert isinstance(instance, Crew)
         try:
+            assert instance.is_active
             return CrewActivity.objects.crew(instance).has_started().latest()
-        except:
+        except CrewActivity.DoesNotExist:
+            return CrewActivity(**{
+                CrewActivity.field_name.CREW: instance,
+                CrewActivity.field_name.NAME: '등록된 활동 없음',
+                CrewActivity.field_name.START_AT: None,
+                CrewActivity.field_name.END_AT: None,
+            })
+        except AssertionError:
             return CrewActivity(**{
                 CrewActivity.field_name.CREW: instance,
                 CrewActivity.field_name.NAME: '활동 종료',
