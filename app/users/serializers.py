@@ -8,17 +8,22 @@ from users.models import User
 PK = 'id'
 
 
-class BOJField(serializers.SerializerMethodField):
-    def to_representation(self, value: BOJUser):
-        return BOJUserSerializer(value).data
-
-    def get_attribute(self, instance) -> BOJUser:
-        assert isinstance(instance, User)
-        return BOJUser.objects.get_by_user(instance)
-
+# Username or Email Serializers
 
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class IsEmailUsableField(serializers.BooleanField):
+    def get_attribute(self, instance):
+        assert 'email' in instance, instance
+        assert isinstance(instance['email'], str)
+        return not User.objects.filter(email=instance['email']).exists()
+
+
+class IsEmailUsableSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    is_usable = IsEmailUsableField(read_only=True)
 
 
 class EmailCodeSerializer(serializers.Serializer):

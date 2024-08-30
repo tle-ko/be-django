@@ -8,8 +8,23 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from users import models
+from users.serializers import IsEmailUsableSerializer
 from users import serializers
 from users import services
+
+
+class EmailCheckAPIView(generics.GenericAPIView):
+    """이메일이 사용가능한지 검사 API"""
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    serializer_class = IsEmailUsableSerializer
+
+    @swagger_auto_schema(query_serializer=IsEmailUsableSerializer)
+    def get(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
 
 class SignInAPIView(generics.GenericAPIView):
@@ -89,33 +104,6 @@ class UsernameCheckAPIView(generics.GenericAPIView):
             data={
                 "username": username,
                 "is_usable": services.is_username_usable(username),
-            },
-            status=status.HTTP_200_OK,
-        )
-
-
-class EmailCheckAPIView(generics.GenericAPIView):
-    """이메일이 사용가능한지 검사 API"""
-
-    authentication_classes = []
-    permission_classes = [AllowAny]
-    serializer_class = serializers.EmailSerializer
-
-    @swagger_auto_schema(
-        query_serializer=serializers.EmailSerializer,
-        responses={
-            status.HTTP_200_OK: '검사를 수행했을 경우, 사용가능 여부를 Boolean으로 반환함.',
-            status.HTTP_400_BAD_REQUEST: '잘못된 이메일 형식.',
-        },
-    )
-    def get(self, request: Request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data['email']
-        return Response(
-            data={
-                "email": email,
-                "is_usable": services.is_email_usable(email),
             },
             status=status.HTTP_200_OK,
         )
