@@ -6,4 +6,4 @@ class BojConfig(AppConfig):
     name = "boj"
 
     def ready(self) -> None:
-        import boj.signals.handlers
+        import boj.services

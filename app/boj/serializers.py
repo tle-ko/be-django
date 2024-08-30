@@ -5,19 +5,24 @@ from boj.models import BOJUser
 
 
 class BOJLevelField(serializers.SerializerMethodField):
-    def to_representation(self, instance: BOJUser):
-        assert isinstance(instance, BOJUser)
-        level = BOJLevel(instance.level)
+    def to_representation(self, boj_level: BOJLevel):
         return {
-            'value': level.value,
-            'name': level.get_name(lang='ko', arabic=False),
+            'value': boj_level.value,
+            'name': boj_level.get_name(lang='ko', arabic=False),
         }
+
+    def get_attribute(self, instance: BOJUser) -> BOJLevel:
+        assert isinstance(instance, BOJUser)
+        return BOJLevel(instance.level)
 
 
 class BOJProfileUrlField(serializers.SerializerMethodField):
-    def to_representation(self, instance: BOJUser):
+    def to_representation(self, username: str):
+        return f'https://boj.kr/{username}'
+
+    def get_attribute(self, instance: BOJUser) -> str:
         assert isinstance(instance, BOJUser)
-        return f'https://boj.kr/{instance.username}'
+        return instance.username
 
 
 class BOJUserSerializer(serializers.ModelSerializer):

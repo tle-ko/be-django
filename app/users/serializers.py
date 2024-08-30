@@ -1,27 +1,20 @@
 from rest_framework import serializers
 
-from boj.enums import BOJLevel
+from boj.models import BOJUser
 from boj.serializers import BOJUserSerializer
-from boj.services import get_boj_user_service
 from users.models import User
 
 
-class UserBOJField(serializers.SerializerMethodField):
-    def to_representation(self, instance: User):
-        assert isinstance(instance, User)
-        service = get_boj_user_service(instance.boj_username)
-        return BOJUserSerializer(service.instance).data
+PK = 'id'
 
 
-class UserBOJLevelNameField(serializers.SerializerMethodField):
-    def to_representation(self, instance: User):
+class BOJField(serializers.SerializerMethodField):
+    def to_representation(self, value: BOJUser):
+        return BOJUserSerializer(value).data
+
+    def get_attribute(self, instance) -> BOJUser:
         assert isinstance(instance, User)
-        service = get_boj_user_service(instance.boj_username)
-        level = BOJLevel(service.instance.level)
-        return {
-            'value': level.value,
-            'name': level.get_name(lang='ko', arabic=False),
-        }
+        return BOJUser.objects.get_by_user(instance)
 
 
 class EmailSerializer(serializers.Serializer):
@@ -40,7 +33,7 @@ class EmailTokenSerializer(serializers.Serializer):
 
 class SignInSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -63,12 +56,12 @@ class UsernameSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    boj = UserBOJField()
+    boj = BOJField()
 
     class Meta:
         model = User
         fields = [
-            'id',
+            PK,
             User.field_name.USERNAME,
             User.field_name.PROFILE_IMAGE,
             'boj',
@@ -77,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    level = UserBOJLevelNameField()
+    boj = BOJField()
 
     class Meta:
         model = User
@@ -87,13 +80,17 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
             User.field_name.BOJ_USERNAME,
-            'level',
+            'boj',
         ]
         extra_kwargs = {
             User.field_name.EMAIL: {
                 'read_only': True,
             },
             User.field_name.PASSWORD: {
+                'write_only': True,
+                'style': {'input_type': 'password'},
+            },
+            User.field_name.BOJ_USERNAME: {
                 'write_only': True,
             }
         }
@@ -109,7 +106,7 @@ class UserMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id',
+            PK,
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
         ]

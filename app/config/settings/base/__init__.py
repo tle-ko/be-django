@@ -55,10 +55,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     "boj",
+    "crews",
+    "crews.activities",
+    "crews.applications",
     "users",
     "problems",
-    "crews",
-    "submissions",
+    "problems.analyses",
 ]
 
 MIDDLEWARE = [

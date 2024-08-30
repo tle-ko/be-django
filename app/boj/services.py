@@ -1,66 +1,47 @@
-from __future__ import annotations
-
-import logging
+from logging import getLogger
 
 from background_task import background
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 import requests
 
-from boj import dto
-from boj import enums
-from boj import models
+from boj.models import BOJUser
+from boj.models import BOJUserSnapshot
+from users.models import User
 
 
-logger = logging.getLogger('tle.boj')
+logger = getLogger('django.server')
 
 
-def get_boj_user_service(boj_username: str) -> BOJUserService:
-    return BOJUserService(boj_username)
+@receiver(post_save, sender=User)
+def auto_create_boj_user(sender, instance: User, created: bool, **kwargs):
+    update_boj_user_data(instance.username)
 
 
-class BOJUserService:
-    def __init__(self, username: str):
-        self.username = username
-        self.instance, created = models.BOJUser.objects.get_or_create(**{
-            models.BOJUser.field_name.USERNAME: username,
-        })
+@receiver(post_save, sender=BOJUser)
+def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
+    if created:
+        update_boj_user_data(instance.username)
 
-    def update(self) -> None:
-        update_boj_user(self.username)
 
-    def create_snapshot(self) -> models.BOJUserSnapshot:
-        return models.BOJUserSnapshot(**{
-            models.BOJUserSnapshot.field_name.USER: self.instance,
-            models.BOJUserSnapshot.field_name.LEVEL: self.instance.level,
-            models.BOJUserSnapshot.field_name.RATING: self.instance.rating,
-            models.BOJUserSnapshot.field_name.CREATED_AT: self.instance.updated_at,
-        })
-
-    def level(self) -> enums.BOJLevel:
-        return enums.BOJLevel(self.instance.level)
+def update_boj_user_data(username: str):
+    assert username.strip().isidentifier()
+    _update_boj_user_data(username)
 
 
 @background
-def update_boj_user(boj_username: str):
-    data = fetch_data(boj_username)
-    service = get_boj_user_service(boj_username)
-    service.instance.level = data.level.value
-    service.instance.rating = data.rating
-    service.instance.updated_at = timezone.now()
-    service.instance.save()
-    service.create_snapshot()
-
-
-def fetch_data(username: str) -> dto.BOJUserData:
+def _update_boj_user_data(username: str):
+    assert username.strip().isidentifier()
+    instance = BOJUser.objects.get_by_username(username)
     url = f'https://solved.ac/api/v3/user/show?handle={username}'
     data = requests.get(url).json()
     try:
-        tier = data['tier']
-        rating = data['rating']
+        instance.level = data['tier']
+        instance.rating = data['rating']
+        instance.updated_at = timezone.now()
+        instance.save()
+        BOJUserSnapshot.objects.create_snapshot_of(instance)
     except AssertionError:
         # Solved.ac API 관련 문제일 가능성이 높다.
-        logger.warning(
-            '"https://solved.ac/api/v3/user/show"로 부터 데이터를 파싱해오는 것에 실패했습니다.'
-        )
-    else:
-        return dto.BOJUserData(level=enums.BOJLevel(tier), rating=rating)
+        logger.warning(f'"{url}"로 부터 데이터를 파싱해오는 것에 실패했습니다.')
