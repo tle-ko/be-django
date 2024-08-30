@@ -36,9 +36,9 @@ class UserManager(BaseUserManager):
                username: Optional[str] = None,
                *args,
                **kwargs) -> models.QuerySet[User]:
-        if email is None:
+        if email is not None:
             kwargs[User.field_name.EMAIL] = email
-        if username is None:
+        if username is not None:
             kwargs[User.field_name.USERNAME] = username
         return super().filter(*args, **kwargs)
 
