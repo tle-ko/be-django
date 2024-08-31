@@ -18,5 +18,15 @@
             "groups": [],
             "user_permissions": []
         }
+    },
+    {
+        "model": "boj.bojuser",
+        "pk": 1,
+        "fields": {
+            "username": "test",
+            "level": 0,
+            "rating": 0,
+            "updated_at": "2024-08-27T04:02:23.327"
+        }
     }
 ]

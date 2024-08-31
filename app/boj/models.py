@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
+from typing import Optional
 
 from django.db import models
 from django.db.models import Manager
@@ -10,14 +10,13 @@ from users.models import User
 
 
 class BOJUserManager(Manager):
-    def username(self, username: str) -> _BOJUserManager:
-        return self.filter(**{BOJUser.field_name.USERNAME: username})
-
-    def get_by_user(self, user: User) -> BOJUser:
-        return self.username(user.boj_username).get_or_create()[0]
+    def filter(self, username: Optional[str] = None, *args, **kwargs) -> models.QuerySet[BOJUser]:
+        if username is not None:
+            kwargs[User.field_name.USERNAME] = username
+        return super().filter(*args, **kwargs)
 
     def get_by_username(self, username: str) -> BOJUser:
-        return self.username(username).get_or_create()[0]
+        return self.get_or_create(**{BOJUser.field_name.USERNAME: username})[0]
 
 
 class BOJUser(models.Model):
@@ -35,7 +34,7 @@ class BOJUser(models.Model):
     )
     updated_at = models.DateTimeField(auto_now_add=True)
 
-    objects: _BOJUserManager = BOJUserManager()
+    objects: BOJUserManager = BOJUserManager()
 
     class field_name:
         USERNAME = 'username'
@@ -66,7 +65,7 @@ class BOJUserSnapshot(models.Model):
     rating = models.IntegerField()
     created_at = models.DateTimeField()
 
-    objects: _BOJUserSnapshotManager = BOJUserSnapshotManager()
+    objects: BOJUserSnapshotManager = BOJUserSnapshotManager()
 
     class field_name:
         USER = 'user'
@@ -84,8 +83,3 @@ class BOJProblem(models.Model):
     time_limit = models.FloatField()
     tags = models.JSONField(default=list)
     level = models.IntegerField(choices=BOJLevel.choices)
-
-
-_BOJUserManager = Union[BOJUserManager, Manager[BOJUser]]
-_BOJUserSnapshotManager = Union[BOJUserSnapshotManager,
-                                Manager[BOJUserSnapshot]]
