@@ -13,6 +13,6 @@ urlpatterns = [
         path("/verification", users.views.EmailVerificationAPIView.as_view()),
     ])),
     path("user", include([
-        path("/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),
+        path("/manage", users.views.UserManageAPIView.as_view()),
     ])),
 ]

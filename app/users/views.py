@@ -95,7 +95,7 @@ class SignOutAPIView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CurrentUserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class UserManageAPIView(generics.RetrieveUpdateAPIView):
     """현재 로그인한 사용자 정보를 조회/수정하는 API"""
     permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
