@@ -10,6 +10,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -155,6 +156,26 @@ class UserEmailVerification(models.Model):
 
     def is_expired(self) -> bool:
         return (self.expires_at is not None) and self.expires_at < timezone.now()
+
+    def is_valid_code(self, code: str, raise_exception=False) -> bool:
+        try:
+            assert isinstance(code, str), '올바르지 않은 형식입니다.'
+            assert code, '인증 코드가 비어있습니다.'
+            assert not self.is_expired(), '인증 코드가 만료되었습니다.'
+            assert self.verification_code == code, '인증 코드가 일치하지 않습니다.'
+        except AssertionError as exception:
+            if raise_exception:
+                raise ValidationError(exception)
+            return False
+        else:
+            return True
+
+    def revoke_code(self):
+        self.verification_code = None
+        self.expires_at = None
+
+    def revoke_token(self):
+        self.verification_token = None
 
     def rotate_code(self, code_len: int = 6):
         self.verification_code = self._create_code(code_len)
