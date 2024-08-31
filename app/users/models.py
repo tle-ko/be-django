@@ -118,6 +118,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.save()
 
 
+class UserEmailVerificationManager(BaseUserManager):
+    def get_or_create_by_email(self, email: str) -> UserEmailVerification:
+        return super().get_or_create(**{UserEmailVerification.field_name.EMAIL: email})[0]
+
+
 class UserEmailVerification(models.Model):
     email = models.EmailField(
         help_text='이메일 주소',
@@ -135,6 +140,8 @@ class UserEmailVerification(models.Model):
     )
     expires_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects: UserEmailVerificationManager = UserEmailVerificationManager()
 
     class field_name:
         EMAIL = 'email'
