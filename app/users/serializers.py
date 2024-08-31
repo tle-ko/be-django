@@ -201,23 +201,31 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'boj',
         ]
         extra_kwargs = {
-            User.field_name.EMAIL: {
-                'read_only': True,
-            },
+            User.field_name.EMAIL: {'read_only': True},
             User.field_name.PASSWORD: {
                 'write_only': True,
                 'style': {'input_type': 'password'},
             },
-            User.field_name.BOJ_USERNAME: {
-                'write_only': True,
-            }
+            User.field_name.BOJ_USERNAME: {'write_only': True}
         }
 
+    def is_valid(self, *, raise_exception=False):
+        try:
+            assert User.field_name.EMAIL not in self.initial_data, (
+                '이메일은 수정할 수 없습니다.'
+            )
+        except AssertionError as exception:
+            if raise_exception:
+                raise ValidationError(exception)
+            else:
+                return (False, None)
+        return super().is_valid(raise_exception=raise_exception)
+
     def save(self, **kwargs):
-        instance: User = super().save(**kwargs)
+        self.instance: User = super().save(**kwargs)
         if User.field_name.PASSWORD in self.validated_data:
-            instance.set_password(self.validated_data[User.field_name.PASSWORD])
-            instance.save()
+            self.instance.set_password(self.validated_data[User.field_name.PASSWORD])
+            self.instance.save()
 
 
 class UserMinimalSerializer(serializers.ModelSerializer):
