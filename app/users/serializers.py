@@ -19,6 +19,43 @@ PK = 'id'
 
 # Username or Email Serializers
 
+class UsabilityEmailField(serializers.Serializer):
+    value = serializers.EmailField(read_only=True)
+    is_usable = serializers.BooleanField(read_only=True)
+
+    def get_attribute(self, instance):
+        data = {
+            'value': None,
+            'is_usable': False,
+        }
+        if 'email' in instance:
+            email = instance['email']
+            data['email'] = email
+            data['is_usable'] = not User.objects.filter(email=email).exists()
+        return data
+
+
+class UsabilityUsernameField(serializers.Serializer):
+    value = serializers.CharField(read_only=True)
+    is_usable = serializers.BooleanField(read_only=True)
+
+    def get_attribute(self, instance):
+        data = {
+            'value': None,
+            'is_usable': False,
+        }
+        if 'username' in instance:
+            name = instance['username']
+            data['username'] = name
+            data['is_usable'] = not User.objects.filter(username=name).exists()
+        return data
+
+
+class UsabilitySerializer(serializers.Serializer):
+    email = UsabilityEmailField(default=None)
+    username = UsabilityUsernameField(default=None)
+
+
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
 

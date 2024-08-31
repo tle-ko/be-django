@@ -11,12 +11,14 @@ from rest_framework.response import Response
 from users import models
 from users.serializers import IsEmailUsableSerializer
 from users.serializers import IsUsernameUsableSerializer
+from users.serializers import UsabilitySerializer
 from users.serializers import SignInSerializer
 from users.serializers import SignUpSerializer
 from users import serializers
 from users import services
 
 
+# TODO: Deprecate
 class EmailCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
 
@@ -31,8 +33,10 @@ class EmailCheckAPIView(generics.GenericAPIView):
         return Response(serializer.data)
 
 
+# TODO: Deprecate
 class UsernameCheckAPIView(generics.GenericAPIView):
     """이메일이 사용가능한지 검사 API"""
+
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = IsUsernameUsableSerializer
@@ -41,6 +45,18 @@ class UsernameCheckAPIView(generics.GenericAPIView):
     def get(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
+
+
+class UsabilityAPIView(generics.RetrieveAPIView):
+    """현재 로그인한 사용자 정보를 조회/수정하는 API"""
+
+    permission_classes = [AllowAny]
+    serializer_class = UsabilitySerializer
+
+    @swagger_auto_schema(query_serializer=UsabilitySerializer)
+    def retrieve(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(request.query_params)
         return Response(serializer.data)
 
 
