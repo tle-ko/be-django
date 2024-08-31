@@ -11,7 +11,7 @@ class SignInTest(TestCase):
     def setUp(self) -> None:
         self.client.logout()
 
-    def test_로그인성공(self):
+    def test_200_로그인성공(self):
         res = self.client.post(
             "/api/v1/auth/signin",
             {
@@ -21,7 +21,7 @@ class SignInTest(TestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_비밀번호_불일치(self):
+    def test_403_비밀번호_불일치(self):
         res = self.client.post(
             "/api/v1/auth/signin",
             {
@@ -41,7 +41,7 @@ class SignUpTest(TestCase):
             UserEmailVerification.field_name.VERIFICATION_TOKEN: 'sample_token',
         })
 
-    def test_회원가입_성공(self):
+    def test_201_회원가입_성공(self):
         res = self.client.post(
             "/api/v1/auth/signup",
             {
@@ -54,7 +54,7 @@ class SignUpTest(TestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    def test_인증토큰_불일치(self):
+    def test_400_인증토큰_불일치(self):
         res = self.client.post(
             "/api/v1/auth/signup",
             {
@@ -75,7 +75,7 @@ class SignOutTest(TestCase):
         self.user = User.objects.get(pk=1)
         self.client.force_login(self.user)
 
-    def test_로그아웃_성공(self):
+    def test_204_로그아웃_성공(self):
         res = self.client.get("/api/v1/auth/signout")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
