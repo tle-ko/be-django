@@ -184,7 +184,7 @@ class UserEmailVerification(models.Model):
     def rotate_token(self, seed: Optional[str] = None):
         if seed is None:
             seed = self._create_code(code_len=16)
-        return sha256(seed.encode()).hexdigest()
+        self.verification_token = sha256(seed.encode()).hexdigest()
 
     def _create_code(self, code_len: int) -> str:
         return ''.join(chr(randint(ord('A'), ord('Z'))) for _ in range(code_len))
