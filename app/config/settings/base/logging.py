@@ -24,14 +24,13 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "INFO",
-            "filters": ["require_debug_true"],
-            'class': 'config.utils.FileAndStreamHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': 'logs/console.log',
-            "formatter": "standard",
+            'when': 'D',
+            "formatter": "django.server",
         },
         "django.mail": {
             "level": "ERROR",
-            "filters": ["require_debug_true"],
             'class': 'config.utils.FileAndStreamHandler',
             'filename': 'logs/django.mail.log',
         },
