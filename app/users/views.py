@@ -1,14 +1,20 @@
+from typing import Optional
+
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 from django.contrib.auth import logout
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
 from rest_framework import throttling
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from users import models
+from users.models import User
 from users.models import UserEmailVerification
 from users.serializers import EmailVerificationSerializer
 from users.serializers import IsEmailUsableSerializer
@@ -96,7 +102,12 @@ class SignInAPIView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def perform_login(self, serializer: SignInSerializer):
-        serializer.save()
+        user: Optional[User]
+        if (user := authenticate(request=self.request, **serializer.validated_data)) is None:
+            raise AuthenticationFailed(f'Invalid email or password')
+        login(self.request, user)
+        user.rotate_token()  # TODO: 이 작업을 로그인 백엔드에서 수행하도록 변경
+        serializer.instance = user
 
 
 class SignUpAPIView(generics.CreateAPIView):

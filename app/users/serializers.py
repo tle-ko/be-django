@@ -1,11 +1,5 @@
-from typing import Optional
-
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
 from django.core.validators import EmailValidator
-from django.http.request import HttpRequest
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import ValidationError
 
 from boj.models import BOJUser
@@ -179,16 +173,6 @@ class SignInSerializer(serializers.ModelSerializer):
             User.field_name.TOKEN: {'read_only': True},
             User.field_name.REFRESH_TOKEN: {'read_only': True},
         }
-
-    def save(self, **kwargs):
-        # 여기서는 사용자의 액세스 토큰 외의 정보를 수정하지는 않는다.
-        request: HttpRequest = self.context['request']
-        user: Optional[User]
-        if (user := authenticate(request=request, **self.validated_data)) is None:
-            raise AuthenticationFailed(f'Invalid email or password {self.validated_data}')
-        login(request, user)
-        user.rotate_token()
-        self.instance = user
 
 
 class SignUpSerializer(serializers.ModelSerializer):
