@@ -1,11 +1,15 @@
+wheel
+uwsgi # might require "apt install python3-dev"
 django
 django-background-tasks
 django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
-Pillow
 drf-yasg
-# MODEL DEPENDENCY
+Pillow
+psycopg2 # PostgreSQL. May require "apt install libpq-dev", "apt install postgresql"
+
+# LLMs
 google-generativeai
 sympy
 antlr4-python3-runtime==4.11 # sympy dependency for latex parsing
