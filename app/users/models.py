@@ -155,7 +155,7 @@ class UserEmailVerification(models.Model):
         CREATED_AT = 'created_at'
 
     def is_expired(self) -> bool:
-        return (self.expires_at is not None) and self.expires_at < timezone.now()
+        return (self.expires_at is None) or self.expires_at < timezone.now()
 
     def is_valid_code(self, code: str, raise_exception=False) -> bool:
         try:
