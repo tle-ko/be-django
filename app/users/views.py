@@ -58,7 +58,7 @@ class UsernameCheckAPIView(generics.GenericAPIView):
 
 
 class UsabilityAPIView(generics.RetrieveAPIView):
-    """현재 로그인한 사용자 정보를 조회/수정하는 API"""
+    """이메일/사용자명이 사용 가능한지 조회하는 API"""
 
     permission_classes = [AllowAny]
     serializer_class = UsabilitySerializer
@@ -74,7 +74,11 @@ class UsabilityAPIView(generics.RetrieveAPIView):
 
 class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
                                generics.GenericAPIView):
-    """이메일 인증 코드 전송 API"""
+    """이메일을 인증하기 위한 API.
+
+    이메일만 전달하면 새로운 코드를 발급 후 이메일로 전송해준다.
+    코드를 함께 전달하면 새로운 인증 토큰을 발급하여 반환한다.
+    """
     authentication_classes = []
     throttle_classes = []
     permission_classes = [AllowAny]
@@ -126,10 +130,12 @@ class SignOutAPIView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# TODO: deprecate
 class EmailVerifyThrottle(throttling.AnonRateThrottle):
     THROTTLE_RATES = '1/min'
 
 
+# TODO: deprecate
 class EmailVerifyAPIView(generics.GenericAPIView):
     """이메일 인증 코드 전송 API"""
     authentication_classes = []
