@@ -138,3 +138,79 @@ class EmailCheckTest(TestCase):
             "email": "test@example.com",
             "is_usable": False,
         })
+
+
+class UsabilityAPITest(TestCase):
+    fixtures = ['user.sample.json']
+
+    def test_200_사용_가능한_이메일(self):
+        res = self.client.get("/api/v1/auth/usability", {
+                "email": "unique@notexample.com",
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": {
+                "value": "unique@notexample.com",
+                "is_usable": True,
+            },
+            "username": {
+                "value": None,
+                "is_usable": False,
+            },
+        })
+
+    def test_200_사용_불가능한_이메일(self):
+        res = self.client.get("/api/v1/auth/usability", {
+                "email": "test@example.com",
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": {
+                "value": "test@example.com",
+                "is_usable": False,
+            },
+            "username": {
+                "value": None,
+                "is_usable": False,
+            },
+        })
+
+    def test_200_사용_가능한_사용자명(self):
+        res = self.client.get("/api/v1/auth/usability", {
+                "username": "unique",
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": {
+                "value": None,
+                "is_usable": False,
+            },
+            "username": {
+                "value": "unique",
+                "is_usable": True,
+            },
+        })
+
+    def test_200_사용_불가능한_사용자명(self):
+        res = self.client.get("/api/v1/auth/usability", {
+                "username": "test",
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": {
+                "value": None,
+                "is_usable": False,
+            },
+            "username": {
+                "value": "test",
+                "is_usable": True,
+            },
+        })
+
+    def test_400_빈_데이터_전송(self):
+        res = self.client.get("/api/v1/auth/usability")
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
