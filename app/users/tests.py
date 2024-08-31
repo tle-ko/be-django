@@ -12,23 +12,17 @@ class SignInTest(TestCase):
         self.client.logout()
 
     def test_200_로그인성공(self):
-        res = self.client.post(
-            "/api/v1/auth/signin",
-            {
-                "email": "test@example.com",
-                "password": "passw0rd@test",
-            },
-        )
+        res = self.client.post("/api/v1/auth/signin", {
+            "email": "test@example.com",
+            "password": "passw0rd@test",
+        })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_403_비밀번호_불일치(self):
-        res = self.client.post(
-            "/api/v1/auth/signin",
-            {
-                "email": "test@example.com",
-                "password": "password@test",
-            }
-        )
+        res = self.client.post("/api/v1/auth/signin", {
+            "email": "test@example.com",
+            "password": "password@test",
+        })
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -42,29 +36,23 @@ class SignUpTest(TestCase):
         })
 
     def test_201_회원가입_성공(self):
-        res = self.client.post(
-            "/api/v1/auth/signup",
-            {
-                "email": self.sample_object.email,
-                "username": "test",
-                "password": "passw0rd@test",
-                "boj_username": "test",
-                "verification_token": self.sample_object.verification_token,
-            }
-        )
+        res = self.client.post("/api/v1/auth/signup", {
+            "email": self.sample_object.email,
+            "username": "test",
+            "password": "passw0rd@test",
+            "boj_username": "test",
+            "verification_token": self.sample_object.verification_token,
+        })
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_400_인증토큰_불일치(self):
-        res = self.client.post(
-            "/api/v1/auth/signup",
-            {
-                "email": self.sample_object.email,
-                "username": "test",
-                "password": "passw0rd@test",
-                "boj_username": "test",
-                "verification_token": 'this_token_must_not_match_the_sample...',
-            }
-        )
+        res = self.client.post("/api/v1/auth/signup", {
+            "email": self.sample_object.email,
+            "username": "test",
+            "password": "passw0rd@test",
+            "boj_username": "test",
+            "verification_token": 'this_token_must_not_match_the_sample...',
+        })
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,9 +73,8 @@ class UsabilityAPITest(TestCase):
 
     def test_200_사용_가능한_이메일(self):
         res = self.client.get("/api/v1/auth/usability", {
-                "email": "unique@notexample.com",
-            }
-        )
+            "email": "unique@notexample.com",
+        })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertDictEqual(res.json(), {
             "email": {
@@ -102,9 +89,8 @@ class UsabilityAPITest(TestCase):
 
     def test_200_사용_불가능한_이메일(self):
         res = self.client.get("/api/v1/auth/usability", {
-                "email": "test@example.com",
-            }
-        )
+            "email": "test@example.com",
+        })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertDictEqual(res.json(), {
             "email": {
@@ -119,9 +105,8 @@ class UsabilityAPITest(TestCase):
 
     def test_200_사용_가능한_사용자명(self):
         res = self.client.get("/api/v1/auth/usability", {
-                "username": "unique",
-            }
-        )
+            "username": "unique",
+        })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertDictEqual(res.json(), {
             "email": {
@@ -136,9 +121,8 @@ class UsabilityAPITest(TestCase):
 
     def test_200_사용_불가능한_사용자명(self):
         res = self.client.get("/api/v1/auth/usability", {
-                "username": "test",
-            }
-        )
+            "username": "test",
+        })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertDictEqual(res.json(), {
             "email": {
