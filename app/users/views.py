@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from users import models
 from users.serializers import IsEmailUsableSerializer
 from users.serializers import IsUsernameUsableSerializer
+from users.serializers import UsabilitySerializerForQueryParameter
 from users.serializers import UsabilitySerializer
 from users.serializers import SignInSerializer
 from users.serializers import SignUpSerializer
@@ -54,7 +55,10 @@ class UsabilityAPIView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = UsabilitySerializer
 
-    @swagger_auto_schema(query_serializer=UsabilitySerializer)
+    @swagger_auto_schema(query_serializer=UsabilitySerializerForQueryParameter)
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
+
     def retrieve(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(request.query_params)
         return Response(serializer.data)

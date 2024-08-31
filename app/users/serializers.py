@@ -30,7 +30,7 @@ class UsabilityEmailField(serializers.Serializer):
         }
         if 'email' in instance:
             email = instance['email']
-            data['email'] = email
+            data['value'] = email
             data['is_usable'] = not User.objects.filter(email=email).exists()
         return data
 
@@ -46,14 +46,24 @@ class UsabilityUsernameField(serializers.Serializer):
         }
         if 'username' in instance:
             name = instance['username']
-            data['username'] = name
+            data['value'] = name
             data['is_usable'] = not User.objects.filter(username=name).exists()
         return data
+
+
+class UsabilitySerializerForQueryParameter(serializers.Serializer):
+    email = serializers.EmailField(default=None)
+    username = serializers.CharField(default=None)
 
 
 class UsabilitySerializer(serializers.Serializer):
     email = UsabilityEmailField(default=None)
     username = UsabilityUsernameField(default=None)
+
+    def to_representation(self, instance: dict):
+        if (instance.get('email', None) is None) and (instance.get('username', None) is None):
+            raise ValidationError('이메일 혹은 사용자명 중 하나는 주어져야 합니다.')
+        return super().to_representation(instance)
 
 
 class EmailSerializer(serializers.Serializer):
