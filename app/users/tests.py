@@ -80,66 +80,6 @@ class SignOutTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
 
-class UsernameCheckTest(TestCase):
-    fixtures = ['user.sample.json']
-
-    def test_사용_가능한_사용자명(self):
-        res = self.client.get(
-            "/api/v1/auth/username/check",
-            {
-                "username": "unique",
-            }
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.json(), {
-            "username": "unique",
-            "is_usable": True,
-        })
-
-    def test_사용_불가능한_사용자명(self):
-        res = self.client.get(
-            "/api/v1/auth/username/check",
-            {
-                "username": "test",
-            }
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.json(), {
-            "username": "test",
-            "is_usable": False,
-        })
-
-
-class EmailCheckTest(TestCase):
-    fixtures = ['user.sample.json']
-
-    def test_사용_가능한_이메일(self):
-        res = self.client.get(
-            "/api/v1/auth/email/check",
-            {
-                "email": "unique@notexample.com",
-            }
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.json(), {
-            "email": "unique@notexample.com",
-            "is_usable": True,
-        })
-
-    def test_사용_불가능한_이메일(self):
-        res = self.client.get(
-            "/api/v1/auth/email/check",
-            {
-                "email": "test@example.com",
-            }
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.json(), {
-            "email": "test@example.com",
-            "is_usable": False,
-        })
-
-
 class UsabilityAPITest(TestCase):
     fixtures = ['user.sample.json']
 

@@ -60,44 +60,6 @@ class UsabilitySerializer(serializers.Serializer):
         return super().to_representation(instance)
 
 
-class EmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-
-
-class IsEmailUsableField(serializers.BooleanField):
-    def get_attribute(self, instance):
-        assert 'email' in instance, instance
-        assert isinstance(instance['email'], str)
-        return not User.objects.filter(email=instance['email']).exists()
-
-
-class IsEmailUsableSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    is_usable = IsEmailUsableField(read_only=True)
-
-
-class IsUsernameUsableField(serializers.BooleanField):
-    def get_attribute(self, instance):
-        assert 'username' in instance, instance
-        assert isinstance(instance['username'], str)
-        return not User.objects.filter(username=instance['username']).exists()
-
-
-class IsUsernameUsableSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    is_usable = IsUsernameUsableField()
-
-
-class EmailCodeSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    code = serializers.CharField()
-
-
-class EmailTokenSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    token = serializers.CharField()
-
-
 # Email Validation Serializers
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
