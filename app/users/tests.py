@@ -138,3 +138,94 @@ class UsabilityAPITest(TestCase):
     def test_400_빈_데이터_전송(self):
         res = self.client.get("/api/v1/auth/usability")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class UserManageAPITest(TestCase):
+    fixtures = ['user.sample.json']
+
+    def setUp(self) -> None:
+        self.client.force_login(user=User.objects.get(username='test'))
+
+    def test_401_GET_비로그인_사용자는_접근_불가(self):
+        self.client.logout()
+        res = self.client.get("/api/v1/user/manage")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_401_PUT_비로그인_사용자는_접근_불가(self):
+        self.client.logout()
+        res = self.client.put("/api/v1/user/manage")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_401_PATCT_비로그인_사용자는_접근_불가(self):
+        self.client.logout()
+        res = self.client.patch("/api/v1/user/manage")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_200_GET_정보_가져오기(self):
+        res = self.client.get("/api/v1/user/manage")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": "test@example.com",
+            "profile_image": None,
+            "username": "test",
+            "boj": {
+                "username": "test",
+                "profile_url": "https://boj.kr/test",
+                "level": {
+                    "value": 0,
+                    "name": "사용자 정보를 불러오지 못함",
+                },
+                "rating": 0,
+                "updated_at": "2024-08-27T04:02:23.327000",
+            }
+        })
+
+    def test_400_PATCH_이메일_수정하기(self):
+        res = self.client.patch("/api/v1/user/manage", {
+            "email": "test@example.com",
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_200_PATCH_사용자명_수정하기(self):
+        res = self.client.patch("/api/v1/user/manage", {
+            "username": "alt_test",
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": "test@example.com",
+            "profile_image": None,
+            "username": "alt_test",
+            "boj": {
+                "username": "test",
+                "profile_url": "https://boj.kr/test",
+                "level": {
+                    "value": 0,
+                    "name": "사용자 정보를 불러오지 못함",
+                },
+                "rating": 0,
+                "updated_at": "2024-08-27T04:02:23.327000",
+            }
+        })
+
+    def test_200_PATCH_비밀번호_수정하기(self):
+        res = self.client.patch("/api/v1/user/manage", {
+            "password": "passw0rd@new_password",
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(res.json(), {
+            "email": "test@example.com",
+            "profile_image": None,
+            "username": "test",
+            "boj": {
+                "username": "test",
+                "profile_url": "https://boj.kr/test",
+                "level": {
+                    "value": 0,
+                    "name": "사용자 정보를 불러오지 못함",
+                },
+                "rating": 0,
+                "updated_at": "2024-08-27T04:02:23.327000",
+            }
+        })
+        user = User.objects.filter(username='test').get()
+        self.assertTrue(user.check_password("passw0rd@new_password"))
