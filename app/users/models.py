@@ -130,15 +130,18 @@ class UserEmailVerification(models.Model):
     )
     verification_code = models.TextField(
         help_text='인증 코드',
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
     verification_token = models.TextField(
         help_text='인증 토큰',
         null=True,
         blank=True,
     )
-    expires_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects: UserEmailVerificationManager = UserEmailVerificationManager()
@@ -151,7 +154,7 @@ class UserEmailVerification(models.Model):
         CREATED_AT = 'created_at'
 
     def is_expired(self) -> bool:
-        return self.expires_at < timezone.now()
+        return (self.expires_at is not None) and self.expires_at < timezone.now()
 
     def rotate_code(self, code_len: int = 6):
         self.verification_code = self._create_code(code_len)
