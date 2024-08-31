@@ -13,6 +13,7 @@ urlpatterns = [
         path("/email/check", users.views.EmailCheckAPIView.as_view()),
         path("/email/verify", users.views.EmailVerifyAPIView.as_view()),
         path("/usability", users.views.UsabilityAPIView.as_view()),
+        path("/verification", users.views.EmailVerificationAPIView.as_view()),
     ])),
     path("user", include([
         path("/manage", users.views.CurrentUserRetrieveUpdateAPIView.as_view()),

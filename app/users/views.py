@@ -9,6 +9,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from users import models
+from users.models import UserEmailVerification
+from users.serializers import EmailVerificationSerializer
 from users.serializers import IsEmailUsableSerializer
 from users.serializers import IsUsernameUsableSerializer
 from users.serializers import UsabilitySerializerForQueryParameter
@@ -62,6 +64,23 @@ class UsabilityAPIView(generics.RetrieveAPIView):
     def retrieve(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(request.query_params)
         return Response(serializer.data)
+
+
+class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
+                               generics.GenericAPIView):
+    """이메일 인증 코드 전송 API"""
+    authentication_classes = []
+    throttle_classes = []
+    permission_classes = [AllowAny]
+    queryset = UserEmailVerification
+    serializer_class = EmailVerificationSerializer
+
+    def get_object(self):
+        email = self.request.data['email']
+        return UserEmailVerification.objects.get_or_create_by_email(email=email)
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class SignInAPIView(generics.GenericAPIView):

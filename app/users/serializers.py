@@ -104,6 +104,40 @@ class EmailTokenSerializer(serializers.Serializer):
     token = serializers.CharField()
 
 
+# Email Validation Serializers
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserEmailVerification
+        fields = [
+            UserEmailVerification.field_name.EMAIL,
+            UserEmailVerification.field_name.VERIFICATION_CODE,
+            UserEmailVerification.field_name.VERIFICATION_TOKEN,
+            UserEmailVerification.field_name.EXPIRES_AT,
+        ]
+        extra_kwargs = {
+            UserEmailVerification.field_name.EMAIL: {'validators': [EmailValidator]},
+            UserEmailVerification.field_name.VERIFICATION_CODE: {'write_only': True},
+            UserEmailVerification.field_name.VERIFICATION_TOKEN: {'read_only': True},
+            UserEmailVerification.field_name.EXPIRES_AT: {'read_only': True},
+        }
+
+    def update(self, instance: UserEmailVerification, validated_data: dict):
+        verification_code = validated_data.get(
+            UserEmailVerification.field_name.VERIFICATION_CODE, None)
+        if verification_code is None:
+            # 코드가 없다면 코드를 만들어 주자.
+            instance.revoke_token()
+            instance.rotate_code()
+        else:
+            # 인증 코드가 있다면 검증해주자.
+            instance.is_valid_code(verification_code, raise_exception=True)
+            instance.revoke_code()
+            instance.rotate_token()
+        instance.save()
+        return instance
+
+
 # User Serializers
 
 class BOJField(serializers.SerializerMethodField):
