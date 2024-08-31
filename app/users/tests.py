@@ -147,7 +147,7 @@ class UsabilityAPITest(TestCase):
             },
             "username": {
                 "value": "test",
-                "is_usable": True,
+                "is_usable": False,
             },
         })
 
