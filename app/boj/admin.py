@@ -4,7 +4,7 @@ from django.http.request import HttpRequest
 
 from boj.models import BOJUser
 from boj.models import BOJUserSnapshot
-from boj.services import update_boj_user_data
+from boj.services import schedule_update_boj_user_data
 
 
 @admin.register(BOJUser)
@@ -16,13 +16,13 @@ class BOJUserModelAdmin(admin.ModelAdmin):
         BOJUser.field_name.UPDATED_AT,
     ]
     actions = [
-        'update',
+        'schedule_update',
     ]
 
-    @admin.action(description="Update selected BOJ user data. (via solved.ac API)")
-    def update(self, request: HttpRequest, queryset: QuerySet[BOJUser]):
+    @admin.action(description="Schedule update selected BOJ user data. (via solved.ac API)")
+    def schedule_update(self, request: HttpRequest, queryset: QuerySet[BOJUser]):
         for obj in queryset:
-            update_boj_user_data(obj.username)
+            schedule_update_boj_user_data(obj.username)
 
 
 @admin.register(BOJUserSnapshot)

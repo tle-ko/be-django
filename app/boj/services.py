@@ -18,16 +18,16 @@ logger = getLogger(__name__)
 
 @receiver(post_save, sender=User)
 def auto_create_boj_user(sender, instance: User, created: bool, **kwargs):
-    update_boj_user_data(instance.username)
+    schedule_update_boj_user_data(instance.username)
 
 
 @receiver(post_save, sender=BOJUser)
 def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
     if created:
-        update_boj_user_data(instance.username)
+        schedule_update_boj_user_data(instance.username)
 
 
-def update_boj_user_data(username: str):
+def schedule_update_boj_user_data(username: str):
     assert username.strip().isidentifier()
     _update_boj_user_data(username)
 
