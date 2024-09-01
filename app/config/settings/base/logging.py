@@ -1,3 +1,6 @@
+from config.settings.base.core import BASE_DIR
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -25,26 +28,26 @@ LOGGING = {
         "console": {
             "level": "INFO",
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/console.log',
+            'filename': BASE_DIR / 'logs/console.log',
             'when': 'D',
             "formatter": "django.server",
         },
         "django.mail": {
             "level": "ERROR",
             'class': 'config.utils.FileAndStreamHandler',
-            'filename': 'logs/django.mail.log',
+            'filename': BASE_DIR / 'logs/django.mail.log',
         },
         "django.server": {
             "level": "INFO",
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/django.server.log',
+            'filename': BASE_DIR / 'logs/django.server.log',
             'when': 'D',
             "formatter": "django.server",
         },
         "problems": {
             "level": "INFO",
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/problems.log',
+            'filename': BASE_DIR / 'logs/problems.log',
             'when': 'D',
             "formatter": "standard",
         },
@@ -52,12 +55,12 @@ LOGGING = {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             'class': 'logging.FileHandler',
-            'filename': 'logs/mail_admins.log',
+            'filename': BASE_DIR / 'logs/mail_admins.log',
         },
         "django.security.DisallowedHost": {
             "level": "INFO",
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/django.security.DisallowedHost.log',
+            'filename': BASE_DIR / 'logs/django.security.DisallowedHost.log',
             'when': 'D',
             "formatter": "standard",
         },
