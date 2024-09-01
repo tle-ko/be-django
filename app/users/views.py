@@ -63,7 +63,10 @@ class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
 
 
 class SignInAPIView(generics.GenericAPIView):
-    """사용자 로그인 API"""
+    """사용자 로그인 API.
+
+    .
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = SignInSerializer
@@ -84,14 +87,20 @@ class SignInAPIView(generics.GenericAPIView):
 
 
 class SignUpAPIView(generics.CreateAPIView):
-    """사용자 등록(회원가입) API"""
+    """사용자 등록(회원가입) API.
+
+    .
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = SignUpSerializer
 
 
 class SignOutAPIView(generics.GenericAPIView):
-    """사용자 로그아웃 API"""
+    """사용자 로그아웃 API.
+
+    .
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -100,7 +109,10 @@ class SignOutAPIView(generics.GenericAPIView):
 
 
 class UserManageAPIView(generics.RetrieveUpdateAPIView):
-    """현재 로그인한 사용자 정보를 조회/수정하는 API"""
+    """현재 로그인한 사용자 정보를 조회/수정하는 API.
+
+    .
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
 
