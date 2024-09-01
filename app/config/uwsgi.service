@@ -1,0 +1,21 @@
+; should be copied to /etc/systemd/system/uwsgi.service
+; then...
+; systemctl daemon-reload
+; systemctl enable uwsgi
+; systemctl restart uwsgi
+
+[Unit]
+Description=uWSGI service
+After=syslog.target
+
+[Service]
+ExecStart=/root/be-django/venv/bin/uwsgi -i /root/be-django/app/config/uwsgi.ini
+
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
