@@ -1,5 +1,6 @@
 from json import JSONDecodeError
 from logging import getLogger
+from datetime import timedelta
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -31,6 +32,11 @@ def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
 def schedule_update_boj_user_data(username: str):
     assert username.strip().isidentifier()
     instance = BOJUser.objects.get_by_username(username)
+
+    # 마지막 갱신으로 부터 90초 이내에 시도한 갱신 요청은 무시 함.
+    if (timezone.now() - instance.updated_at) < timedelta(seconds=90):
+        return
+
     update_boj_user(instance)
 
 
