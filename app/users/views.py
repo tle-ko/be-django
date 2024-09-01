@@ -23,7 +23,11 @@ from users.serializers import SignUpSerializer
 
 
 class UsabilityAPIView(generics.RetrieveAPIView):
-    """이메일/사용자명이 사용 가능한지 조회하는 API"""
+    """이메일/사용자명이 사용 가능한지 조회하는 API.
+
+    이메일 혹은 사용자명 중 하나만 입력해도 동작하지만,
+    둘 다 입력하지 않을 경우 400 BAD_REQUEST를 반환한다.
+    """
 
     permission_classes = [AllowAny]
     serializer_class = UsabilitySerializer
@@ -59,7 +63,10 @@ class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
 
 
 class SignInAPIView(generics.GenericAPIView):
-    """사용자 로그인 API"""
+    """사용자 로그인 API.
+
+    .
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = SignInSerializer
@@ -80,14 +87,20 @@ class SignInAPIView(generics.GenericAPIView):
 
 
 class SignUpAPIView(generics.CreateAPIView):
-    """사용자 등록(회원가입) API"""
+    """사용자 등록(회원가입) API.
+
+    .
+    """
     authentication_classes = []
     permission_classes = [AllowAny]
     serializer_class = SignUpSerializer
 
 
 class SignOutAPIView(generics.GenericAPIView):
-    """사용자 로그아웃 API"""
+    """사용자 로그아웃 API.
+
+    .
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -96,7 +109,10 @@ class SignOutAPIView(generics.GenericAPIView):
 
 
 class UserManageAPIView(generics.RetrieveUpdateAPIView):
-    """현재 로그인한 사용자 정보를 조회/수정하는 API"""
+    """현재 로그인한 사용자 정보를 조회/수정하는 API.
+
+    .
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
 
