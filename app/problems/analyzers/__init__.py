@@ -1,9 +1,9 @@
 from logging import getLogger
 
-from background_task import background
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from background_task.tasks import tasks
 from problems.analyses.dto import ProblemAnalysisDTO
 from problems.analyses.models import ProblemAnalysis
 from problems.analyses.models import ProblemTag
@@ -13,7 +13,7 @@ from problems.dto import ProblemDTO
 from problems.models import Problem
 
 
-logger = getLogger('problems.analyzers')
+logger = getLogger(__name__)
 
 
 def get_analyzer() -> ProblemAnalyzer:
@@ -26,7 +26,7 @@ def auto_analyze(sender, instance: Problem, created: bool, **kwargs):
         schedule_analyze(instance.pk)
 
 
-@background
+@tasks.background
 def schedule_analyze(problem_id: int):
     logger.info(f'PK={problem_id} 문제의 분석 준비중.')
     problem = Problem.objects.get(pk=problem_id)

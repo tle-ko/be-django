@@ -1,19 +1,19 @@
 from json import JSONDecodeError
 from logging import getLogger
 
-from background_task import background
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from rest_framework import status
 import requests
 
+from background_task.tasks import tasks
 from boj.models import BOJUser
 from boj.models import BOJUserSnapshot
 from users.models import User
 
 
-logger = getLogger('django.server')
+logger = getLogger(__name__)
 
 
 @receiver(post_save, sender=User)
@@ -32,7 +32,7 @@ def update_boj_user_data(username: str):
     _update_boj_user_data(username)
 
 
-@background
+@tasks.background
 def _update_boj_user_data(username: str):
     assert username.strip().isidentifier()
     instance = BOJUser.objects.get_by_username(username)

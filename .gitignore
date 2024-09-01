@@ -60,7 +60,6 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-app/logs/*
 app/config/settings/*.py
 !app/config/settings/__init__.py
 !app/config/settings/test.py

@@ -9,7 +9,7 @@ from sympy.parsing.latex import parse_latex
 from problems.analyses.models import ProblemTag
 
 
-logger = getLogger('problems.analyzers.gemini.parsers')
+logger = getLogger(__name__)
 
 
 @cache
