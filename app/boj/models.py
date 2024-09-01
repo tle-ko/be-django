@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Tuple
 
 from django.db import models
 from django.db.models import Manager
@@ -15,8 +16,11 @@ class BOJUserManager(Manager):
             kwargs[User.field_name.USERNAME] = username
         return super().filter(*args, **kwargs)
 
+    def get_or_create_by_username(self, username: str) -> Tuple[BOJUser, bool]:
+        return self.get_or_create(**{BOJUser.field_name.USERNAME: username})
+
     def get_by_username(self, username: str) -> BOJUser:
-        return self.get_or_create(**{BOJUser.field_name.USERNAME: username})[0]
+        return self.get_or_create_by_username(username)[0]
 
 
 class BOJUser(models.Model):
