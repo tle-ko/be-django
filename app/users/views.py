@@ -23,7 +23,11 @@ from users.serializers import SignUpSerializer
 
 
 class UsabilityAPIView(generics.RetrieveAPIView):
-    """이메일/사용자명이 사용 가능한지 조회하는 API"""
+    """이메일/사용자명이 사용 가능한지 조회하는 API.
+
+    이메일 혹은 사용자명 중 하나만 입력해도 동작하지만,
+    둘 다 입력하지 않을 경우 400 BAD_REQUEST를 반환한다.
+    """
 
     permission_classes = [AllowAny]
     serializer_class = UsabilitySerializer
