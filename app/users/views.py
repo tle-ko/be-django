@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from users.models import User
 from users.models import UserEmailVerification
@@ -102,6 +103,7 @@ class SignOutAPIView(generics.GenericAPIView):
     .
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = Serializer
 
     def get(self, request, *args, **kwargs):
         logout(request)

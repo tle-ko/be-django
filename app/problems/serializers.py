@@ -169,8 +169,7 @@ class ProblemStatisticSerializer(serializers.Serializer):
     difficulty = ProblemStatisticsDifficultyField()
     tags = ProblemStatisticsTagsField()
 
-    def __init__(self, instance: ProblemStatisticDTO, **kwargs):
-        assert isinstance(instance, ProblemStatisticDTO)
+    def __init__(self, instance: ProblemStatisticDTO = None, **kwargs):
         super().__init__(instance, **kwargs)
 
 
