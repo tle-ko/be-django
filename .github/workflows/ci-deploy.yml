@@ -1,0 +1,23 @@
+name: CI via SSH (Deploy)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: CI via SSH (Deploy)
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOSTNAME }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd be-django
+          git pull origin main
+          git checkout main
+          systemctl restart uwsgi
