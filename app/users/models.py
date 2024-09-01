@@ -115,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def rotate_token(self):
         token: RefreshToken = RefreshToken.for_user(self)
         self.token = str(token.access_token)
-        self.refresh_token = str(token.token)
+        self.refresh_token = token.token
         self.save()
 
 

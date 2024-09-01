@@ -11,12 +11,31 @@ class SignInTest(TestCase):
     def setUp(self) -> None:
         self.client.logout()
 
-    def test_200_로그인성공(self):
+    def test_200_세션_로그인성공(self):
         res = self.client.post("/api/v1/auth/signin", {
             "email": "test@example.com",
             "password": "passw0rd@test",
         })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        data = res.json()
+        token = data.pop('token')
+        self.assertGreater(len(token), 1)
+        self.assertDictEqual(data, {
+            "id": 1,
+            "username": "test",
+            "profile_image": None,
+            "refresh_token": None,
+            "boj": {
+                "username": "test",
+                "profile_url": "https://boj.kr/test",
+                "level": {
+                    "value": 0,
+                    "name": "사용자 정보를 불러오지 못함",
+                },
+                "rating": 0,
+                "updated_at": "2024-08-27T04:02:23.327000",
+            },
+        })
 
     def test_403_비밀번호_불일치(self):
         res = self.client.post("/api/v1/auth/signin", {
@@ -24,6 +43,24 @@ class SignInTest(TestCase):
             "password": "password@test",
         })
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_200_Bearer_토큰_로그인(self):
+        # 인증 토큰 발급받기
+        token = self.client.post("/api/v1/auth/signin", {
+            "email": "test@example.com",
+            "password": "passw0rd@test",
+        }).json()['token']
+
+        # 임의로 로그인이 필요한 기능 사용 (로그아웃 됨을 확인)
+        self.client.logout()
+        res = self.client.get("/api/v1/user/manage")
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # 임의로 로그인이 필요한 기능 사용 (토큰 로그인 시도)
+        res = self.client.get("/api/v1/user/manage", headers={
+            'Authorization': f'Bearer {token}',
+        })
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
 
 class SignUpTest(TestCase):
