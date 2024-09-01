@@ -27,15 +27,23 @@ def auto_update_boj_user(sender, instance: BOJUser, created: bool, **kwargs):
         schedule_update_boj_user_data(instance.username)
 
 
+@tasks.background
 def schedule_update_boj_user_data(username: str):
     assert username.strip().isidentifier()
-    _update_boj_user_data(username)
-
-
-@tasks.background
-def _update_boj_user_data(username: str):
-    assert username.strip().isidentifier()
     instance = BOJUser.objects.get_by_username(username)
+    update_boj_user(instance)
+
+
+def update_boj_user(instance: BOJUser):
+    raw_boj_user_data = fetch_boj_user_data(instance.username)
+    instance.level = raw_boj_user_data['tier']
+    instance.rating = raw_boj_user_data['rating']
+    instance.updated_at = timezone.now()
+    instance.save()
+    BOJUserSnapshot.objects.create_snapshot_of(instance)
+
+
+def fetch_boj_user_data(username: str) -> dict:
     url = f'https://solved.ac/api/v3/user/show?handle={username}'
     res = requests.get(url)
     if res.status_code == status.HTTP_404_NOT_FOUND:
@@ -43,14 +51,13 @@ def _update_boj_user_data(username: str):
     else:
         try:
             data = res.json()
-            instance.level = data['tier']
-            instance.rating = data['rating']
-            instance.updated_at = timezone.now()
-            instance.save()
-            BOJUserSnapshot.objects.create_snapshot_of(instance)
+            assert 'tier' in data
+            assert 'rating' in data
         except AssertionError:
             # Solved.ac API 관련 문제일 가능성이 높다.
             logger.warning(f'"{url}"로 부터 데이터를 파싱해오는 것에 실패했습니다.')
         except JSONDecodeError:
             logger.warning(f'"{url}"로 부터 데이터를 파싱해오는 것에 실패했습니다.')
             logger.error(f'받은 데이터: "{res.content}"')
+        else:
+            return data
