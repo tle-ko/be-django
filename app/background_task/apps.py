@@ -14,14 +14,18 @@ class BackgroundTasksAppConfig(AppConfig):
 
     def ready(self):
         import background_task.signals  # noqa
-
-        logger.info('creating thread for background tasks')
-
         from background_task.management.commands.process_tasks import Command as ProcessTasksCommand
 
-        runner = ProcessTasksCommand()
-        thread = Thread(target=runner.run)
+        def task_runner(*args, **kwargs):
+            logger.info('background tasks thread started')
+            try:
+                command = ProcessTasksCommand()
+                command.handle()
+            except Exception as exception:
+                logger.error(exception)
+            finally:
+                logger.info('shutting down background task thread.')
+
+        thread = Thread(target=task_runner)
         thread.setDaemon(True)
         thread.start()
-
-        logger.info('background tasks thread started')

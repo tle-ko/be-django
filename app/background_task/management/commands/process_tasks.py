@@ -57,11 +57,6 @@ class Command(BaseCommand):
             'dest': 'log_std',
             'help': 'Redirect stdout and stderr to the logging system',
         }),
-        (('--dev', ), {
-            'action': 'store_true',
-            'dest': 'dev',
-            'help': 'Auto-reload your code on changes. Use this only for development',
-        }),
     )
 
     if VERSION < (1, 8):
@@ -112,12 +107,12 @@ class Command(BaseCommand):
                 time.sleep(random.uniform(sig_manager.time_to_wait[0], sig_manager.time_to_wait[1]))
 
     def handle(self, *args, **options):
-        is_dev = options.get('dev', False)
-        self.sig_manager = SignalManager()
-        if is_dev:
-            reload_func = autoreload.run_with_reloader
-            if VERSION < (2, 2):
-                reload_func = autoreload.main
-            reload_func(self.run, *args, **options)
-        else:
-            self.run(*args, **options)
+        # 메인 스레드에서 수행할 것이 아니므로 시그널을 처리하지 못한다.
+        # 임의로 Placeholder Class만 만들어서 사용한다.
+        self.sig_manager = FakeSignalManager()
+        self.run(*args, **options)
+
+
+class FakeSignalManager(SignalManager):
+    def __init__(self):
+        self.slow_down(None, None)
