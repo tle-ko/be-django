@@ -1,4 +1,10 @@
+from logging import getLogger
+from threading import Thread
+
 from django.apps import AppConfig
+
+
+logger = getLogger(__name__)
 
 
 class BackgroundTasksAppConfig(AppConfig):
@@ -8,3 +14,14 @@ class BackgroundTasksAppConfig(AppConfig):
 
     def ready(self):
         import background_task.signals  # noqa
+
+        logger.info('creating thread for background tasks')
+
+        from background_task.management.commands.process_tasks import Command as ProcessTasksCommand
+
+        runner = ProcessTasksCommand()
+        thread = Thread(target=runner.run)
+        thread.setDaemon(True)
+        thread.start()
+
+        logger.info('background tasks thread started')
