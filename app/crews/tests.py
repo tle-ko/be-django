@@ -4,7 +4,7 @@ from rest_framework import status
 from users.models import User
 
 
-class CrewAPITest(TestCase):
+class RecruitingCrewListAPIViewTest(TestCase):
     fixtures = ['sample.json']
     maxDiff = None
 
@@ -12,7 +12,7 @@ class CrewAPITest(TestCase):
         self.user = User.objects.get(pk=1)
         self.client.force_login(self.user)
 
-    def test_비로그인_사용자로_recruiting_크루_목록_조회(self):
+    def test_200_비로그인_사용자로_recruiting_크루_목록_조회(self):
         self.client.logout()
         res = self.client.get("/api/v1/crews/recruiting")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -56,7 +56,7 @@ class CrewAPITest(TestCase):
             },
         ])
 
-    def test_로그인_사용자로_recruiting_크루_목록_조회(self):
+    def test_200_로그인_사용자로_recruiting_크루_목록_조회(self):
         res = self.client.get("/api/v1/crews/recruiting")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertListEqual(res.json(), [
@@ -79,12 +79,21 @@ class CrewAPITest(TestCase):
             },
         ])
 
-    def test_비로그인_사용자로_my_크루_목록_조회_불가능(self):
+
+class MyCrewListAPIViewTest(TestCase):
+    fixtures = ['sample.json']
+    maxDiff = None
+
+    def setUp(self) -> None:
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
+
+    def test_401_비로그인_사용자로_my_크루_목록_조회_불가능(self):
         self.client.logout()
         res = self.client.get("/api/v1/crews/my")
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_my_크루_목록_조회(self):
+    def test_200_my_크루_목록_조회(self):
         res = self.client.get("/api/v1/crews/my")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertListEqual(res.json(), [
@@ -101,7 +110,16 @@ class CrewAPITest(TestCase):
             },
         ])
 
-    def test_크루_생성(self):
+
+class CrewCreateAPIViewTest(TestCase):
+    fixtures = ['sample.json']
+    maxDiff = None
+
+    def setUp(self) -> None:
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
+
+    def test_201_크루_생성(self):
         res = self.client.post("/api/v1/crew", {
             "icon": "🥇",
             "name": "임시로 생성해본 크루",
