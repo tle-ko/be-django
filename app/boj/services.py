@@ -13,7 +13,7 @@ from boj.models import BOJUserSnapshot
 from users.models import User
 
 
-logger = getLogger('django.server')
+logger = getLogger(__name__)
 
 
 @receiver(post_save, sender=User)

@@ -10,7 +10,7 @@ from problems.analyzers.gemini import prompts
 from problems.analyzers.gemini import parsers
 
 
-logger = getLogger('problems.analyzers.gemini.analyzer')
+logger = getLogger(__name__)
 
 
 class GeminiProblemAnalyzer(ProblemAnalyzer):

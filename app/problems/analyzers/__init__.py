@@ -13,7 +13,7 @@ from problems.dto import ProblemDTO
 from problems.models import Problem
 
 
-logger = getLogger('problems.analyzers')
+logger = getLogger(__name__)
 
 
 def get_analyzer() -> ProblemAnalyzer:
