@@ -17,6 +17,25 @@ class SignInTest(TestCase):
             "password": "passw0rd@test",
         })
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        data = res.json()
+        token = data.pop('token')
+        self.assertGreater(len(token), 1)
+        self.assertDictEqual(data, {
+            "id": 1,
+            "username": "test",
+            "profile_image": None,
+            "refresh_token": None,
+            "boj": {
+                "username": "test",
+                "profile_url": "https://boj.kr/test",
+                "level": {
+                    "value": 0,
+                    "name": "사용자 정보를 불러오지 못함",
+                },
+                "rating": 0,
+                "updated_at": "2024-08-27T04:02:23.327000",
+            },
+        })
 
     def test_403_비밀번호_불일치(self):
         res = self.client.post("/api/v1/auth/signin", {
