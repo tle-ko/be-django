@@ -1,10 +1,10 @@
 from textwrap import dedent
 
-from background_task import background
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from background_task.tasks import tasks
 from users.models import UserEmailVerification
 
 
@@ -19,7 +19,7 @@ def notify_on_code_generated(sender, instance: UserEmailVerification, created: b
         _schedule_mail(subject, message, recipient)
 
 
-@background
+@tasks.background
 def _schedule_mail(subject: str, message: str, recipient: str) -> None:
     send_mail(
         subject=subject,
