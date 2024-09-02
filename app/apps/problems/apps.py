@@ -6,4 +6,4 @@ class ProblemsConfig(AppConfig):
     name = "apps.problems"
 
     def ready(self) -> None:
-        import apps.problems.analyzers
+        from apps.problems import analyzers

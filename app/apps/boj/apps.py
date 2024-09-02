@@ -6,4 +6,4 @@ class BojConfig(AppConfig):
     name = "apps.boj"
 
     def ready(self) -> None:
-        import apps.boj.services
+        from apps.boj import services

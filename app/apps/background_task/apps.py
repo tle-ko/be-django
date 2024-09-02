@@ -13,7 +13,7 @@ class BackgroundTasksAppConfig(AppConfig):
     verbose_name = 'Background Tasks ({})'.format(version_info)
 
     def ready(self):
-        import apps.background_task.signals  # noqa
+        from apps.background_task import signals  # noqa
         from apps.background_task.management.commands.process_tasks import Command as ProcessTasksCommand
 
         def task_runner(*args, **kwargs):
