@@ -38,6 +38,12 @@ class ProblemCreateAPIViewTest(TestCase):
         res = self.client.post("/api/v1/problem", self.sample_data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_201_링크가_누락_되어도_문제_생성_가능(self):
+        data = self.sample_data.copy()
+        del data['link']
+        res = self.client.post("/api/v1/problem", data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
     def test_400_일부_필드_누락(self):
         for drop_field in self.required_fields:
             with self.subTest(drop_field=drop_field):
