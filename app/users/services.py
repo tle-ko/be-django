@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from background_task.tasks import tasks
+from apps.background_task.tasks import tasks
 from users.models import UserEmailVerification
 
 
