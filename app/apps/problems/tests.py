@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 
+from apps.problems.models import Problem
 from users.models import User
 
 
@@ -52,3 +53,21 @@ class ProblemCreateAPIViewTest(TestCase):
                     for field in self.required_fields if field != drop_field
                 })
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ProblemDetailRetrieveAPIViewTest(TestCase):
+    fixtures = ['sample.json']
+    maxDiff = None
+
+    def setUp(self) -> None:
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
+
+    def test_200_문제_정보_가져오기(self):
+        problem = Problem.objects.get(pk=1)
+        res = self.client.get(f"/api/v1/problem/{problem.pk}/detail")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_404(self):
+        res = self.client.get(f"/api/v1/problem/999/detail")
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
