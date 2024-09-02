@@ -2,8 +2,8 @@ from django.core.validators import EmailValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from boj.models import BOJUser
-from boj.serializers import BOJUserSerializer
+from apps.boj.models import BOJUser
+from apps.boj.serializers import BOJUserSerializer
 from users.models import User
 from users.models import UserEmailVerification
 

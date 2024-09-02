@@ -43,18 +43,18 @@ INSTALLED_APPS = [
 
     "corsheaders",
     "drf_yasg",
-    'background_task',
     "rest_framework",
     'rest_framework_simplejwt',
 
-    "boj",
-    "crews",
-    "crews.activities",
-    "crews.applications",
-    "crews.submissions",
     "users",
-    "problems",
-    "problems.analyses",
+    'apps.background_task',
+    "apps.boj",
+    "apps.crews",
+    "apps.crews.activities",
+    "apps.crews.applications",
+    # "apps.crews.submissions",
+    "apps.problems",
+    "apps.problems.analyses",
 ]
 
 MIDDLEWARE = [
