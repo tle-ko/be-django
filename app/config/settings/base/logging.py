@@ -57,24 +57,10 @@ LOGGING = {
             'when': 'D',
             "formatter": "standard",
         },
-        "background_task": {
+        "apps": {
             "level": "INFO",
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': BASE_DIR / 'logs/app/background_task/.log',
-            'when': 'D',
-            "formatter": "standard",
-        },
-        "boj": {
-            "level": "INFO",
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': BASE_DIR / 'logs/app/boj/.log',
-            'when': 'D',
-            "formatter": "standard",
-        },
-        "problems": {
-            "level": "INFO",
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': BASE_DIR / 'logs/app/problems/.log',
+            'filename': BASE_DIR / 'logs/apps/.log',
             'when': 'D',
             "formatter": "standard",
         },
@@ -94,16 +80,8 @@ LOGGING = {
             "level": "DEBUG",
             'propagate': False,
         },
-        "background_task": {
-            "handlers": ["background_task"],
-            "level": "INFO",
-        },
-        "boj": {
-            "handlers": ["boj"],
-            "level": "INFO",
-        },
-        "problems": {
-            "handlers": ["problems"],
+        "apps": {
+            "handlers": ["apps"],
             "level": "INFO",
         },
     },
