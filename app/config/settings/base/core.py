@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "crews",
     "crews.activities",
     "crews.applications",
+    "crews.submissions",
     "users",
     "problems",
     "problems.analyses",

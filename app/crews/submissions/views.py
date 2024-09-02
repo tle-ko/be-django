@@ -6,7 +6,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.serializers import Serializer
 from rest_framework.response import Response
 
-from submissions import serializers
+from crews.submissions import serializers
 
 
 class CreateCodeReview(generics.RetrieveAPIView):
