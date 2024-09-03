@@ -8,7 +8,9 @@ from apps.problems import serializers
 
 
 class ProblemCreateAPIView(generics.CreateAPIView):
-    """문제 생성 API"""
+    """문제 생성 API.
+
+    ."""
 
     queryset = models.Problem.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -31,16 +33,21 @@ class ProblemCreateAPIView(generics.CreateAPIView):
 
 
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """문제 상세 조회, 수정, 삭제 API"""
+    """문제 상세 조회, 수정, 삭제 API.
+
+    ."""
 
     queryset = models.Problem.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDetailSerializer
     lookup_field = 'id'
+    lookup_url_kwarg = 'problem_id'
 
 
 class ProblemSearchListAPIView(generics.ListAPIView):
-    """문제 검색 API"""
+    """문제 검색 API.
+
+    ."""
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemMinimalSerializer
