@@ -29,8 +29,8 @@ def auto_analyze(sender, instance: Problem, created: bool, **kwargs):
 @tasks.background
 def schedule_analyze(problem_id: int):
     logger.info(f'PK={problem_id} 문제의 분석 준비중.')
-    problem = Problem.objects.get(pk=problem_id)
-    problem_dto = ProblemDTO.from_model(problem)
+    problem: Problem = Problem.objects.get(pk=problem_id)
+    problem_dto = problem.as_dto()
     logger.info('문제 분석기를 불러오는 중.')
     analyzer = get_analyzer()
     logger.info(f'{problem_dto} 문제의 분석 시작.')
