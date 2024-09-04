@@ -166,6 +166,7 @@ class ProblemMinimalSerializer(serializers.ModelSerializer):
 
 
 class ProblemStatisticSerializer(serializers.Serializer):
+    problem_count = serializers.IntegerField(source="sample_count")
     difficulties = ProblemStatisticsDifficultyField()
     tags = ProblemStatisticsTagsField()
 
