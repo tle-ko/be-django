@@ -151,6 +151,7 @@ class CrewStatisticsAPIViewTest(TestCase):
     def test_200_응답_데이터_형식_검사(self) -> None:
         res = self.client.get("/api/v1/crew/1/statistics")
         self.assertDictEqual(res.json(), {
+            "problem_count": 1,
             "difficulties": [
                 {
                     "difficulty": 0,
