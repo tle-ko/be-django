@@ -1,8 +1,22 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from django.db import models
 
 from apps.problems.dto import ProblemDTO
 from apps.problems.enums import Unit
 from users.models import User
+
+
+class ProblemrManager(models.Manager):
+    def filter(self,
+               created_by: Optional[User] = None,
+               **kwargs) -> models.QuerySet[Problem]:
+        extra_kwargs = {}
+        if created_by is not None:
+            extra_kwargs[Problem.field_name.CREATED_BY] = created_by
+        return self.filter(**(extra_kwargs | kwargs))
 
 
 class Problem(models.Model):
@@ -45,6 +59,8 @@ class Problem(models.Model):
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects: ProblemrManager = ProblemrManager()
 
     class field_name:
         TITLE = 'title'

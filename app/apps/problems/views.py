@@ -53,6 +53,4 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     serializer_class = serializers.ProblemMinimalSerializer
 
     def get_queryset(self):
-        return models.Problem.objects.filter(**{
-            models.Problem.field_name.CREATED_BY: self.request.user,
-        })
+        return models.Problem.objects.filter(created_by=self.request.user)
