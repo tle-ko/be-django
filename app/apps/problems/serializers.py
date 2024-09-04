@@ -90,6 +90,7 @@ class ProblemStatisticsTagsField(serializers.SerializerMethodField):
         finally:
             return [
                 {
+                    'key': tag.key,
                     'label': {
                         'ko': tag.name_ko,
                         'en': tag.name_en,
