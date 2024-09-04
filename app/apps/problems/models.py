@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from django.db import models
 
 from apps.problems.dto import ProblemDTO
@@ -5,11 +9,20 @@ from apps.problems.enums import Unit
 from users.models import User
 
 
+class ProblemrManager(models.Manager):
+    def filter(self,
+               created_by: Optional[User] = None,
+               **kwargs) -> models.QuerySet[Problem]:
+        extra_kwargs = {}
+        if created_by is not None:
+            extra_kwargs[Problem.field_name.CREATED_BY] = created_by
+        return self.filter(**(extra_kwargs | kwargs))
+
+
 class Problem(models.Model):
     title = models.CharField(
         max_length=100,
         help_text='문제 이름을 입력해주세요.',
-        blank=False,
     )
     link = models.URLField(
         help_text='문제 링크를 입력해주세요. (선택)',
@@ -17,15 +30,12 @@ class Problem(models.Model):
     )
     description = models.TextField(
         help_text='문제 설명을 입력해주세요.',
-        blank=False,
     )
     input_description = models.TextField(
         help_text='문제 입력 설명을 입력해주세요.',
-        blank=True,
     )
     output_description = models.TextField(
         help_text='문제 출력 설명을 입력해주세요.',
-        blank=True,
     )
     memory_limit = models.FloatField(
         help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
@@ -36,7 +46,6 @@ class Problem(models.Model):
     )
     time_limit = models.FloatField(
         help_text='문제 시간 제한을 입력해주세요. (초 단위)',
-        default=1.0,
     )
     time_limit_unit = models.TextField(
         choices=Unit.choices,
@@ -50,6 +59,8 @@ class Problem(models.Model):
         null=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects: ProblemrManager = ProblemrManager()
 
     class field_name:
         TITLE = 'title'

@@ -166,7 +166,7 @@ class ProblemMinimalSerializer(serializers.ModelSerializer):
 
 
 class ProblemStatisticSerializer(serializers.Serializer):
-    difficulty = ProblemStatisticsDifficultyField()
+    difficulties = ProblemStatisticsDifficultyField()
     tags = ProblemStatisticsTagsField()
 
     def __init__(self, instance: ProblemStatisticDTO = None, **kwargs):

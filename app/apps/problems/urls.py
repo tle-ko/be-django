@@ -6,5 +6,5 @@ from apps.problems import views
 urlpatterns = [
     path("problems", views.ProblemSearchListAPIView.as_view()),
     path("problem", views.ProblemCreateAPIView.as_view()),
-    path("problem/<int:id>/detail", views.ProblemDetailRetrieveUpdateDestroyAPIView.as_view()),
+    path("problem/<int:problem_id>/detail", views.ProblemDetailRetrieveUpdateDestroyAPIView.as_view()),
 ]

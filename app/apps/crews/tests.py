@@ -134,3 +134,29 @@ class CrewCreateAPIViewTest(TestCase):
             "is_active": True
         })
         self.assertEqual(res.status_code, status.HTTP_201_CREATED, res.json())
+
+
+class CrewStatisticsAPIViewTest(TestCase):
+    fixtures = ['sample.json', 'single_activity']
+    maxDiff = None
+
+    def setUp(self) -> None:
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
+
+    def test_200_ok(self) -> None:
+        res = self.client.get("/api/v1/crew/1/statistics")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_200_응답_데이터_형식_검사(self) -> None:
+        res = self.client.get("/api/v1/crew/1/statistics")
+        self.assertDictEqual(res.json(), {
+            "difficulties": [
+                {
+                    "difficulty": 0,
+                    "problem_count": 1,
+                    "ratio": 1,
+                },
+            ],
+            "tags": [],
+        })
