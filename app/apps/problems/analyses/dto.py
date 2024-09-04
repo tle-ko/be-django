@@ -23,4 +23,4 @@ class ProblemTagDTO:
     name_en: str
 
     def __hash__(self) -> int:
-        return self.key
+        return hash(self.key)
