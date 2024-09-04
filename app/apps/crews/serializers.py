@@ -91,13 +91,14 @@ class MemberField(serializers.SerializerMethodField):
         self.include_member_details = include_member_details
 
     def to_representation(self, crew: Crew):
-        members = CrewMember.objects.filter(crew=crew)
+        members = CrewMember.objects.filter(crew=crew).select_related(CrewMember.field_name.USER)
+        users = [member.user for member in members]
         data = {
-            "count": members.count(),
+            "count": len(users),
             "max_count": crew.max_members,
         }
         if self.include_member_details:
-            data['items'] = CrewMemberSerializer(members, many=True).data
+            data['items'] = UserMinimalSerializer(users, many=True).data
         return data
 
     def get_attribute(self, instance: Crew):
@@ -139,8 +140,8 @@ class LatestActivityField(CrewActivitySerializer):
 
 
 class ActivitiesField(CrewActivitySerializer):
-    def __init__(self, **kwargs):
-        super().__init__(many=True, **kwargs)
+    def to_representation(self, queryset: QuerySet[CrewActivity]):
+        return CrewActivitySerializer(queryset, many=True).data
 
     def get_attribute(self, instance: Crew) -> QuerySet[CrewActivity]:
         assert isinstance(instance, Crew)
@@ -248,7 +249,7 @@ class CrewDashboardSerializer(serializers.ModelSerializer):
 
     tags = TagsField()
     members = MemberField(include_member_details=True)
-    activities = CrewActivitySerializer()
+    activities = ActivitiesField()
     is_captain = IsCaptainField()
 
     class Meta:
