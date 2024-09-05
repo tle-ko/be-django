@@ -39,4 +39,4 @@ class BackgroundTasksAppConfig(AppConfig):
         thread.start()
 
     def backoff(self, instance: Task) -> timedelta:
-        return timedelta(seconds=(instance.attempts ** 4) + 5)
+        return timedelta(seconds=60+instance.attempts)
