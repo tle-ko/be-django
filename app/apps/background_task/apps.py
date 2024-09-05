@@ -1,7 +1,15 @@
+from datetime import timedelta
 from logging import getLogger
 from threading import Thread
+from typing import TYPE_CHECKING
 
 from django.apps import AppConfig
+
+
+if TYPE_CHECKING:
+    from background_task.models import Task
+else:
+    Task = None
 
 
 logger = getLogger(__name__)
@@ -29,3 +37,6 @@ class BackgroundTasksAppConfig(AppConfig):
         thread = Thread(target=task_runner)
         thread.setDaemon(True)
         thread.start()
+
+    def backoff(self, instance: Task) -> timedelta:
+        return timedelta(seconds=(instance.attempts ** 4) + 5)

@@ -7,6 +7,8 @@ import os
 import traceback
 
 from io import StringIO
+
+from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -257,7 +259,7 @@ class Task(models.Model):
                              task_id=self.id, completed_task=completed)
             self.delete()
         else:
-            backoff = timedelta(seconds=(self.attempts ** 4) + 5)
+            backoff = apps.get_app_config("background_task").backoff(self)
             self.run_at = timezone.now() + backoff
             logger.warning('Rescheduling task %s for %s later at %s', self,
                            backoff, self.run_at)
