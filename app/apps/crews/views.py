@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 
-from apps.crews.activities.models import CrewActivityProblem
+from apps.activities.models import CrewActivityProblem
 from apps.crews.models import Crew
 from apps.crews.permissions import IsMember
 from apps.crews.serializers import RecruitingCrewSerializer

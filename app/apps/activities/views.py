@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from apps.crews.activities import models
+from apps.activities import models
 
 
 class CrewDashboardActivityAPIView(generics.RetrieveAPIView):

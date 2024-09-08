@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'apps.background_task',
     "apps.boj",
     "apps.crews",
-    "apps.crews.activities",
+    "apps.activities",
     "apps.crews.applications",
     # "apps.crews.submissions",
     "apps.problems",

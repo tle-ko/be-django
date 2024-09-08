@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 from apps.crews.models import Crew
-from apps.crews.activities.models import CrewActivity
-from apps.crews.activities.models import CrewActivityProblem
-from apps.crews.activities.models import CrewActivitySubmission
+from apps.activities.models import CrewActivity
+from apps.activities.models import CrewActivityProblem
+from apps.activities.models import CrewActivitySubmission
 
 
 admin.site.register([

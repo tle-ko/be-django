@@ -5,8 +5,8 @@ from django.db.models import QuerySet
 from django.db.transaction import atomic
 from rest_framework import serializers
 
-from apps.crews.activities.models import CrewActivity
-from apps.crews.activities.serializers import CrewActivitySerializer
+from apps.activities.models import CrewActivity
+from apps.activities.serializers import CrewActivitySerializer
 from apps.crews.applications.services import is_valid_applicant
 from apps.crews.dto import CrewTagDTO
 from apps.crews.enums import ProgrammingLanguageChoices

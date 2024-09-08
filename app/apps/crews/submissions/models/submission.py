@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.crews.enums import ProgrammingLanguageChoices
-from apps.crews.activities.models import CrewActivityProblem
+from apps.activities.models import CrewActivityProblem
 from users.models import User
 
 
