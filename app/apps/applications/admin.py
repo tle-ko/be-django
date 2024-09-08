@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http.request import HttpRequest
 
-from apps.crews.applications.models import CrewApplication
-from apps.crews.applications.services import accept
-from apps.crews.applications.services import reject
+from apps.applications.models import CrewApplication
+from apps.applications.services import accept
+from apps.applications.services import reject
 
 
 @admin.register(CrewApplication)

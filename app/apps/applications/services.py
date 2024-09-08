@@ -9,8 +9,8 @@ from rest_framework.exceptions import ValidationError
 from apps.background_task import background
 from apps.boj.enums import BOJLevel
 from apps.boj.models import BOJUser
-from apps.crews.applications.models import CrewApplication
-from apps.crews.applications.signals import reviewed
+from apps.applications.models import CrewApplication
+from apps.applications.signals import reviewed
 from apps.crews.models import Crew
 from apps.crews.models import CrewMember
 from users.models import User

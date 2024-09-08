@@ -1,6 +1,6 @@
 from rest_framework.request import Request
 
-from apps.crews.applications.models import CrewApplication
+from apps.applications.models import CrewApplication
 from apps.crews.permissions import IsCaptain as _IsCaptain
 
 

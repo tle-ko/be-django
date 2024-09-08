@@ -6,10 +6,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from apps.crews.applications.models import CrewApplication
-from apps.crews.applications.permissions import IsCaptain
-from apps.crews.applications.services import review
-from apps.crews.applications import serializers
+from apps.applications.models import CrewApplication
+from apps.applications.permissions import IsCaptain
+from apps.applications.services import review
+from apps.applications import serializers
 from apps.crews.models import Crew
 from apps.crews import servicesa
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.crews.applications.models import CrewApplication
+from apps.applications.models import CrewApplication
 
 
 PK = 'id'

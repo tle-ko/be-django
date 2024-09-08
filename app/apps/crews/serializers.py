@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from apps.activities.models import CrewActivity
 from apps.activities.serializers import CrewActivitySerializer
-from apps.crews.applications.services import is_valid_applicant
+from apps.applications.services import is_valid_applicant
 from apps.crews.dto import CrewTagDTO
 from apps.crews.enums import ProgrammingLanguageChoices
 from apps.crews.models import Crew
