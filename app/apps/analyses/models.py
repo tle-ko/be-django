@@ -5,9 +5,9 @@ from typing import Union
 from django.db import models
 from django.db.transaction import atomic
 
-from apps.problems.analyses.dto import ProblemAnalysisDTO
-from apps.problems.analyses.dto import ProblemTagDTO
-from apps.problems.analyses.enums import ProblemDifficulty
+from apps.analyses.dto import ProblemAnalysisDTO
+from apps.analyses.dto import ProblemTagDTO
+from apps.analyses.enums import ProblemDifficulty
 from apps.problems.models import Problem
 
 

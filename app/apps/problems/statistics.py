@@ -1,9 +1,9 @@
 from typing import Iterable
 
 from apps.problems.models import Problem
-from apps.problems.analyses.enums import ProblemDifficulty
-from apps.problems.analyses.models import ProblemAnalysis
-from apps.problems.analyses.models import ProblemAnalysisTag
+from apps.analyses.enums import ProblemDifficulty
+from apps.analyses.models import ProblemAnalysis
+from apps.analyses.models import ProblemAnalysisTag
 from apps.problems.dto import ProblemStatisticDTO
 
 

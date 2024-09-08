@@ -2,7 +2,7 @@ from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field
 
-from apps.problems.analyses.dto import ProblemTagDTO
+from apps.analyses.dto import ProblemTagDTO
 
 
 @dataclass

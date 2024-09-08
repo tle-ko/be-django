@@ -4,9 +4,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.background_task.tasks import tasks
-from apps.problems.analyses.dto import ProblemAnalysisDTO
-from apps.problems.analyses.models import ProblemAnalysis
-from apps.problems.analyses.models import ProblemTag
+from apps.analyses.dto import ProblemAnalysisDTO
+from apps.analyses.models import ProblemAnalysis
+from apps.analyses.models import ProblemTag
 from apps.problems.analyzers.base import ProblemAnalyzer
 from apps.problems.analyzers.gemini import GeminiProblemAnalyzer
 from apps.problems.dto import ProblemDTO

@@ -3,10 +3,10 @@ from typing import List
 from django.db.models import QuerySet
 from rest_framework import serializers
 
-from apps.problems.analyses.enums import ProblemDifficulty
-from apps.problems.analyses.models import ProblemAnalysis
-from apps.problems.analyses.models import ProblemAnalysisTag
-from apps.problems.analyses.models import ProblemTag
+from apps.analyses.enums import ProblemDifficulty
+from apps.analyses.models import ProblemAnalysis
+from apps.analyses.models import ProblemAnalysisTag
+from apps.analyses.models import ProblemTag
 
 
 PK = 'id'

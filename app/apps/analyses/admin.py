@@ -1,10 +1,10 @@
 from django.contrib import admin
 
 from apps.problems.models import Problem
-from apps.problems.analyses.models import ProblemAnalysis
-from apps.problems.analyses.models import ProblemAnalysisTag
-from apps.problems.analyses.models import ProblemTag
-from apps.problems.analyses.models import ProblemTagRelation
+from apps.analyses.models import ProblemAnalysis
+from apps.analyses.models import ProblemAnalysisTag
+from apps.analyses.models import ProblemTag
+from apps.analyses.models import ProblemTagRelation
 
 
 @admin.register(ProblemAnalysis)

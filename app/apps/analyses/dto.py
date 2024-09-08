@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Tuple
 
-from apps.problems.analyses.enums import ProblemDifficulty
+from apps.analyses.enums import ProblemDifficulty
 
 
 @dataclass

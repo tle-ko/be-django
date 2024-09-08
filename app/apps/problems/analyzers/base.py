@@ -1,5 +1,5 @@
 from apps.problems.dto import ProblemDTO
-from apps.problems.analyses.dto import ProblemAnalysisDTO
+from apps.analyses.dto import ProblemAnalysisDTO
 
 
 class ProblemAnalyzer:
