@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from apps.crews.activities.models import CrewActivity
-from apps.crews.applications.models import CrewApplication
+from apps.activities.models import CrewActivity
+from apps.applications.models import CrewApplication
 from apps.crews.models import Crew
 from apps.crews.models import CrewMember
 from apps.crews.models import CrewSubmittableLanguage

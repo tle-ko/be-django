@@ -4,10 +4,10 @@ from rest_framework import serializers
 
 from apps.problems import dto
 from apps.problems import models
-from apps.problems.analyses.enums import ProblemDifficulty
-from apps.problems.analyses.models import ProblemAnalysis
-from apps.problems.analyses.serializers import ProblemAnalysisSerializer
-from apps.problems.analyses.serializers import ProblemAnalysisDifficultyField
+from apps.analyses.enums import ProblemDifficulty
+from apps.analyses.models import ProblemAnalysis
+from apps.analyses.serializers import ProblemAnalysisSerializer
+from apps.analyses.serializers import ProblemAnalysisDifficultyField
 from apps.problems.dto import ProblemStatisticDTO
 from apps.problems.enums import Unit
 from apps.problems.models import Problem
