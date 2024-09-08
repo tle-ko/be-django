@@ -1,3 +1,4 @@
+setuptools
 wheel
 uwsgi # might require "apt install python3-dev"
 django
