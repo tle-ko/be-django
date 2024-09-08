@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from apps.crews.submissions.models.submission import Submission
+from apps.submissions.models.submission import Submission
 from users.models import User
 
 

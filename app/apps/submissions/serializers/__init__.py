@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.crews.submissions.models import Submission
+from apps.submissions.models import Submission
 
 
 class SubmissionSerializer(serializers.ModelField):

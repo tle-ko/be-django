@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.crews.submissions.models import *
+from apps.submissions.models import *
 
 
 admin.site.register([
