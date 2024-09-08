@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 
 from apps.problems.models import Problem
-from apps.problems.analyzers import schedule_analyze
+from apps.analyses.analyzers import schedule_analyze
 from users.models import User
 
 

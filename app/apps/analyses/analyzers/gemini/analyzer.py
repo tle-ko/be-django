@@ -3,11 +3,11 @@ from logging import getLogger
 from django.conf import settings
 from google import generativeai as genai
 
-from apps.problems.analyzers.base import ProblemAnalyzer
-from apps.problems.analyzers.base import ProblemDTO
-from apps.problems.analyzers.base import ProblemAnalysisDTO
-from apps.problems.analyzers.gemini import prompts
-from apps.problems.analyzers.gemini import parsers
+from apps.analyses.analyzers.base import ProblemAnalyzer
+from apps.analyses.analyzers.base import ProblemDTO
+from apps.analyses.analyzers.base import ProblemAnalysisDTO
+from apps.analyses.analyzers.gemini import prompts
+from apps.analyses.analyzers.gemini import parsers
 
 
 logger = getLogger(__name__)

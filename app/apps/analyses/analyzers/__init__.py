@@ -7,8 +7,8 @@ from apps.background_task.tasks import tasks
 from apps.analyses.dto import ProblemAnalysisDTO
 from apps.analyses.models import ProblemAnalysis
 from apps.analyses.models import ProblemTag
-from apps.problems.analyzers.base import ProblemAnalyzer
-from apps.problems.analyzers.gemini import GeminiProblemAnalyzer
+from apps.analyses.analyzers.base import ProblemAnalyzer
+from apps.analyses.analyzers.gemini import GeminiProblemAnalyzer
 from apps.problems.dto import ProblemDTO
 from apps.problems.models import Problem
 
