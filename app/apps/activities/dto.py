@@ -1,40 +1,30 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
 from typing import List
 
-from apps.analyses.enums import ProblemDifficulty
+
+@dataclass
+class UserDTO:
+    user_id: int
+    username: str
+    profile_image: str
 
 
 @dataclass
-class CrewProblem:
-    problem_number: int
-    problem_id: int
+class UserSubmissionTableDTO:
+    submissions: List[UserSubmissionTableRowDTO]
+    submitted_by: UserDTO
+
+
+@dataclass
+class UserSubmissionTableRowDTO:
+    submission_id: int
+    problem_id: str
     problem_title: str
-    problem_difficulty: ProblemDifficulty
+    problem_order: int
+    reviewers: List[UserDTO]
+    created_at: datetime
     is_submitted: bool
-    last_submitted_date: datetime
-
-
-@dataclass
-class CrewActivity:
-    activity_id: int
-    name: str
-    start_at: datetime
-    end_at: datetime
-    is_in_progress: bool
-    has_started: bool
-    has_ended: bool
-
-
-@dataclass
-class SubmissionGraphNode:
-    problem_number: int
-    submitted_at: datetime
-    is_accepted: bool  # 정답인지 여부
-
-
-@dataclass
-class SubmissionGraph:
-    user_username: str
-    user_profile_image: str
-    submissions: List[SubmissionGraphNode]

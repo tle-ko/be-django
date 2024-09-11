@@ -1,12 +1,34 @@
+from __future__ import annotations
+
 from django.db import models
 
 from apps.crews.enums import ProgrammingLanguageChoices
+from apps.activities.models import CrewActivity
 from apps.activities.models import CrewActivityProblem
 from users.models import User
 
 
+class SubmissionManager(models.Manager):
+    def filter(self,
+               activity: CrewActivity = None,
+               activity_problem: CrewActivityProblem = None,
+               user: User = None,
+               *args, **kwargs) -> models.QuerySet[Submission]:
+        if activity is not None:
+            kwargs[Submission.field_name.ACTIVITY] = activity
+        if activity_problem is not None:
+            kwargs[Submission.field_name.PROBLEM] = activity_problem
+        if user is not None:
+            kwargs[Submission.field_name.USER] = user
+        return super().filter(*args, **kwargs)
+
+
 class Submission(models.Model):
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
+    activity = models.ForeignKey(
+        CrewActivity,
+        on_delete=models.PROTECT,
+    )
     problem = models.ForeignKey(
         CrewActivityProblem,
         on_delete=models.PROTECT,
@@ -34,7 +56,10 @@ class Submission(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    objects: SubmissionManager = SubmissionManager()
+
     class field_name:
+        ACTIVITY = 'activity'
         PROBLEM = 'problem'
         USER = 'user'
         CODE = 'code'
