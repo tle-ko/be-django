@@ -62,7 +62,7 @@ class CrewStatisticsAPIView(generics.RetrieveAPIView):
     lookup_url_kwarg = 'crew_id'
 
     def get_object(self):
-        activity_problems = CrewActivityProblem.objects.crew(
+        activity_problems = CrewActivityProblem.objects.filter(
             crew=super().get_object(),
         ).select_related(CrewActivityProblem.field_name.PROBLEM)
         return create_statistics([ap.problem for ap in activity_problems])

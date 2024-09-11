@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "apps.crews",
     "apps.activities",
     "apps.applications",
-    # "apps.submissions",
+    "apps.submissions",
     "apps.problems",
     "apps.analyses",
 ]

@@ -1,4 +1,4 @@
-from config.settings.base import *
+from config.settings.base.core import *
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
