@@ -72,8 +72,16 @@ class CrewActivity(models.Model):
 
 
 class CrewActivityProblemManager(models.Manager):
-    def crew(self, crew: Crew) -> _CrewActivityProblemManager:
-        return self.filter(**{CrewActivityProblem.field_name.CREW: crew})
+    def filter(self,
+               crew: Crew = None,
+               activity: CrewActivity = None,
+               *args,
+               **kwargs) -> models.QuerySet[CrewActivityProblem]:
+        if crew is not None:
+            kwargs[CrewActivityProblem.field_name.CREW] = crew
+        if activity is not None:
+            kwargs[CrewActivityProblem.field_name.ACTIVITY] = activity
+        return super().filter(*args, **kwargs)
 
 
 class CrewActivityProblem(models.Model):
