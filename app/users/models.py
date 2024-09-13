@@ -19,29 +19,28 @@ def get_profile_image_path(user: User, filename: str) -> str:
 
 
 class UserManager(BaseUserManager):
-    def create(self, email: str, username: str, password: str, **kwargs) -> User:
+    def create_user(self, email: str, username: str, password: Optional[str] = None, **kwargs) -> User:
         if not email:
             raise ValueError('The Email field must be set')
         if not username:
             raise ValueError('The Username field must be set')
-        if not password:
-            raise ValueError('The Password field must be set')
         email = self.normalize_email(email)
-        user = User(email=email, username=username, **kwargs)
+        user = self.model(email=email, username=username, **kwargs)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
-    def filter(self,
-               email: Optional[str] = None,
-               username: Optional[str] = None,
-               *args,
-               **kwargs) -> models.QuerySet[User]:
-        if email is not None:
-            kwargs[User.field_name.EMAIL] = email
-        if username is not None:
-            kwargs[User.field_name.USERNAME] = username
-        return super().filter(*args, **kwargs)
+    def create_superuser(self, email: str, username: str, password: str, **kwargs) -> User:
+        kwargs.setdefault('is_staff', True)
+        kwargs.setdefault('is_superuser', True)
+
+        if kwargs.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if kwargs.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, username, password, **kwargs)
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):

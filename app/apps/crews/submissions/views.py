@@ -1,19 +1,20 @@
 from typing import Callable
-
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
 from rest_framework import generics, permissions, status
-from rest_framework.serializers import Serializer
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
 from apps.crews.submissions import serializers
+from apps.crews.activities.models import CrewActivitySubmission
+from apps.crews.submissions.models import SubmissionComment
+from users.models import User
 
 
 class CreateCodeReview(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.SubmissionSerializer
-    get_serializer: Callable[..., Serializer]
-
     lookup_field = 'id'
 
     @swagger_auto_schema(
@@ -66,3 +67,56 @@ class CreateCodeReview(generics.RetrieveAPIView):
             },
             status=status.HTTP_200_OK,
         )
+
+# 코드 리뷰 조회 api
+class CodeReviewInquiryAPI(APIView):
+    def get(self, request, crew_id, user_id):
+        user = get_object_or_404(User, id=user_id)
+
+        # CrewActivitySubmission을 필터링
+        submissions = CrewActivitySubmission.objects.filter(user=user, problem__crew_id=crew_id).select_related('problem')
+
+        if not submissions.exists():
+            return Response({'detail': 'No submissions found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        problems = {}
+        for submission in submissions:
+            problem_id = submission.problem.id
+
+            if problem_id not in problems:
+                # 해당 제출물에 달린 댓글 조회
+                comments = SubmissionComment.objects.filter(submission__id=submission.id)
+
+                # 댓글 작성자 정보를 리뷰어로 설정
+                reviewers = [
+                    {
+                        'user_id': comment.created_by.id,
+                        'username': comment.created_by.username,
+                        'profile_image': comment.created_by.profile_image.url if comment.created_by.profile_image else None
+                    }
+                    for comment in comments
+                ] if comments.exists() else None
+
+                # 문제 정보와 리뷰어 정보를 함께 저장
+                problems[problem_id] = {
+                    'submission_id': submission.id,
+                    'problems_order': submission.problem.order,
+                    'problems_title': submission.problem.problem.title,
+                    'submission_date': submission.created_at.isoformat(),
+                    'reviewers': reviewers  # 댓글 없을 시 None
+                }
+
+        # 최종 응답 데이터
+        response_data = {
+            'members': [
+                {
+                    'user_id': user.id,
+                    'username': user.username,
+                    'profile_image': user.profile_image.url if user.profile_image else None,
+                    'problems': list(problems.values())
+                }
+            ]
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
