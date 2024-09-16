@@ -1,65 +1,42 @@
 from __future__ import annotations
 
-from typing import Union
-
-from django.core.validators import MinValueValidator
-from django.db import models
+from django.db.models import Manager
+from django.db.models import QuerySet
 from django.utils import timezone
 
-from apps.crews.enums import ProgrammingLanguageChoices
-from apps.crews.models import Crew
-from apps.problems.models import Problem
+from apps.crews.db import CrewDAO
+from apps.analyses.enums import ProblemDifficulty
+from apps.analyses.models import ProblemAnalysis
 from users.models import User
 
+from . import db
+from . import dto
 
-class CrewActivityManager(models.Manager):
+
+class CrewActivityManager(Manager):
     def filter(self,
-               crew: Crew = None,
+               crew: CrewDAO = None,
                has_started: bool = None,
                in_progress: bool = None,
                *args,
-               **kwargs) -> models.QuerySet[CrewActivity]:
+               **kwargs) -> QuerySet[CrewActivity]:
+        now = timezone.now()
         if crew is not None:
-            assert isinstance(crew, Crew)
+            assert isinstance(crew, CrewDAO)
             kwargs[CrewActivity.field_name.CREW] = crew
         if has_started is not None:
-            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
+            kwargs[CrewActivity.field_name.START_AT + '__lte'] = now
         if in_progress is not None:
-            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
-            kwargs[CrewActivity.field_name.END_AT + '__gt'] = timezone.now()
+            kwargs[CrewActivity.field_name.START_AT + '__lte'] = now
+            kwargs[CrewActivity.field_name.END_AT + '__gt'] = now
         return super().filter(*args, **kwargs)
 
 
-class CrewActivity(models.Model):
-    crew = models.ForeignKey(
-        Crew,
-        on_delete=models.CASCADE,
-        help_text='크루를 입력해주세요.',
-    )
-    name = models.TextField(
-        help_text='활동 이름을 입력해주세요. (예: "1회차")',
-    )
-    start_at = models.DateTimeField(
-        help_text='활동 시작 일자를 입력해주세요.',
-    )
-    end_at = models.DateTimeField(
-        help_text='활동 종료 일자를 입력해주세요.',
-    )
-
-    objects: _CrewActivityManager = CrewActivityManager()
-
-    class field_name:
-        CREW = 'crew'
-        NAME = 'name'
-        START_AT = 'start_at'
-        END_AT = 'end_at'
+class CrewActivity(db.CrewActivityDAO):
+    objects: CrewActivityManager = CrewActivityManager()
 
     class Meta:
-        ordering = ['start_at']
-        get_latest_by = ['end_at']
-
-    def __str__(self) -> str:
-        return f'[{self.pk}: "{self.name}"@"{self.crew.display_name()}" ({self.start_at.date()} ~ {self.end_at.date()})]'
+        proxy = True
 
     def is_in_progress(self) -> bool:
         return self.has_started() and not self.has_ended()
@@ -70,113 +47,83 @@ class CrewActivity(models.Model):
     def has_ended(self) -> bool:
         return self.end_at < timezone.now()
 
+    def problems(self) -> QuerySet[CrewActivityProblem]:
+        return CrewActivityProblem.objects.filter(activity=self)
 
-class CrewActivityProblemManager(models.Manager):
-    def crew(self, crew: Crew) -> _CrewActivityProblemManager:
-        return self.filter(**{CrewActivityProblem.field_name.CREW: crew})
+    def as_dto(self) -> dto.CrewActivityDTO:
+        return dto.CrewActivityDTO(
+            activity_id=self.pk,
+            name=self.name,
+            start_at=self.start_at,
+            end_at=self.end_at,
+            is_in_progress=self.is_in_progress(),
+            has_started=self.has_started(),
+            has_ended=self.has_ended(),
+        )
 
 
-class CrewActivityProblem(models.Model):
-    crew = models.ForeignKey(
-        Crew,
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False,
-    )
-    activity = models.ForeignKey(
-        CrewActivity,
-        on_delete=models.CASCADE,
-        help_text='활동을 입력해주세요.',
-    )
-    problem = models.ForeignKey(
-        Problem,
-        on_delete=models.PROTECT,
-        help_text='문제를 입력해주세요.',
-    )
-    order = models.IntegerField(
-        help_text='문제 순서를 입력해주세요.',
-        validators=[
-            MinValueValidator(1),
-        ],
-    )
+class CrewActivityProblemManager(Manager):
+    def filter(self,
+               crew: CrewDAO = None,
+               activity: db.CrewActivityDAO = None,
+               *args,
+               **kwargs) -> QuerySet[CrewActivityProblem]:
+        if crew is not None:
+            assert isinstance(crew, CrewDAO)
+            kwargs[CrewActivityProblem.field_name.CREW] = crew
+        if activity is not None:
+            assert isinstance(activity, db.CrewActivityDAO)
+            kwargs[CrewActivityProblem.field_name.ACTIVITY] = activity
+        return super().filter(*args, **kwargs)
 
-    objects: _CrewActivityProblemManager = CrewActivityProblemManager()
 
-    class field_name:
-        # related fields
-        SUBMISSIONS = 'submissions'
-        # fields
-        CREW = 'crew'
-        ACTIVITY = 'activity'
-        PROBLEM = 'problem'
-        ORDER = 'order'
+class CrewActivityProblem(db.CrewActivityProblemDAO):
+    objects: CrewActivityProblemManager = CrewActivityProblemManager()
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['activity', 'order'],
-                name='unique_order_per_activity_problem',
-            ),
-        ]
-        ordering = ['order']
+        proxy = True
 
-    def save(self, *args, **kwargs) -> None:
-        assert self.crew == self.activity.crew
-        return super().save(*args, **kwargs)
+    def as_dto(self) -> dto.CrewActivityProblemDTO:
+        try:
+            analysis = ProblemAnalysis.objects.filter(
+                problem=self.problem).first()
+        except ProblemAnalysis.DoesNotExist:
+            difficulty = ProblemDifficulty.UNDER_ANALYSIS
+        else:
+            difficulty = analysis.difficulty
+        finally:
+            return dto.CrewActivityProblemDTO(
+                problem_id=self.pk,
+                problem_ref_id=self.problem.pk,
+                order=self.order,
+                title=self.problem.title,
+                difficulty=difficulty,
+            )
 
-    def __repr__(self) -> str:
-        return f'{self.activity.__repr__()} ← #{self.order} {self.problem.__repr__()}'
+    def as_submission_dto(self, user: User) -> dto.CrewActivityProblemSubmissionDTO:
+        try:
+            submission = CrewActivitySubmission.objects.filter(**{
+                CrewActivitySubmission.field_name.PROBLEM: self,
+                CrewActivitySubmission.field_name.USER: user,
+            }).latest()
+        except CrewActivitySubmission.DoesNotExist:
+            is_submitted = False
+            is_correct = False
+            date_submitted_at = None
+        else:
+            is_submitted = True
+            is_correct = submission.is_correct
+            date_submitted_at = submission.created_at
+        finally:
+            return dto.CrewActivityProblemSubmissionDTO(
+                **self.as_dto().__dict__,
+                submission_id=submission.pk,
+                is_submitted=is_submitted,
+                is_correct=is_correct,
+                date_submitted_at=date_submitted_at,
+            )
 
-    def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()}'
 
-
-class CrewActivitySubmission(models.Model):
-    # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
-    problem = models.ForeignKey(
-        CrewActivityProblem,
-        on_delete=models.PROTECT,
-        help_text='활동 문제를 입력해주세요.',
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        help_text='유저를 입력해주세요.',
-    )
-    code = models.TextField(
-        help_text='유저의 코드를 입력해주세요.',
-    )
-    language = models.TextField(
-        choices=ProgrammingLanguageChoices.choices,
-        help_text='유저의 코드 언어를 입력해주세요.',
-    )
-    is_correct = models.BooleanField(
-        help_text='유저의 코드가 정답인지 여부를 입력해주세요.',
-    )
-    is_help_needed = models.BooleanField(
-        help_text='유저의 코드에 도움이 필요한지 여부를 입력해주세요.',
-        default=False,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class field_name:
-        PROBLEM = 'problem'
-        USER = 'user'
-        CODE = 'code'
-        LANGUAGE = 'language'
-        IS_CORRECT = 'is_correct'
-        IS_HELP_NEEDED = 'is_help_needed'
-        CREATED_AT = 'created_at'
-        UPDATED_AT = 'updated_at'
-
+class CrewActivitySubmission(db.CrewActivitySubmissionDAO):
     class Meta:
-        ordering = ['created_at']
-
-    def __str__(self) -> str:
-        return f'[{self.pk} : {self.problem}  ← {self.user}]'
-
-
-_CrewActivityManager = Union[CrewActivityManager, models.Manager[CrewActivity]]
-_CrewActivityProblemManager = Union[CrewActivityProblemManager,
-                                    models.Manager[CrewActivityProblem]]
+        proxy = True

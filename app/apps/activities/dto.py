@@ -1,22 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
 
 from apps.analyses.enums import ProblemDifficulty
 
 
 @dataclass
-class CrewProblem:
-    problem_number: int
-    problem_id: int
-    problem_title: str
-    problem_difficulty: ProblemDifficulty
-    is_submitted: bool
-    last_submitted_date: datetime
-
-
-@dataclass
-class CrewActivity:
+class CrewActivityDTO:
     activity_id: int
     name: str
     start_at: datetime
@@ -27,14 +16,16 @@ class CrewActivity:
 
 
 @dataclass
-class SubmissionGraphNode:
-    problem_number: int
-    submitted_at: datetime
-    is_accepted: bool  # 정답인지 여부
+class CrewActivityProblemDTO:
+    problem_id: int  # 문제 ID
+    problem_ref_id: int  # 원본 문제 ID
+    order: int # 문제 번호
+    title: str
+    difficulty: ProblemDifficulty
 
 
-@dataclass
-class SubmissionGraph:
-    user_username: str
-    user_profile_image: str
-    submissions: List[SubmissionGraphNode]
+class CrewActivityProblemSubmissionDTO(CrewActivityProblemDTO):
+    submission_id: int
+    is_submitted: bool
+    is_correct: bool
+    date_submitted_at: datetime
