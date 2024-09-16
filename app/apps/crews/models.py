@@ -9,10 +9,8 @@ from django.db import models
 from django.contrib.auth.models import AnonymousUser
 
 from apps.boj.enums import BOJLevel
-from apps.crews.dto import CrewTagDTO
-from apps.crews.enums import CrewTagType
-from apps.crews.enums import EmojiChoices
-from apps.crews.enums import ProgrammingLanguageChoices
+from apps.crews import dto
+from apps.crews import enums
 from users.models import User
 
 
@@ -54,10 +52,10 @@ class Crew(models.Model):
         help_text='크루 이름을 입력해주세요. (최대 20자)',
     )
     icon = models.TextField(
-        choices=EmojiChoices.choices,
+        choices=enums.EmojiChoices.choices,
         null=False,
         blank=False,
-        default=EmojiChoices.U1F6A2,  # :ship:
+        default=enums.EmojiChoices.U1F6A2,  # :ship:
         help_text='크루 아이콘을 입력해주세요. (이모지)',
     )
     max_members = models.IntegerField(
@@ -130,15 +128,15 @@ class Crew(models.Model):
     def display_name(self) -> str:
         return f'{self.icon} {self.name}'
 
-    def tags(self) -> List[CrewTagDTO]:
+    def tags(self) -> List[dto.CrewTagDTO]:
         tags = []
         # 사용 가능 언어
         for language_value in CrewSubmittableLanguage.objects.filter(crew=self).values_list(CrewSubmittableLanguage.field_name.LANGUAGE, flat=True):
-            language = ProgrammingLanguageChoices(language_value)
-            tag_dto = CrewTagDTO(
+            language = enums.ProgrammingLanguageChoices(language_value)
+            tag_dto = dto.CrewTagDTO(
                 key=language.value,
                 name=language.label,
-                type=CrewTagType.LANGUAGE,
+                type=enums.CrewTagType.LANGUAGE,
             )
             tags.append(tag_dto)
         # 백준 최소 요구 티어
@@ -149,18 +147,18 @@ class Crew(models.Model):
             tag_name = f"{min_level.get_division_name(lang='ko')} 이상"
         else:
             tag_name = f"{min_level.get_name(lang='ko', arabic=False)} 이상"
-        tag_dto = CrewTagDTO(
+        tag_dto = dto.CrewTagDTO(
             key=None,
             name=tag_name,
-            type=CrewTagType.LEVEL,
+            type=enums.CrewTagType.LEVEL,
         )
         tags.append(tag_dto)
         # 커스텀 태그
         for tag_name in self.custom_tags:
-            tag_dto = CrewTagDTO(
+            tag_dto = dto.CrewTagDTO(
                 key=None,
                 name=tag_name,
-                type=CrewTagType.CUSTOM,
+                type=enums.CrewTagType.CUSTOM,
             )
             tags.append(tag_dto)
         return tags
@@ -242,13 +240,13 @@ class CrewSubmittableLanguageManager(models.Manager):
             kwargs[CrewSubmittableLanguage.field_name.CREW] = crew
         return super().filter(*args, **kwargs)
 
-    def bulk_create_from_languages(self, crew: Crew, languages: List[Union[str, ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
+    def bulk_create_from_languages(self, crew: Crew, languages: List[Union[str, enums.ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
         assert isinstance(crew, Crew)
         entities = []
         for language in languages:
             if isinstance(language, str):
-                language = ProgrammingLanguageChoices(language)
-            elif isinstance(language, ProgrammingLanguageChoices):
+                language = enums.ProgrammingLanguageChoices(language)
+            elif isinstance(language, enums.ProgrammingLanguageChoices):
                 pass
             else:
                 raise ValueError(f'{language}은 선택 가능한 언어가 아닙니다.')
@@ -266,7 +264,7 @@ class CrewSubmittableLanguage(models.Model):
         on_delete=models.CASCADE,
     )
     language = models.TextField(
-        choices=ProgrammingLanguageChoices.choices,
+        choices=enums.ProgrammingLanguageChoices.choices,
         help_text='언어 키를 입력해주세요. (최대 20자)',
     )
 
