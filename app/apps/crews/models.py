@@ -163,6 +163,9 @@ class Crew(models.Model):
             tags.append(tag_dto)
         return tags
 
+    def is_captain(self, user: User) -> bool:
+        return CrewMember.objects.filter(crew=self, user=user, is_captain=True).exists()
+
     def save(self, *args, **kwargs) -> None:
         retval = super().save(*args, **kwargs)
         if not CrewMember.objects.filter(crew=self, is_captain=True).exists():
