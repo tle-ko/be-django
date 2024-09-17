@@ -75,6 +75,9 @@ class BOJUser(db.BOJUserDAO):
         self.save()
         self.create_snapshot()
 
+    def schedule_update(self):
+        schedule_update_boj_user_data(self.username)
+
 
 class BOJUserSnapshot(db.BOJUserSnapshotDAO):
     class Meta:
