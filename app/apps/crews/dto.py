@@ -1,44 +1,38 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime
 from typing import List
 
-from apps.crews.enums import CrewTagType
+from apps.activities.dto import CrewActivityDTO
+from users.dto import UserDTO
+
+from . import enums
 
 
 @dataclass
 class CrewDTO:
     crew_id: int
-    id: int  # TODO: deprecate
     name: str
     icon: str
     is_active: bool
-    is_captain: bool
-
-
-@dataclass
-class CrewMemberDTO:
-    user_id: int
-    username: str
-    is_captain: bool
+    latest_activity: CrewActivityDTO
 
 
 @dataclass
 class CrewTagDTO:
     key: str
     name: str
-    type: CrewTagType
+    type: enums.CrewTagType
 
 
 @dataclass
-class CrewActivityDTO:
-    activity_id: int
-    name: str
-    date_start_at: datetime
-    date_end_at: datetime
+class CrewMemberDTO(UserDTO):
+    is_captain: bool
 
 
 @dataclass
 class CrewDashboardDTO(CrewDTO):
+    captain: CrewMemberDTO
     notice: str
     tags: List[CrewTagDTO]
     members: List[CrewMemberDTO]

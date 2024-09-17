@@ -1,12 +1,10 @@
-from enum import Enum
-
 from django.db import models
 
 
-class CrewTagType(Enum):
-    LANGUAGE = 'language'
-    LEVEL = 'level'
-    CUSTOM = 'custom'
+class CrewTagType(models.TextChoices):
+    LANGUAGE = 'language', 'language'
+    LEVEL = 'level', 'level'
+    CUSTOM = 'custom', 'custom'
 
 
 class ProgrammingLanguageChoices(models.TextChoices):

@@ -1,68 +1,51 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
-from rest_framework.permissions import IsAuthenticated
 
-from apps.activities.models import CrewActivityProblem
-from apps.crews.models import Crew
-from apps.crews.permissions import IsMember
-from apps.crews.serializers import RecruitingCrewSerializer
-from apps.crews.serializers import MyCrewSerializer
-from apps.crews.serializers import CrewCreateSerializer
-from apps.crews.serializers import CrewDashboardSerializer
-from apps.problems.serializers import ProblemStatisticSerializer
-from apps.problems.statistics import create_statistics
+from apps.problems.serializers import ProblemStatisticDTOSerializer
+
+from . import mixins
+from . import models
+from . import permissions
+from . import serializers
 
 
 class RecruitingCrewListAPIView(generics.ListAPIView):
-    """크루 목록"""
-    permission_classes = [AllowAny]
-    serializer_class = RecruitingCrewSerializer
+    """크루 목록.\n\n."""
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        return Crew.objects.filter(
-            not_as_member=self.request.user,
-            is_recruiting=True,
-        )
+        return models.Crew.objects.is_recruiting(self.request.user)
 
 
 class MyCrewListAPIView(generics.ListAPIView):
-    """나의 참여 크루"""
-    permission_classes = [IsAuthenticated & IsMember]
-    serializer_class = MyCrewSerializer
+    """나의 참여 크루.\n\n."""
+    permission_classes = [permissions.IsMember]
+    serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        return Crew.objects.filter(as_member=self.request.user).order_by(
-            Crew.field_name.IS_ACTIVE,
-            Crew.field_name.UPDATED_AT,
-        ).reverse()
+        return models.Crew.objects.as_member(self.request.user)
 
 
 class CrewCreateAPIView(generics.CreateAPIView):
-    """크루 생성 API"""
-    queryset = Crew
-    permission_classes = [IsAuthenticated]
-    serializer_class = CrewCreateSerializer
+    """크루 생성 API.\n\n."""
+    queryset = models.Crew
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.CrewCreateSerializer
 
 
-class CrewDashboardAPIView(generics.RetrieveAPIView):
-    """크루 대시보드 홈 API"""
-    queryset = Crew
-    permission_classes = [IsAuthenticated & IsMember]
-    serializer_class = CrewDashboardSerializer
-    lookup_field = 'id'
-    lookup_url_kwarg = 'crew_id'
-
-
-class CrewStatisticsAPIView(generics.RetrieveAPIView):
-    """크루 대시보드 문제 통계 API"""
-    queryset = Crew
-    permission_classes = [IsAuthenticated & IsMember]
-    serializer_class = ProblemStatisticSerializer
-    lookup_field = 'id'
-    lookup_url_kwarg = 'crew_id'
+class CrewDashboardAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
+    """크루 대시보드 홈 API.\n\n."""
+    permission_classes = [permissions.IsMember]
+    serializer_class = serializers.CrewDashboardDTOSerializer
 
     def get_object(self):
-        activity_problems = CrewActivityProblem.objects.crew(
-            crew=super().get_object(),
-        ).select_related(CrewActivityProblem.field_name.PROBLEM)
-        return create_statistics([ap.problem for ap in activity_problems])
+        return self.get_crew().dashboard(self.request.user)
+
+
+class CrewStatisticsAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
+    """크루 대시보드 문제 통계 API.\n\n."""
+    permission_classes = [permissions.IsMember]
+    serializer_class = ProblemStatisticDTOSerializer
+
+    def get_object(self):
+        return self.get_crew().statistics()
