@@ -127,10 +127,10 @@ class ProblemAnalysisTagQuerySet(QuerySet):
                **kwargs: Any) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
         return self._kwargs_filtering(super().filter, problem, analysis, *args, **kwargs)
 
-    def problem(self, problem: ProblemDAO) -> ProblemAnalysisTagQuerySet:
+    def problem(self, problem: ProblemDAO) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
         return self.filter(problem=problem)
 
-    def analysis(self, analysis: ProblemAnalysis) -> ProblemAnalysisTagQuerySet:
+    def analysis(self, analysis: ProblemAnalysis) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
         return self.filter(analysis=analysis)
 
     def _kwargs_filtering(self,
