@@ -13,6 +13,8 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from . import dto
+
 
 def get_profile_image_path(user: User, filename: str) -> str:
     return f'user/profile/{user.pk}/{filename}'
@@ -117,6 +119,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.token = str(token.access_token)
         self.refresh_token = token.token
         self.save()
+
+    def as_dto(self) -> dto.UserDTO:
+        return dto.UserDTO(
+            user_id=self.pk,
+            username=self.username,
+            profile_image=self.get_profile_image_url(),
+        )
+
+    def get_profile_image_url(self) -> Optional[str]:
+        return self.profile_image.url if self.profile_image else None
 
 
 class UserEmailVerificationManager(BaseUserManager):
