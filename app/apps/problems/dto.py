@@ -36,6 +36,6 @@ class ProblemTagStaticDTO:
 
 @dataclass
 class ProblemStatisticDTO:
-    sample_count: int = field(default=0)
+    problem_count: int = field(default=0)
     difficulty: List[ProblemDifficultyStaticDTO] = field(default_factory=list)
     tags: List[ProblemTagStaticDTO] = field(default_factory=list)

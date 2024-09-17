@@ -10,11 +10,11 @@ from . import models
 
 
 def create_statistics(problems: Iterable[models.Problem]) -> dto.ProblemStatisticDTO:
-    sample_count = 0
+    problem_count = 0
     difficulty_count = Counter()
     tag_count = Counter()
     for problem in problems:
-        sample_count += 1
+        problem_count += 1
         try:
             analysis = ProblemAnalysis.objects.get_by_problem(problem)
         except ProblemAnalysis.DoesNotExist:
@@ -31,12 +31,12 @@ def create_statistics(problems: Iterable[models.Problem]) -> dto.ProblemStatisti
             for tag_dto in tags:
                 tag_count[tag_dto] += 1
     try:
-        ratio_denominator = 1 / sample_count
+        ratio_denominator = 1 / problem_count
     except ZeroDivisionError:
         ratio_denominator = 0
     finally:
         return dto.ProblemStatisticDTO(
-            sample_count=sample_count,
+            problem_count=problem_count,
             difficulty=[
                 dto.ProblemDifficultyStaticDTO(
                     difficulty=difficulty,
