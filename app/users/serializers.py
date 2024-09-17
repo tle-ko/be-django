@@ -13,6 +13,12 @@ PK = 'id'
 
 # Username or Email Serializers
 
+class UserDTOSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    username = serializers.CharField()
+    profile_image = serializers.CharField()
+
+
 class UsabilityEmailField(serializers.Serializer):
     value = serializers.EmailField(read_only=True)
     is_usable = serializers.BooleanField(read_only=True)
