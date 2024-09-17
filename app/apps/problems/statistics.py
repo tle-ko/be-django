@@ -37,7 +37,7 @@ def create_statistics(problems: Iterable[models.Problem]) -> dto.ProblemStatisti
     finally:
         return dto.ProblemStatisticDTO(
             problem_count=problem_count,
-            difficulty=[
+            difficulties=[
                 dto.ProblemDifficultyStaticDTO(
                     difficulty=difficulty,
                     count=count,
