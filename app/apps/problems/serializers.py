@@ -62,46 +62,6 @@ class ProblemDifficultyField(ProblemAnalysisDifficultyField):
             return ProblemDifficulty(analysis.difficulty)
 
 
-class ProblemStatisticsDifficultyField(serializers.SerializerMethodField):
-    def to_representation(self, statistics: dto.ProblemStatisticDTO):
-        assert isinstance(statistics, dto.ProblemStatisticDTO)
-        try:
-            ratio_denominator = 1 / statistics.sample_count
-        except ZeroDivisionError:
-            ratio_denominator = 0
-        finally:
-            return [
-                {
-                    'difficulty': difficulty,
-                    'problem_count': count,
-                    'ratio': count * ratio_denominator,
-                }
-                for difficulty, count in statistics.difficulty.items()
-            ]
-
-
-class ProblemStatisticsTagsField(serializers.SerializerMethodField):
-    def to_representation(self, statistics: dto.ProblemStatisticDTO):
-        assert isinstance(statistics, dto.ProblemStatisticDTO)
-        try:
-            ratio_denominator = 1 / statistics.sample_count
-        except ZeroDivisionError:
-            ratio_denominator = 0
-        finally:
-            return [
-                {
-                    'key': tag.key,
-                    'label': {
-                        'ko': tag.name_ko,
-                        'en': tag.name_en,
-                    },
-                    'problem_count': count,
-                    'ratio': count * ratio_denominator,
-                }
-                for tag, count in statistics.tags.items()
-            ]
-
-
 class ProblemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Problem
@@ -164,15 +124,6 @@ class ProblemMinimalSerializer(serializers.ModelSerializer):
             models.Problem.field_name.UPDATED_AT,
         ]
         read_only_fields = ['__all__']
-
-
-class ProblemStatisticSerializer(serializers.Serializer):
-    problem_count = serializers.IntegerField(source="sample_count")
-    difficulties = ProblemStatisticsDifficultyField()
-    tags = ProblemStatisticsTagsField()
-
-    def __init__(self, instance: ProblemStatisticDTO = None, **kwargs):
-        super().__init__(instance, **kwargs)
 
 
 class UnitSerializer(serializers.Serializer):

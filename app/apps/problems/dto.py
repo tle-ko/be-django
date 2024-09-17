@@ -1,8 +1,9 @@
-from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field
+from typing import List
 
 from apps.analyses.dto import ProblemTagDTO
+from apps.analyses.enums import ProblemDifficulty
 
 
 @dataclass
@@ -20,7 +21,21 @@ class ProblemDTO:
 
 
 @dataclass
+class ProblemDifficultyStaticDTO:
+    difficulty: ProblemDifficulty
+    count: int
+    ratio: float
+
+
+@dataclass
+class ProblemTagStaticDTO:
+    tag: ProblemTagDTO
+    count: int
+    ratio: float
+
+
+@dataclass
 class ProblemStatisticDTO:
     sample_count: int = field(default=0)
-    difficulty: Counter[int] = field(default_factory=Counter)
-    tags: Counter[ProblemTagDTO] = field(default_factory=Counter)
+    difficulty: List[ProblemDifficultyStaticDTO] = field(default_factory=list)
+    tags: List[ProblemTagStaticDTO] = field(default_factory=list)
