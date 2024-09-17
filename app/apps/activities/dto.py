@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -14,12 +16,24 @@ class CrewActivityDTO:
     has_started: bool
     has_ended: bool
 
+    @staticmethod
+    def none(name: str) -> CrewActivityDTO:
+        return CrewActivityDTO(
+            activity_id=None,
+            name=name,
+            start_at=None,
+            end_at=None,
+            is_in_progress=False,
+            has_started=False,
+            has_ended=False,
+        )
+
 
 @dataclass
 class CrewActivityProblemDTO:
     problem_id: int  # 문제 ID
     problem_ref_id: int  # 원본 문제 ID
-    order: int # 문제 번호
+    order: int  # 문제 번호
     title: str
     difficulty: ProblemDifficulty
 
