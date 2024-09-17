@@ -8,7 +8,7 @@ class BOJLevelField(serializers.SerializerMethodField):
     def to_representation(self, boj_level: BOJLevel):
         return {
             'value': boj_level.value,
-            'name': boj_level.get_name(lang='ko', arabic=False),
+            'name': boj_level.get_name(lang='ko', roman=False),
         }
 
     def get_attribute(self, instance: BOJUser) -> BOJLevel:
