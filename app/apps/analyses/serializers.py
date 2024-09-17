@@ -12,6 +12,12 @@ from apps.analyses.models import ProblemTag
 PK = 'id'
 
 
+class ProblemTagDTOSerializer(serializers.Serializer):
+    key = serializers.CharField()
+    name_ko = serializers.CharField()
+    name_en = serializers.CharField()
+
+
 class ProblemAnalysisDifficultyField(serializers.SerializerMethodField):
     def to_representation(self, difficulty: ProblemDifficulty):
         return {
