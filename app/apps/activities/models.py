@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import List
+from typing import Optional
+
 from django.db.models import Manager
 from django.db.models import QuerySet
 from django.utils import timezone
@@ -7,6 +10,8 @@ from django.utils import timezone
 from apps.crews.db import CrewDAO
 from apps.analyses.enums import ProblemDifficulty
 from apps.analyses.models import ProblemAnalysis
+from apps.submissions.dto import SubmissionDTO
+from apps.submissions.models import Submission
 from users.models import User
 
 from . import db
@@ -84,44 +89,30 @@ class CrewActivityProblem(db.CrewActivityProblemDAO):
         proxy = True
 
     def as_dto(self) -> dto.CrewActivityProblemDTO:
-        try:
-            analysis = ProblemAnalysis.objects.filter(
-                problem=self.problem).first()
-        except ProblemAnalysis.DoesNotExist:
-            difficulty = ProblemDifficulty.UNDER_ANALYSIS
-        else:
-            difficulty = analysis.difficulty
-        finally:
-            return dto.CrewActivityProblemDTO(
-                problem_id=self.pk,
-                problem_ref_id=self.problem.pk,
-                order=self.order,
-                title=self.problem.title,
-                difficulty=difficulty,
-            )
+        return dto.CrewActivityProblemDTO(
+            **self.problem.as_dto().__dict__,
+            problem_id=self.pk,
+            problem_ref_id=self.problem.pk,
+            order=self.order,
+        )
 
-    def as_submission_dto(self, user: User) -> dto.CrewActivityProblemSubmissionDTO:
+    def as_detail_dto(self, user: User) -> dto.CrewActivityProblemDetailDTO:
+        return dto.CrewActivityProblemDetailDTO(
+            **self.as_dto().__dict__,
+            submissions=self.submissions(),
+            my_submission=self.submission_of_user(user),
+        )
+
+    def submissions(self) -> List[SubmissionDTO]:
+        return [obj.as_dto() for obj in Submission.objects.problem(self)]
+
+    def submission_of_user(self, user: User) -> Optional[SubmissionDTO]:
         try:
-            submission = CrewActivitySubmission.objects.filter(**{
-                CrewActivitySubmission.field_name.PROBLEM: self,
-                CrewActivitySubmission.field_name.USER: user,
-            }).latest()
-        except CrewActivitySubmission.DoesNotExist:
-            is_submitted = False
-            is_correct = False
-            date_submitted_at = None
+            obj = Submission.objects.problem(self).submitted_by(user).latest()
+        except Submission.DoesNotExist:
+            return None
         else:
-            is_submitted = True
-            is_correct = submission.is_correct
-            date_submitted_at = submission.created_at
-        finally:
-            return dto.CrewActivityProblemSubmissionDTO(
-                **self.as_dto().__dict__,
-                submission_id=submission.pk,
-                is_submitted=is_submitted,
-                is_correct=is_correct,
-                date_submitted_at=date_submitted_at,
-            )
+            return obj.as_dto()
 
 
 class CrewActivitySubmission(db.CrewActivitySubmissionDAO):

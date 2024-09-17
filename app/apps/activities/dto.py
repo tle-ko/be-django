@@ -2,8 +2,23 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from typing import List
+from typing import Optional
 
-from apps.analyses.enums import ProblemDifficulty
+from apps.problems.dto import ProblemDTO
+from apps.submissions.dto import SubmissionDTO
+
+
+@dataclass
+class CrewActivityProblemDTO(ProblemDTO):
+    problem_ref_id: int  # 원본 문제 ID
+    order: int  # 문제 번호
+
+
+@dataclass
+class CrewActivityProblemDetailDTO(CrewActivityProblemDTO):
+    submissions: List[SubmissionDTO]
+    my_submission: Optional[SubmissionDTO]
 
 
 @dataclass
@@ -30,16 +45,5 @@ class CrewActivityDTO:
 
 
 @dataclass
-class CrewActivityProblemDTO:
-    problem_id: int  # 문제 ID
-    problem_ref_id: int  # 원본 문제 ID
-    order: int  # 문제 번호
-    title: str
-    difficulty: ProblemDifficulty
-
-
-class CrewActivityProblemSubmissionDTO(CrewActivityProblemDTO):
-    submission_id: int
-    is_submitted: bool
-    is_correct: bool
-    date_submitted_at: datetime
+class CrewActivityDetailDTO(CrewActivityDTO):
+    problems: List[CrewActivityProblemDetailDTO]
