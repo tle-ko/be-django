@@ -160,9 +160,9 @@ class Crew(db.CrewDAO):
         if min_level == BOJLevel.U:
             tag_name = '티어 무관'
         elif min_level.get_tier() == 5:
-            tag_name = f"{min_level.get_division_name(lang='ko')} 이상"
+            tag_name = f"{min_level.get_division_name()} 이상"
         else:
-            tag_name = f"{min_level.get_name(lang='ko', arabic=False)} 이상"
+            tag_name = f"{min_level.get_name()} 이상"
         return [
             dto.CrewTagDTO(
                 key=None,
@@ -183,12 +183,13 @@ class Crew(db.CrewDAO):
         ]
 
 
-class CrewMemberManager(Manager):
+
+class CrewMemberQuerySet(QuerySet):
     def filter(self,
                user: User = None,
                crew: Crew = None,
                is_captain: bool = None,
-               *args, **kwargs) -> QuerySet[CrewMember]:
+               *args, **kwargs) -> Union[CrewMemberQuerySet, QuerySet[CrewMember]]:
         if user is not None:
             kwargs[CrewMember.field_name.USER] = user
         if crew is not None:
@@ -197,12 +198,33 @@ class CrewMemberManager(Manager):
             kwargs[CrewMember.field_name.IS_CAPTAIN] = is_captain
         return super().filter(*args, **kwargs)
 
+    def crew(self, crew: Crew) -> Union[CrewMemberQuerySet, QuerySet[CrewMember]]:
+        return self.filter(crew=crew)
+
+    def user(self, user: User) -> Union[CrewMemberQuerySet, QuerySet[CrewMember]]:
+        return self.filter(user=user)
+
+
+class CrewMemberManager(Manager):
+    def exists(self, crew: Crew, user: User) -> bool:
+        return self.filter(crew=crew, user=user).exists()
+
+    def get(self, crew: Crew, user: User) -> CrewMember:
+        return self.filter(crew=crew, user=user).get()
+
+    def get_queryset(self) -> CrewMemberQuerySet:
+        return CrewMemberQuerySet(self.model, using=self._db)
+
     def get_captain(self, crew: Crew) -> CrewMember:
-        return self.filter(crew=crew, is_captain=True).get()
+        kwargs = {}
+        kwargs[CrewMember.field_name.CREW] = crew
+        kwargs[CrewMember.field_name.IS_CAPTAIN] = True
+        return self.filter(**kwargs).get()
 
 
 class CrewMember(db.CrewMemberDAO):
-    objects: CrewMemberManager = CrewMemberManager()
+    objects: Union[CrewMemberManager, CrewMemberQuerySet, QuerySet[CrewMember]]
+    objects = CrewMemberManager()
 
     class Meta:
         proxy = True
