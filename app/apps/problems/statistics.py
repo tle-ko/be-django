@@ -23,13 +23,12 @@ def create_statistics(problems: Iterable[models.Problem]) -> dto.ProblemStatisti
         else:
             difficulty = ProblemDifficulty(analysis.difficulty)
             tags = [
-                obj.tag.as_dto()
+                obj.as_dto()
                 for obj in ProblemAnalysisTag.objects.analysis(analysis).select_related(ProblemAnalysisTag.field_name.TAG)
             ]
-        finally:
-            difficulty_count[difficulty] += 1
-            for tag_dto in tags:
-                tag_count[tag_dto] += 1
+        difficulty_count[difficulty] += 1
+        for tag_dto in tags:
+            tag_count[tag_dto] += 1
     try:
         ratio_denominator = 1 / problem_count
     except ZeroDivisionError:
