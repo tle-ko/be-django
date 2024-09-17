@@ -1,94 +1,75 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Union
 
-from django.db import models
+from django.db.models import Manager
+from django.db.models import QuerySet
 
-from apps.problems.dto import ProblemDTO
-from apps.problems.enums import Unit
+from apps.analyses.models import ProblemAnalysis
 from users.models import User
 
+from . import db
+from . import dto
 
-class ProblemrManager(models.Manager):
+
+class ProblemQuerySet(QuerySet):
+    def exclude(self,
+                created_by: Optional[User] = None,
+                **kwargs) -> ProblemQuerySet:
+        return self._kwargs_filtering(super().exclude, created_by, **kwargs)
+
     def filter(self,
                created_by: Optional[User] = None,
-               **kwargs) -> models.QuerySet[Problem]:
-        extra_kwargs = {}
+               **kwargs) -> ProblemQuerySet:
+        return self._kwargs_filtering(super().filter, created_by, **kwargs)
+
+    def created_by(self, user: User) -> ProblemQuerySet:
+        return self.filter(created_by=user)
+
+    def search(self, q: Optional[str] = None) -> ProblemQuerySet:
+        if q is None:
+            return self
+        return self.filter(**{
+            Problem.field_name.TITLE+'__icontains': q,
+        }).order_by(Problem.field_name.TITLE)
+
+    def _kwargs_filtering(self,
+                          filter_function,
+                          created_by: Optional[User] = None,
+                          **kwargs) -> ProblemQuerySet:
         if created_by is not None:
-            extra_kwargs[Problem.field_name.CREATED_BY] = created_by
-        return self.filter(**(extra_kwargs | kwargs))
+            assert isinstance(created_by, User)
+            kwargs[db.ProblemDAO.field_name.CREATED_BY] = created_by
+        return filter_function(**kwargs)
 
 
-class Problem(models.Model):
-    title = models.CharField(
-        max_length=100,
-        help_text='문제 이름을 입력해주세요.',
-    )
-    link = models.URLField(
-        help_text='문제 링크를 입력해주세요. (선택)',
-        blank=True,
-    )
-    description = models.TextField(
-        help_text='문제 설명을 입력해주세요.',
-    )
-    input_description = models.TextField(
-        help_text='문제 입력 설명을 입력해주세요.',
-    )
-    output_description = models.TextField(
-        help_text='문제 출력 설명을 입력해주세요.',
-    )
-    memory_limit = models.FloatField(
-        help_text='문제 메모리 제한을 입력해주세요. (MB 단위)',
-    )
-    memory_limit_unit = models.TextField(
-        choices=Unit.choices,
-        default=Unit.MEGA_BYTE,
-    )
-    time_limit = models.FloatField(
-        help_text='문제 시간 제한을 입력해주세요. (초 단위)',
-    )
-    time_limit_unit = models.TextField(
-        choices=Unit.choices,
-        default=Unit.SECOND,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        help_text='이 문제를 추가한 사용자를 입력해주세요.',
-        null=True,
-    )
-    updated_at = models.DateTimeField(auto_now=True)
-
-    objects: ProblemrManager = ProblemrManager()
-
-    class field_name:
-        TITLE = 'title'
-        LINK = 'link'
-        DESCRIPTION = 'description'
-        INPUT_DESCRIPTION = 'input_description'
-        OUTPUT_DESCRIPTION = 'output_description'
-        MEMORY_LIMIT = 'memory_limit'
-        MEMORY_LIMIT_UNIT = 'memory_limit_unit'
-        TIME_LIMIT = 'time_limit'
-        TIME_LIMIT_UNIT = 'time_limit_unit'
-        CREATED_AT = 'created_at'
-        CREATED_BY = 'created_by'
-        UPDATED_AT = 'updated_at'
+class Problem(db.ProblemDAO):
+    objects: Union[ProblemQuerySet, QuerySet[Problem]]
+    objects = Manager.from_queryset(ProblemQuerySet)()
 
     class Meta:
-        ordering = ['-created_at']
+        proxy = True
 
-    def __str__(self) -> str:
-        return f'[{self.pk} : {self.title}]'
+    def analysis(self) -> dto.ProblemAnalysisDTO:
+        try:
+            return ProblemAnalysis.objects.get_by_problem(self).as_dto()
+        except ProblemAnalysis.DoesNotExist:
+            return dto.ProblemAnalysisDTO.none(self.pk)
 
-    def as_dto(self) -> ProblemDTO:
-        return ProblemDTO(
-            id=self.pk,
+    def as_dto(self) -> dto.ProblemDTO:
+        return dto.ProblemDTO(
+            problem_id=self.pk,
             title=self.title,
+            analysis=self.analysis(),
+        )
+
+    def as_detail_dto(self) -> dto.ProblemDetailDTO:
+        return dto.ProblemDetailDTO(
+            **self.as_dto().__dict__,
             description=self.description,
             input_description=self.input_description,
             output_description=self.output_description,
-            memory_limit=self.memory_limit,
-            time_limit=self.time_limit,
+            memory_limit=dto.ProblemLimitDTO.mega_byte(self.memory_limit),
+            time_limit=dto.ProblemLimitDTO.second(self.time_limit),
         )

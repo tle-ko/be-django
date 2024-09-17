@@ -8,10 +8,11 @@ from django.db.models import Manager
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 
-from apps.problems.models import Problem
+from apps.problems.db import ProblemDAO
 
 from . import db
 from . import dto
+from . import enums
 
 
 class ProblemTagQuerySet(QuerySet):
@@ -41,21 +42,21 @@ class ProblemTagRelation(db.ProblemTagRelationDAO):
 
 class ProblemAnalysisQuerySet(QuerySet):
     def exclude(self,
-                problem: Problem = None,
+                problem: ProblemDAO = None,
                 *args: Any,
                 **kwargs: Any) -> ProblemAnalysisQuerySet:
         return self._kwargs_filtering(super().exclude, problem, *args, **kwargs)
 
     def filter(self,
-               problem: Problem = None,
+               problem: ProblemDAO = None,
                *args: Any,
                **kwargs: Any) -> ProblemAnalysisQuerySet:
         return self._kwargs_filtering(super().filter, problem, *args, **kwargs)
 
-    def get_by_problem(self, problem: Problem) -> ProblemAnalysis:
+    def get_by_problem(self, problem: ProblemDAO) -> ProblemAnalysis:
         return self.problem(problem).latest()
 
-    def problem(self, problem: Problem) -> ProblemAnalysisQuerySet:
+    def problem(self, problem: ProblemDAO) -> ProblemAnalysisQuerySet:
         return self.filter(problem=problem)
 
     def create_from_dto(self, analysis_dto: dto.ProblemAnalysisRawDTO) -> ProblemAnalysis:
@@ -79,10 +80,10 @@ class ProblemAnalysisQuerySet(QuerySet):
 
     def _kwargs_filtering(self,
                           filter_function,
-                          problem: Problem = None,
+                          problem: ProblemDAO = None,
                           **kwargs) -> ProblemAnalysisQuerySet:
         if problem is not None:
-            assert isinstance(problem, Problem)
+            assert isinstance(problem, ProblemDAO)
             kwargs[ProblemAnalysis.field_name.PROBLEM] = problem
         return filter_function(**kwargs)
 
@@ -99,10 +100,13 @@ class ProblemAnalysis(db.ProblemAnalysisDAO):
             problem_id=self.problem.pk,
             is_analyzed=True,
             time_complexity=self.time_complexity,
-            difficulty=self.difficulty,
-            hints=self.hint,
-            tags=self.tags.all().as_dto(),
+            difficulty=self.as_difficulty_dto(),
+            hints=self.hint if type(self.hint) is list else [self.hint],
+            tags=self.tags(),
         )
+
+    def as_difficulty_dto(self) -> dto.ProblemDifficultyDTO:
+        return dto.ProblemDifficultyDTO(enums.ProblemDifficulty(super().difficulty))
 
     def tags(self) -> List[dto.ProblemTagDTO]:
         return [obj.as_dto() for obj in ProblemAnalysisTag.objects.filter(analysis=self)]
@@ -110,20 +114,20 @@ class ProblemAnalysis(db.ProblemAnalysisDAO):
 
 class ProblemAnalysisTagQuerySet(QuerySet):
     def exclude(self,
-                problem: Problem = None,
+                problem: ProblemDAO = None,
                 analysis: ProblemAnalysis = None,
                 *args: Any,
                 **kwargs: Any) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
         return self._kwargs_filtering(super().exclude, problem, analysis, *args, **kwargs)
 
     def filter(self,
-               problem: Problem = None,
+               problem: ProblemDAO = None,
                analysis: ProblemAnalysis = None,
                *args: Any,
                **kwargs: Any) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
         return self._kwargs_filtering(super().filter, problem, analysis, *args, **kwargs)
 
-    def problem(self, problem: Problem) -> ProblemAnalysisTagQuerySet:
+    def problem(self, problem: ProblemDAO) -> ProblemAnalysisTagQuerySet:
         return self.filter(problem=problem)
 
     def analysis(self, analysis: ProblemAnalysis) -> ProblemAnalysisTagQuerySet:
@@ -131,11 +135,11 @@ class ProblemAnalysisTagQuerySet(QuerySet):
 
     def _kwargs_filtering(self,
                           filter_function,
-                          problem: Problem = None,
+                          problem: ProblemDAO = None,
                           analysis: ProblemAnalysis = None,
                           **kwargs) -> ProblemAnalysisQuerySet:
         if problem is not None:
-            assert isinstance(problem, Problem)
+            assert isinstance(problem, ProblemDAO)
             try:
                 analysis = ProblemAnalysis.objects.problem(problem).latest()
             except ProblemAnalysis.DoesNotExist:
