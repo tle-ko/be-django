@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.background_task.tasks import tasks
-from apps.analyses.dto import ProblemAnalysisDTO
+from apps.analyses.dto import ProblemAnalysisRawDTO
 from apps.analyses.models import ProblemAnalysis
 from apps.analyses.models import ProblemTag
 from apps.analyses.analyzers.base import ProblemAnalyzer
@@ -42,7 +42,7 @@ def schedule_analyze(problem_id: int):
     logger.info(f'{problem_dto} 문제의 분석 결과를 데이터베이스에 저장 완료.')
 
 
-def validate_analysis_dto_tags(analysis_dto: ProblemAnalysisDTO):
+def validate_analysis_dto_tags(analysis_dto: ProblemAnalysisRawDTO):
     for tag_key in analysis_dto.tags:
         try:
             ProblemTag.objects.get_by_key(tag_key)

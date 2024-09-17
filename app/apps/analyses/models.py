@@ -1,94 +1,68 @@
 from __future__ import annotations
 
+from typing import Any
+from typing import List
 from typing import Union
 
-from django.db import models
+from django.db.models import Manager
+from django.db.models import QuerySet
 from django.db.transaction import atomic
 
-from apps.analyses.dto import ProblemAnalysisDTO
-from apps.analyses.dto import ProblemTagDTO
-from apps.analyses.enums import ProblemDifficulty
 from apps.problems.models import Problem
 
+from . import db
+from . import dto
 
-class ProblemTagManager(models.Manager):
+
+class ProblemTagQuerySet(QuerySet):
     def get_by_key(self, key: str) -> ProblemTag:
         return self.get(**{ProblemTag.field_name.KEY: key})
 
 
-class ProblemTag(models.Model):
-    key = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text='알고리즘 태그 키를 입력해주세요. (최대 20자)',
-    )
-    name_ko = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text='알고리즘 태그 이름(국문)을 입력해주세요. (최대 50자)',
-    )
-    name_en = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text='알고리즘 태그 이름(영문)을 입력해주세요. (최대 50자)',
-    )
-
-    objects: _ProblemTagManager = ProblemTagManager()
-
-    class field_name:
-        KEY = 'key'
-        NAME_KO = 'name_ko'
-        NAME_EN = 'name_en'
+class ProblemTag(db.ProblemTagDAO):
+    objects: ProblemTagQuerySet
+    objects = Manager.from_queryset(ProblemTagQuerySet)()
 
     class Meta:
-        ordering = ['key']
+        proxy = True
 
-    def __repr__(self) -> str:
-        return f'[#{self.key}]'
-
-    def __str__(self) -> str:
-        return f'{self.pk} : {self.__repr__()} ({self.name_ko})'
-
-    def as_dto(self) -> ProblemTagDTO:
-        return ProblemTagDTO(
+    def as_dto(self) -> dto.ProblemTagDTO:
+        return dto.ProblemTagDTO(
             key=self.key,
             name_ko=self.name_ko,
             name_en=self.name_en,
         )
 
 
-class ProblemTagRelation(models.Model):
-    parent = models.ForeignKey(
-        ProblemTag,
-        on_delete=models.CASCADE,
-        related_name='parent'
-    )
-    child = models.ForeignKey(
-        ProblemTag,
-        on_delete=models.CASCADE,
-        related_name='child'
-    )
-
-    class field_name:
-        PARENT = 'parent'
-        CHILD = 'child'
-
-    def __str__(self) -> str:
-        return f'{self.pk} : #{self.parent.key} <- #{self.child.key}'
+class ProblemTagRelation(db.ProblemTagRelationDAO):
+    class Meta:
+        proxy = True
 
 
-class ProblemAnalysisManager(models.Manager):
-    def problem(self, problem: Problem) -> _ProblemAnalysisManager:
-        return self.filter(**{ProblemAnalysis.field_name.PROBLEM: problem})
+class ProblemAnalysisQuerySet(QuerySet):
+    def exclude(self,
+                problem: Problem = None,
+                *args: Any,
+                **kwargs: Any) -> ProblemAnalysisQuerySet:
+        return self._kwargs_filtering(super().exclude, problem, *args, **kwargs)
+
+    def filter(self,
+               problem: Problem = None,
+               *args: Any,
+               **kwargs: Any) -> ProblemAnalysisQuerySet:
+        return self._kwargs_filtering(super().filter, problem, *args, **kwargs)
 
     def get_by_problem(self, problem: Problem) -> ProblemAnalysis:
         return self.problem(problem).latest()
 
-    def create_from_dto(self, analysis_dto: ProblemAnalysisDTO) -> ProblemAnalysis:
+    def problem(self, problem: Problem) -> ProblemAnalysisQuerySet:
+        return self.filter(problem=problem)
+
+    def create_from_dto(self, analysis_dto: dto.ProblemAnalysisRawDTO) -> ProblemAnalysis:
         analysis = ProblemAnalysis(**{
             ProblemAnalysis.field_name.PROBLEM: analysis_dto.problem_id,
             ProblemAnalysis.field_name.TIME_COMPLEXITY: analysis_dto.time_complexity,
-            ProblemAnalysis.field_name.DIFFICULTY: ProblemDifficulty.from_label(analysis_dto.difficulty),
+            ProblemAnalysis.field_name.DIFFICULTY: analysis_dto.difficulty,
             ProblemAnalysis.field_name.HINT: analysis_dto.hints,
         })
         analysis_tags = []
@@ -103,95 +77,83 @@ class ProblemAnalysisManager(models.Manager):
             analysis.save()
             ProblemAnalysisTag.objects.bulk_create(analysis_tags)
 
+    def _kwargs_filtering(self,
+                          filter_function,
+                          problem: Problem = None,
+                          **kwargs) -> ProblemAnalysisQuerySet:
+        if problem is not None:
+            assert isinstance(problem, Problem)
+            kwargs[ProblemAnalysis.field_name.PROBLEM] = problem
+        return filter_function(**kwargs)
 
-class ProblemAnalysis(models.Model):
-    problem = models.ForeignKey(
-        Problem,
-        on_delete=models.CASCADE,
-        help_text='문제를 입력해주세요.',
-    )
-    difficulty = models.IntegerField(
-        help_text='문제 난이도를 입력해주세요.',
-        choices=ProblemDifficulty.choices,
-    )
-    time_complexity = models.CharField(
-        max_length=100,
-        help_text=(
-            '문제 시간 복잡도를 입력해주세요. ',
-            '예) O(1), O(n), O(n^2), O(V \log E) 등',
-        ),
-        validators=[
-            # TODO: 시간 복잡도 검증 로직 추가
-        ],
-    )
-    hint = models.JSONField(
-        help_text='문제 힌트를 입력해주세요. Step-by-step 으로 입력해주세요.',
-        validators=[
-            # TODO: 힌트 검증 로직 추가
-        ],
-        blank=False,
-        default=list,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    objects: _ProblemAnalysisManager = ProblemAnalysisManager()
-
-    class field_name:
-        PROBLEM = 'problem'
-        DIFFICULTY = 'difficulty'
-        TIME_COMPLEXITY = 'time_complexity'
-        HINT = 'hint'
-        CREATED_AT = 'created_at'
+class ProblemAnalysis(db.ProblemAnalysisDAO):
+    objects: ProblemAnalysisQuerySet
+    objects = Manager.from_queryset(ProblemAnalysisQuerySet)()
 
     class Meta:
-        verbose_name_plural = 'Problem analyses'
-        ordering = ['-created_at']
-        get_latest_by = ['created_at']
+        proxy = True
 
-    def __str__(self):
-        return f'[Analyse of {self.problem}]'
+    def as_dto(self) -> dto.ProblemAnalysisDTO:
+        return dto.ProblemAnalysisDTO(
+            problem_id=self.problem.pk,
+            is_analyzed=True,
+            time_complexity=self.time_complexity,
+            difficulty=self.difficulty,
+            hints=self.hint,
+            tags=self.tags.all().as_dto(),
+        )
 
-
-class ProblemAnalysisTagManager(models.Manager):
-    def problem(self, problem: Problem) -> _ProblemAnalysisTagManager:
-        try:
-            analysis = ProblemAnalysis.objects.get_by_problem(problem)
-        except ProblemAnalysis.DoesNotExist:
-            return ProblemAnalysisTag.objects.none()
-        else:
-            return self.analysis(analysis)
-
-    def analysis(self, analysis: ProblemAnalysis) -> _ProblemAnalysisTagManager:
-        return self.filter(**{ProblemAnalysisTag.field_name.ANALYSIS: analysis})
+    def tags(self) -> List[dto.ProblemTagDTO]:
+        return [obj.as_dto() for obj in ProblemAnalysisTag.objects.filter(analysis=self)]
 
 
-class ProblemAnalysisTag(models.Model):
-    analysis = models.ForeignKey(
-        ProblemAnalysis,
-        on_delete=models.CASCADE,
-        null=False,
-        blank=False,
-    )
-    tag = models.ForeignKey(
-        ProblemTag,
-        on_delete=models.PROTECT,
-        null=False,
-        blank=False,
-        help_text='문제의 DSA 태그를 입력해주세요.',
-    )
+class ProblemAnalysisTagQuerySet(QuerySet):
+    def exclude(self,
+                problem: Problem = None,
+                analysis: ProblemAnalysis = None,
+                *args: Any,
+                **kwargs: Any) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
+        return self._kwargs_filtering(super().exclude, problem, analysis, *args, **kwargs)
 
-    objects: _ProblemAnalysisTagManager = ProblemAnalysisTagManager()
+    def filter(self,
+               problem: Problem = None,
+               analysis: ProblemAnalysis = None,
+               *args: Any,
+               **kwargs: Any) -> Union[ProblemAnalysisTagQuerySet, QuerySet[ProblemAnalysisTag]]:
+        return self._kwargs_filtering(super().filter, problem, analysis, *args, **kwargs)
 
-    class field_name:
-        ANALYSIS = 'analysis'
-        TAG = 'tag'
+    def problem(self, problem: Problem) -> ProblemAnalysisTagQuerySet:
+        return self.filter(problem=problem)
 
-    def __str__(self):
-        return f'{self.analysis.problem} #{self.tag}'
+    def analysis(self, analysis: ProblemAnalysis) -> ProblemAnalysisTagQuerySet:
+        return self.filter(analysis=analysis)
+
+    def _kwargs_filtering(self,
+                          filter_function,
+                          problem: Problem = None,
+                          analysis: ProblemAnalysis = None,
+                          **kwargs) -> ProblemAnalysisQuerySet:
+        if problem is not None:
+            assert isinstance(problem, Problem)
+            try:
+                analysis = ProblemAnalysis.objects.problem(problem).latest()
+            except ProblemAnalysis.DoesNotExist:
+                analysis = ProblemAnalysisTag.objects.none()
+            finally:
+                kwargs[ProblemAnalysisTag.field_name.ANALYSIS] = analysis
+        if analysis is not None:
+            assert isinstance(analysis, ProblemAnalysis)
+            kwargs[ProblemAnalysisTag.field_name.ANALYSIS] = analysis
+        return filter_function(**kwargs)
 
 
-_ProblemTagManager = Union[ProblemTagManager, models.Manager[ProblemTag]]
-_ProblemAnalysisManager = Union[ProblemAnalysisManager,
-                                models.Manager[ProblemAnalysis]]
-_ProblemAnalysisTagManager = Union[ProblemAnalysisTagManager,
-                                   models.Manager[ProblemAnalysisTag]]
+class ProblemAnalysisTag(db.ProblemAnalysisTagDAO):
+    objects: ProblemAnalysisTagQuerySet
+    objects = Manager.from_queryset(ProblemAnalysisTagQuerySet)()
+
+    class Meta:
+        proxy = True
+
+    def as_dto(self) -> dto.ProblemTagDTO:
+        return ProblemTag.as_dto(self.tag)

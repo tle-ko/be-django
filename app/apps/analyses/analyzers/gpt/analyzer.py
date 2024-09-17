@@ -11,5 +11,5 @@ class GPTProblemAnalyzer(ProblemAnalyzer):
             cls._instance = GPTProblemAnalyzer()
         return cls._instance
 
-    def analyze(self, problem: dto.ProblemDTO) -> dto.ProblemAnalysisDTO:
+    def analyze(self, problem: dto.ProblemDTO) -> dto.ProblemAnalysisRawDTO:
         raise NotImplementedError

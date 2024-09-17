@@ -5,7 +5,7 @@ from google import generativeai as genai
 
 from apps.analyses.analyzers.base import ProblemAnalyzer
 from apps.analyses.analyzers.base import ProblemDTO
-from apps.analyses.analyzers.base import ProblemAnalysisDTO
+from apps.analyses.analyzers.base import ProblemAnalysisRawDTO
 from apps.analyses.analyzers.gemini import prompts
 from apps.analyses.analyzers.gemini import parsers
 
@@ -35,9 +35,9 @@ class GeminiProblemAnalyzer(ProblemAnalyzer):
             },
         )
 
-    def analyze(self, problem_dto: ProblemDTO) -> ProblemAnalysisDTO:
-        analysis_dto = ProblemAnalysisDTO(
-            problem_id=problem_dto.id,
+    def analyze(self, problem_dto: ProblemDTO) -> ProblemAnalysisRawDTO:
+        analysis_dto = ProblemAnalysisRawDTO(
+            problem_id=problem_dto.problem_id,
             difficulty=None,
             time_complexity=None,
             tags=None,
