@@ -32,7 +32,7 @@ class CrewMemberDTO(UserDTO):
 
 @dataclass
 class CrewDashboardDTO(CrewDTO):
-    captain: CrewMemberDTO
+    is_captain: bool
     notice: str
     tags: List[CrewTagDTO]
     members: List[CrewMemberDTO]

@@ -20,12 +20,15 @@ from . import enums
 
 
 class CrewQuerySet(QuerySet):
+    def all(self) -> Union[CrewQuerySet, QuerySet[Crew]]:
+        return super().all()
+
     def exclude(self,
                 as_captain: User = None,
                 as_member: User = None,
                 is_recruiting: bool = None,
                 *args,
-                **kwargs) -> CrewQuerySet:
+                **kwargs) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self._kwargs_filtering(super().exclude, as_captain, as_member, is_recruiting, *args, **kwargs)
 
     def filter(self,
@@ -33,13 +36,16 @@ class CrewQuerySet(QuerySet):
                as_member: User = None,
                is_recruiting: bool = None,
                *args,
-               **kwargs) -> CrewQuerySet:
+               **kwargs) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self._kwargs_filtering(super().filter, as_captain, as_member, is_recruiting, *args, **kwargs)
 
-    def is_recruiting(self, user: User) -> CrewQuerySet:
+    def is_recruiting(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self.filter(is_recruiting=True).exclude(as_member=user)
 
-    def as_member(self, user: User) -> CrewQuerySet:
+    def as_dto(self) -> List[dto.CrewDTO]:
+        return [obj.as_dto() for obj in self.all()]
+
+    def as_member(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self.filter(as_member=user).order_by(
             '-'+Crew.field_name.UPDATED_AT,
             '-'+Crew.field_name.IS_ACTIVE,
@@ -121,11 +127,11 @@ class Crew(db.CrewDAO):
     def dashboard(self, user: User) -> dto.CrewDashboardDTO:
         return dto.CrewDashboardDTO(
             **self.as_dto().__dict__,
+            is_captain=self.is_captain(user),
             notice=self.notice,
             tags=self.tags(),
             members=self.members(),
             activities=self.activities(),
-            is_captain=self.is_captain(user),
         )
 
     def display_name(self) -> str:

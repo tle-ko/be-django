@@ -14,7 +14,7 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        return models.Crew.objects.is_recruiting(self.request.user)
+        return models.Crew.objects.is_recruiting(self.request.user).as_dto()
 
 
 class MyCrewListAPIView(generics.ListAPIView):
@@ -23,7 +23,7 @@ class MyCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        return models.Crew.objects.as_member(self.request.user)
+        return models.Crew.objects.as_member(self.request.user).as_dto()
 
 
 class CrewCreateAPIView(generics.CreateAPIView):
@@ -43,7 +43,8 @@ class CrewDashboardAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
 
 
 class CrewStatisticsAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
-    """크루 대시보드 문제 통계 API.\n\n."""
+    """크루 대시보드 문제 통계 API.\n\n.
+    이 크루에 등록된 모든 문제에 대한 통계입니다."""
     permission_classes = [permissions.IsMember]
     serializer_class = ProblemStatisticDTOSerializer
 

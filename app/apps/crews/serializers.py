@@ -26,8 +26,7 @@ class CrewMemberDTOSerializer(UserDTOSerializer):
 
 
 class CrewDTOSerializer(serializers.Serializer):
-    id = serializers.IntegerField(source='pk')
-    crew_id = serializers.IntegerField(source='pk')
+    crew_id = serializers.IntegerField()
     is_active = serializers.BooleanField()
     name = serializers.CharField()
     icon = serializers.CharField()
