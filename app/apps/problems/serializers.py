@@ -8,6 +8,7 @@ from apps.analyses.enums import ProblemDifficulty
 from apps.analyses.models import ProblemAnalysis
 from apps.analyses.serializers import ProblemAnalysisSerializer
 from apps.analyses.serializers import ProblemAnalysisDifficultyField
+from apps.analyses.serializers import ProblemTagDTOSerializer
 from apps.problems.dto import ProblemStatisticDTO
 from apps.problems.enums import Unit
 from apps.problems.models import Problem
@@ -15,6 +16,24 @@ from users.serializers import UserMinimalSerializer
 
 
 PK = 'id'
+
+
+class ProblemDifficultyStatisticDTOSerializer(serializers.Serializer):
+    difficulty = serializers.IntegerField()
+    count = serializers.IntegerField()
+    ratio = serializers.FloatField()
+
+
+class ProblemTagStaticDTOSerializer(serializers.Serializer):
+    tag = ProblemTagDTOSerializer()
+    count = serializers.IntegerField()
+    ratio = serializers.FloatField()
+
+
+class ProblemStatisticDTOSerializer(serializers.Serializer):
+    problem_count = serializers.IntegerField()
+    difficulties = ProblemDifficultyStatisticDTOSerializer(many=True)
+    tags = ProblemTagStaticDTOSerializer(many=True)
 
 
 class AnalysisSerializer(ProblemAnalysisSerializer):
