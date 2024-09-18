@@ -6,11 +6,11 @@ from typing import Union
 from django.db.models import Manager
 from django.db.models import QuerySet
 
-from apps.analyses.models import ProblemAnalysis
+from apps.analyses.models.proxy import ProblemAnalysis
 from users.models import User
 
-from . import db
-from . import dto
+from .. import dto
+from .. import models
 
 
 class ProblemQuerySet(QuerySet):
@@ -40,11 +40,11 @@ class ProblemQuerySet(QuerySet):
                           **kwargs) -> ProblemQuerySet:
         if created_by is not None:
             assert isinstance(created_by, User)
-            kwargs[db.ProblemDAO.field_name.CREATED_BY] = created_by
+            kwargs[models.ProblemDAO.field_name.CREATED_BY] = created_by
         return filter_function(**kwargs)
 
 
-class Problem(db.ProblemDAO):
+class Problem(models.ProblemDAO):
     objects: Union[ProblemQuerySet, QuerySet[Problem]]
     objects = Manager.from_queryset(ProblemQuerySet)()
 

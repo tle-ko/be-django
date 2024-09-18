@@ -7,15 +7,13 @@ from django.db.models import Manager
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from apps.crews.db import CrewDAO
-from apps.analyses.enums import ProblemDifficulty
-from apps.analyses.models import ProblemAnalysis
+from apps.crews.models import CrewDAO
 from apps.submissions.dto import SubmissionDTO
-from apps.submissions.models import Submission
+from apps.submissions.models.proxy import Submission
 from users.models import User
 
-from . import db
-from . import dto
+from .. import dto
+from .. import models
 
 
 class CrewActivityManager(Manager):
@@ -37,7 +35,7 @@ class CrewActivityManager(Manager):
         return super().filter(*args, **kwargs)
 
 
-class CrewActivity(db.CrewActivityDAO):
+class CrewActivity(models.CrewActivityDAO):
     objects: CrewActivityManager = CrewActivityManager()
 
     class Meta:
@@ -70,19 +68,19 @@ class CrewActivity(db.CrewActivityDAO):
 class CrewActivityProblemManager(Manager):
     def filter(self,
                crew: CrewDAO = None,
-               activity: db.CrewActivityDAO = None,
+               activity: models.CrewActivityDAO = None,
                *args,
                **kwargs) -> QuerySet[CrewActivityProblem]:
         if crew is not None:
             assert isinstance(crew, CrewDAO)
             kwargs[CrewActivityProblem.field_name.CREW] = crew
         if activity is not None:
-            assert isinstance(activity, db.CrewActivityDAO)
+            assert isinstance(activity, models.CrewActivityDAO)
             kwargs[CrewActivityProblem.field_name.ACTIVITY] = activity
         return super().filter(*args, **kwargs)
 
 
-class CrewActivityProblem(db.CrewActivityProblemDAO):
+class CrewActivityProblem(models.CrewActivityProblemDAO):
     objects: CrewActivityProblemManager = CrewActivityProblemManager()
 
     class Meta:
@@ -115,6 +113,6 @@ class CrewActivityProblem(db.CrewActivityProblemDAO):
             return obj.as_dto()
 
 
-class CrewActivitySubmission(db.CrewActivitySubmissionDAO):
+class CrewActivitySubmission(models.CrewActivitySubmissionDAO):
     class Meta:
         proxy = True

@@ -5,14 +5,14 @@ from rest_framework.request import Request
 
 from common.pagination import LargeResultsSetPagination
 
-from . import models
 from . import serializers
+from .models import proxy
 
 
 class ProblemCreateAPIView(generics.CreateAPIView):
     """문제 생성 API.\n\n."""
 
-    queryset = models.Problem
+    queryset = proxy.Problem
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
 
@@ -20,7 +20,7 @@ class ProblemCreateAPIView(generics.CreateAPIView):
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """문제 상세 조회, 수정, 삭제 API.\n\n."""
 
-    queryset = models.Problem
+    queryset = proxy.Problem
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
     lookup_field = 'id'
@@ -37,7 +37,7 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
-        return models.Problem.objects.created_by(self.request.user).search(self.get_query_string())
+        return proxy.Problem.objects.created_by(self.request.user).search(self.get_query_string())
 
     def get_query_string(self) -> str:
         self.request: Request

@@ -1,8 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from apps.activities.models import CrewActivityProblemDAO
 from apps.crews.enums import ProgrammingLanguageChoices
-from apps.activities.db import CrewActivityProblemDAO
 from users.models import User
 
 
@@ -46,8 +46,6 @@ class SubmissionDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
-        app_label = 'submissions'
-        db_table = 'submissions_submission'
         ordering = ['created_at']
 
     def __str__(self) -> str:
@@ -98,8 +96,6 @@ class SubmissionCommentDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
-        app_label = 'submissions'
-        db_table = 'submissions_submissioncomment'
         ordering = ['-created_at']
 
     def __str__(self) -> str:

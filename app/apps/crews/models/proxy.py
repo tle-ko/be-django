@@ -6,17 +6,21 @@ from typing import Union
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Manager
 from django.db.models import QuerySet
+from rest_framework.exceptions import ValidationError
 
+from apps.activities.models.proxy import CrewActivity
+from apps.activities.models.proxy import CrewActivityProblem
+from apps.applications.dto import CrewApplicantDTO
+from apps.applications.models.proxy import CrewApplication
 from apps.boj.enums import BOJLevel
-from apps.activities.models import CrewActivity
-from apps.activities.models import CrewActivityProblem
+from apps.boj.models.proxy import BOJUser
 from apps.problems.dto import ProblemStatisticDTO
 from apps.problems.statistics import create_statistics
 from users.models import User
 
-from . import db
-from . import dto
-from . import enums
+from .. import dto
+from .. import enums
+from .. import models
 
 
 class CrewQuerySet(QuerySet):
@@ -44,6 +48,12 @@ class CrewQuerySet(QuerySet):
 
     def as_dto(self) -> List[dto.CrewDTO]:
         return [obj.as_dto() for obj in self.all()]
+
+    def as_my_dto(self) -> List[dto.MyCrewDTO]:
+        return [obj.as_my_dto() for obj in self.all()]
+
+    def as_recruiting_dto(self) -> List[dto.RecruitingCrewDTO]:
+        return [obj.as_recruiting_dto() for obj in self.all()]
 
     def as_member(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self.filter(as_member=user).order_by(
@@ -88,19 +98,80 @@ class CrewQuerySet(QuerySet):
             return CrewMember.objects.filter(user=user).values_list(CrewMember.field_name.CREW, flat=True)
 
 
-class CrewManager(Manager):
-    def get_queryset(self) -> QuerySet:
-        return CrewQuerySet(self.model, using=self._db)
-
-
-class Crew(db.CrewDAO):
-    objects: CrewQuerySet = CrewManager.from_queryset(CrewQuerySet)()
+class Crew(models.CrewDAO):
+    objects: CrewQuerySet = Manager.from_queryset(CrewQuerySet)()
 
     class Meta:
         proxy = True
 
     def activities(self) -> List[dto.CrewActivityDTO]:
         return [obj.as_dto() for obj in CrewActivity.objects.filter(crew=self)]
+
+    def applications(self) -> List[CrewApplicantDTO]:
+        return [obj.as_dto() for obj in CrewApplication.objects.crew(self)]
+
+    def apply(self, user: User, message: str) -> CrewApplication:
+        self.is_appliable(user, raise_exception=True)
+        return CrewApplication.objects.create(
+            crew=self,
+            applicant=user,
+            message=message,
+        )
+
+    def as_dto(self) -> dto.CrewDTO:
+        return dto.CrewDTO(
+            crew_id=self.pk,
+            name=self.name,
+            icon=self.icon,
+            is_active=self.is_active,
+            latest_activity=self.latest_activity(),
+            member_count=self.member_count(),
+            tags=self.tags(),
+        )
+
+    def as_recruiting_dto(self, user: User) -> dto.RecruitingCrewDTO:
+        return dto.RecruitingCrewDTO(
+            **self.as_dto().__dict__,
+            is_appliable=self.is_appliable(user),
+        )
+
+    def as_my_dto(self, user: User) -> dto.MyCrewDTO:
+        return dto.MyCrewDTO(
+            **self.as_dto().__dict__,
+            is_captain=self.is_captain(user),
+            notice=self.notice,
+        )
+
+    def captain(self) -> CrewMember:
+        return CrewMember.objects.get_captain(self)
+
+    def display_name(self) -> str:
+        return f'{self.icon} {self.name}'
+
+    def is_appliable(self, user: User, raise_exception=False) -> bool:
+        try:
+            boj_user = BOJUser.objects.get(user.boj_username)
+            assert self.is_recruiting, (
+                "'크루가 현재 크루원을 모집하고 있지 않습니다."
+            )
+            assert CrewMember.objects.crew(self.crew).count() < self.max_members, (
+                "크루의 최대 정원을 초과하였습니다."
+            )
+            assert not CrewMember.objects.exists(self, self.applicant), (
+                "이미 가입한 크루입니다."
+            )
+            assert (self.min_boj_level is None) or (self.min_boj_level <= boj_user.level), (
+                "최소 백준 티어 요구조건을 달성하지 못하였습니다."
+            )
+        except AssertionError as exception:
+            if raise_exception:
+                raise ValidationError from exception
+            return False
+        else:
+            return True
+
+    def is_captain(self, user: User) -> bool:
+        return CrewMember.objects.filter(crew=self, user=user, is_captain=True).exists()
 
     def latest_activity(self) -> dto.CrewActivityDTO:
         if not self.is_active:
@@ -112,33 +183,11 @@ class Crew(db.CrewDAO):
         else:
             return obj.as_dto()
 
-    def as_dto(self) -> dto.CrewDTO:
-        return dto.CrewDTO(
-            crew_id=self.pk,
-            name=self.name,
-            icon=self.icon,
-            is_active=self.is_active,
-            latest_activity=self.latest_activity(),
+    def member_count(self) -> dto.CrewMemberCountDTO:
+        return dto.CrewMemberCountDTO(
+            count=CrewMember.objects.crew(self).count(),
+            max_count=self.max_members,
         )
-
-    def captain(self) -> CrewMember:
-        return CrewMember.objects.get_captain(self)
-
-    def dashboard(self, user: User) -> dto.CrewDashboardDTO:
-        return dto.CrewDashboardDTO(
-            **self.as_dto().__dict__,
-            is_captain=self.is_captain(user),
-            notice=self.notice,
-            tags=self.tags(),
-            members=self.members(),
-            activities=self.activities(),
-        )
-
-    def display_name(self) -> str:
-        return f'{self.icon} {self.name}'
-
-    def is_captain(self, user: User) -> bool:
-        return CrewMember.objects.filter(crew=self, user=user, is_captain=True).exists()
 
     def members(self) -> List[dto.CrewMemberDTO]:
         return [obj.as_dto() for obj in CrewMember.objects.filter(crew=self)]
@@ -182,6 +231,8 @@ class Crew(db.CrewDAO):
             for tag_name in self.custom_tags
         ]
 
+    def set_submittable_languages(self, languages: List[Union[str, enums.ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
+        return CrewSubmittableLanguage.objects.bulk_create_from_languages(self, languages)
 
 
 class CrewMemberQuerySet(QuerySet):
@@ -212,9 +263,6 @@ class CrewMemberManager(Manager):
     def get(self, crew: Crew, user: User) -> CrewMember:
         return self.filter(crew=crew, user=user).get()
 
-    def get_queryset(self) -> CrewMemberQuerySet:
-        return CrewMemberQuerySet(self.model, using=self._db)
-
     def get_captain(self, crew: Crew) -> CrewMember:
         kwargs = {}
         kwargs[CrewMember.field_name.CREW] = crew
@@ -222,9 +270,9 @@ class CrewMemberManager(Manager):
         return self.filter(**kwargs).get()
 
 
-class CrewMember(db.CrewMemberDAO):
+class CrewMember(models.CrewMemberDAO):
     objects: Union[CrewMemberManager, CrewMemberQuerySet, QuerySet[CrewMember]]
-    objects = CrewMemberManager()
+    objects = CrewMemberManager.from_queryset(CrewMemberQuerySet)()
 
     class Meta:
         proxy = True
@@ -238,15 +286,15 @@ class CrewMember(db.CrewMemberDAO):
 
 class CrewSubmittableLanguageManager(Manager):
     def filter(self,
-               crew: Crew = None,
+               crew: models.CrewDAO = None,
                *args,
                **kwargs) -> QuerySet[CrewSubmittableLanguage]:
         if crew is not None:
             kwargs[CrewSubmittableLanguage.field_name.CREW] = crew
         return super().filter(*args, **kwargs)
 
-    def bulk_create_from_languages(self, crew: Crew, languages: List[Union[str, enums.ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
-        assert isinstance(crew, Crew)
+    def bulk_create_from_languages(self, crew: models.CrewDAO, languages: List[Union[str, enums.ProgrammingLanguageChoices]]) -> List[CrewSubmittableLanguage]:
+        assert isinstance(crew, models.CrewDAO)
         entities = []
         for language in languages:
             if isinstance(language, str):
@@ -263,7 +311,7 @@ class CrewSubmittableLanguageManager(Manager):
         return CrewSubmittableLanguage.objects.bulk_create(entities)
 
 
-class CrewSubmittableLanguage(db.CrewSubmittableLanguageDAO):
+class CrewSubmittableLanguage(models.CrewSubmittableLanguageDAO):
     objects: CrewSubmittableLanguageManager = CrewSubmittableLanguageManager()
 
     class Meta:

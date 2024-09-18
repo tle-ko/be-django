@@ -5,7 +5,6 @@ from rest_framework import serializers
 from apps.analyses.serializers import ProblemAnalysisDTOSerializer
 from apps.analyses.serializers import ProblemTagDTOSerializer
 
-from . import db
 from . import models
 
 
@@ -46,22 +45,22 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
 
 class ProblemDAOSerializer(serializers.ModelSerializer):
     class Meta:
-        model = db.ProblemDAO
+        model = models.ProblemDAO
         fields = [
-            db.ProblemDAO.field_name.TITLE,
-            db.ProblemDAO.field_name.LINK,
-            db.ProblemDAO.field_name.DESCRIPTION,
-            db.ProblemDAO.field_name.INPUT_DESCRIPTION,
-            db.ProblemDAO.field_name.OUTPUT_DESCRIPTION,
-            db.ProblemDAO.field_name.MEMORY_LIMIT,
-            db.ProblemDAO.field_name.TIME_LIMIT,
-            db.ProblemDAO.field_name.CREATED_BY,
+            models.ProblemDAO.field_name.TITLE,
+            models.ProblemDAO.field_name.LINK,
+            models.ProblemDAO.field_name.DESCRIPTION,
+            models.ProblemDAO.field_name.INPUT_DESCRIPTION,
+            models.ProblemDAO.field_name.OUTPUT_DESCRIPTION,
+            models.ProblemDAO.field_name.MEMORY_LIMIT,
+            models.ProblemDAO.field_name.TIME_LIMIT,
+            models.ProblemDAO.field_name.CREATED_BY,
         ]
         read_only_fields = [
-            db.ProblemDAO.field_name.CREATED_BY,
+            models.ProblemDAO.field_name.CREATED_BY,
         ]
         extra_kwargs = {
-            db.ProblemDAO.field_name.CREATED_BY: {
+            models.ProblemDAO.field_name.CREATED_BY: {
                 'default': serializers.CurrentUserDefault(),
             },
         }
@@ -123,21 +122,21 @@ class ProblemSearchQueryParamSerializer(serializers.Serializer):
 
 # class ProblemDetailSerializer(serializers.ModelSerializer):
 #     class Meta:
-#         model = db.ProblemDAO
+#         model = models.ProblemDAO
 #         fields = [
-#             db.ProblemDAO.field_name.TITLE,
-#             db.ProblemDAO.field_name.LINK,
-#             db.ProblemDAO.field_name.DESCRIPTION,
-#             db.ProblemDAO.field_name.INPUT_DESCRIPTION,
-#             db.ProblemDAO.field_name.OUTPUT_DESCRIPTION,
-#             db.ProblemDAO.field_name.MEMORY_LIMIT,
-#             db.ProblemDAO.field_name.TIME_LIMIT,
-#             db.ProblemDAO.field_name.CREATED_BY,
-#             db.ProblemDAO.field_name.UPDATED_AT,
+#             models.ProblemDAO.field_name.TITLE,
+#             models.ProblemDAO.field_name.LINK,
+#             models.ProblemDAO.field_name.DESCRIPTION,
+#             models.ProblemDAO.field_name.INPUT_DESCRIPTION,
+#             models.ProblemDAO.field_name.OUTPUT_DESCRIPTION,
+#             models.ProblemDAO.field_name.MEMORY_LIMIT,
+#             models.ProblemDAO.field_name.TIME_LIMIT,
+#             models.ProblemDAO.field_name.CREATED_BY,
+#             models.ProblemDAO.field_name.UPDATED_AT,
 #         ]
 #         read_only_fields = [
-#             db.ProblemDAO.field_name.CREATED_BY,
-#             db.ProblemDAO.field_name.UPDATED_AT,
+#             models.ProblemDAO.field_name.CREATED_BY,
+#             models.ProblemDAO.field_name.UPDATED_AT,
 #         ]
 
 #     @property

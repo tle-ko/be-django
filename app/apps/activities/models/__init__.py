@@ -2,9 +2,9 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from apps.crews.db import CrewDAO
 from apps.crews.enums import ProgrammingLanguageChoices
-from apps.problems.models import Problem
+from apps.crews.models import CrewDAO
+from apps.problems.models.proxy import Problem
 from users.models import User
 
 
@@ -31,8 +31,6 @@ class CrewActivityDAO(models.Model):
         END_AT = 'end_at'
 
     class Meta:
-        app_label = 'activities'
-        db_table = 'activities_crewactivity'
         ordering = ['start_at']
         get_latest_by = ['end_at']
 
@@ -83,8 +81,6 @@ class CrewActivityProblemDAO(models.Model):
         ORDER = 'order'
 
     class Meta:
-        app_label = 'activities'
-        db_table = 'activities_crewactivityproblem'
         constraints = [
             models.UniqueConstraint(
                 fields=['activity', 'order'],
@@ -144,8 +140,6 @@ class CrewActivitySubmissionDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
-        app_label = 'activities'
-        db_table = 'activities_crewactivitysubmission'
         ordering = ['created_at']
 
     def __str__(self) -> str:

@@ -8,11 +8,11 @@ from django.db.models import Manager
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 
-from apps.problems.db import ProblemDAO
+from apps.problems.models import ProblemDAO
 
-from . import db
-from . import dto
-from . import enums
+from .. import dto
+from .. import enums
+from .. import models
 
 
 class ProblemTagQuerySet(QuerySet):
@@ -20,7 +20,7 @@ class ProblemTagQuerySet(QuerySet):
         return self.get(**{ProblemTag.field_name.KEY: key})
 
 
-class ProblemTag(db.ProblemTagDAO):
+class ProblemTag(models.ProblemTagDAO):
     objects: ProblemTagQuerySet
     objects = Manager.from_queryset(ProblemTagQuerySet)()
 
@@ -35,7 +35,7 @@ class ProblemTag(db.ProblemTagDAO):
         )
 
 
-class ProblemTagRelation(db.ProblemTagRelationDAO):
+class ProblemTagRelation(models.ProblemTagRelationDAO):
     class Meta:
         proxy = True
 
@@ -88,7 +88,7 @@ class ProblemAnalysisQuerySet(QuerySet):
         return filter_function(**kwargs)
 
 
-class ProblemAnalysis(db.ProblemAnalysisDAO):
+class ProblemAnalysis(models.ProblemAnalysisDAO):
     objects: ProblemAnalysisQuerySet
     objects = Manager.from_queryset(ProblemAnalysisQuerySet)()
 
@@ -152,7 +152,7 @@ class ProblemAnalysisTagQuerySet(QuerySet):
         return filter_function(**kwargs)
 
 
-class ProblemAnalysisTag(db.ProblemAnalysisTagDAO):
+class ProblemAnalysisTag(models.ProblemAnalysisTagDAO):
     objects: ProblemAnalysisTagQuerySet
     objects = Manager.from_queryset(ProblemAnalysisTagQuerySet)()
 

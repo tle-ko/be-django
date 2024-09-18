@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from . import models
+from .models import proxy
 
 
 admin.site.register([
-    models.Submission,
-    models.SubmissionComment,
+    proxy.Submission,
+    proxy.SubmissionComment,
 ])

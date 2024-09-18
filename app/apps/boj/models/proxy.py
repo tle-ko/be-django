@@ -13,10 +13,10 @@ import requests
 from apps.background_task import background
 from users.models import User
 
-from . import db
-from . import dto
-from . import enums
-from . import signals
+from .. import dto
+from .. import enums
+from .. import models
+from .. import signals
 
 
 logger = getLogger(__name__)
@@ -44,7 +44,7 @@ class BOJUserManager(Manager):
         return self.filter(**kwargs).exists()
 
 
-class BOJUser(db.BOJUserDAO):
+class BOJUser(models.BOJUserDAO):
     objects: BOJUserManager = BOJUserManager()
 
     class Meta:
@@ -79,7 +79,7 @@ class BOJUser(db.BOJUserDAO):
         schedule_update_boj_user_data(self.username)
 
 
-class BOJUserSnapshot(db.BOJUserSnapshotDAO):
+class BOJUserSnapshot(models.BOJUserSnapshotDAO):
     class Meta:
         proxy = True
 

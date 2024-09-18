@@ -5,7 +5,7 @@ from django.db import models
 from apps.boj.enums import BOJLevel
 from users.models import User
 
-from . import enums
+from .. import enums
 
 
 class CrewDAO(models.Model):
@@ -81,8 +81,6 @@ class CrewDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
-        app_label = 'crews'
-        db_table = 'crews_crew'
         ordering = ['-updated_at']
 
     def save(self, *args, **kwargs):
@@ -124,8 +122,6 @@ class CrewMemberDAO(models.Model):
         CREATED_AT = 'created_at'
 
     class Meta:
-        app_label = 'crews'
-        db_table = 'crews_crewmember'
         constraints = [
             models.UniqueConstraint(
                 fields=['crew', 'user'],
@@ -153,8 +149,6 @@ class CrewSubmittableLanguageDAO(models.Model):
         LANGUAGE = 'language'
 
     class Meta:
-        app_label = 'crews'
-        db_table = 'crews_crewsubmittablelanguage'
         ordering = ['crew']
 
     def __str__(self) -> str:

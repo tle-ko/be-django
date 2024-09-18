@@ -1,14 +1,13 @@
 from django.contrib import admin
 
-from apps.activities.models import CrewActivity
-from apps.applications.models import CrewApplication
-from apps.crews.models import Crew
-from apps.crews.models import CrewMember
-from apps.crews.models import CrewSubmittableLanguage
+from apps.activities.models.proxy import CrewActivity
+from apps.applications.models.proxy import CrewApplication
 from users.models import User
 
+from .models import proxy
 
-@admin.register(Crew)
+
+@admin.register(proxy.Crew)
 class CrewModelAdmin(admin.ModelAdmin):
     list_display = [
         'id',
@@ -17,66 +16,66 @@ class CrewModelAdmin(admin.ModelAdmin):
         'get_members',
         'get_applicants',
         'get_activities',
-        Crew.field_name.IS_ACTIVE,
-        Crew.field_name.IS_RECRUITING,
-        Crew.field_name.CREATED_AT,
+        proxy.Crew.field_name.IS_ACTIVE,
+        proxy.Crew.field_name.IS_RECRUITING,
+        proxy.Crew.field_name.CREATED_AT,
     ]
     search_fields = [
-        Crew.field_name.NAME,
-        Crew.field_name.CREATED_BY+'__'+User.field_name.USERNAME,
-        Crew.field_name.ICON,
+        proxy.Crew.field_name.NAME,
+        proxy.Crew.field_name.CREATED_BY+'__'+User.field_name.USERNAME,
+        proxy.Crew.field_name.ICON,
     ]
 
     @admin.display(description='Display Name')
-    def get_display_name(self, obj: Crew):
+    def get_display_name(self, obj: proxy.Crew):
         return obj.display_name()
 
     @admin.display(description='Captain')
-    def get_captain(self, obj: Crew):
-        return CrewMember.objects.filter(crew=obj, is_captain=True).get()
+    def get_captain(self, obj: proxy.Crew):
+        return proxy.CrewMember.objects.filter(crew=obj, is_captain=True).get()
 
     @admin.display(description='Members')
-    def get_members(self, obj: Crew):
-        return f'{CrewMember.objects.filter(crew=obj).count()} / {obj.max_members}'
+    def get_members(self, obj: proxy.Crew):
+        return f'{proxy.CrewMember.objects.filter(crew=obj).count()} / {obj.max_members}'
 
     @admin.display(description='Applicants')
-    def get_applicants(self, obj: Crew):
+    def get_applicants(self, obj: proxy.Crew):
         return CrewApplication.objects.filter(crew=obj).count()
 
     @admin.display(description='Activities')
-    def get_activities(self, obj: Crew):
+    def get_activities(self, obj: proxy.Crew):
         return CrewActivity.objects.filter(crew=obj).count()
 
 
-@admin.register(CrewMember)
+@admin.register(proxy.CrewMember)
 class CrewMemberModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewMember.field_name.USER,
-        CrewMember.field_name.CREW,
-        CrewMember.field_name.IS_CAPTAIN,
-        CrewMember.field_name.CREATED_AT,
+        proxy.CrewMember.field_name.USER,
+        proxy.CrewMember.field_name.CREW,
+        proxy.CrewMember.field_name.IS_CAPTAIN,
+        proxy.CrewMember.field_name.CREATED_AT,
     ]
     search_fields = [
-        CrewMember.field_name.CREW+'__'+Crew.field_name.NAME,
-        CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
+        proxy.CrewMember.field_name.CREW+'__'+proxy.Crew.field_name.NAME,
+        proxy.CrewMember.field_name.USER+'__'+User.field_name.USERNAME,
     ]
     ordering = [
-        CrewMember.field_name.CREW,
-        CrewMember.field_name.IS_CAPTAIN,
+        proxy.CrewMember.field_name.CREW,
+        proxy.CrewMember.field_name.IS_CAPTAIN,
     ]
 
 
-@admin.register(CrewSubmittableLanguage)
+@admin.register(proxy.CrewSubmittableLanguage)
 class CrewSubmittableLanguageModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewSubmittableLanguage.field_name.CREW,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        proxy.CrewSubmittableLanguage.field_name.CREW,
+        proxy.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]
     search_fields = [
-        CrewActivity.field_name.CREW+'__'+Crew.field_name.NAME,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        CrewActivity.field_name.CREW+'__'+proxy.Crew.field_name.NAME,
+        proxy.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]
     ordering = [
-        CrewSubmittableLanguage.field_name.CREW,
-        CrewSubmittableLanguage.field_name.LANGUAGE,
+        proxy.CrewSubmittableLanguage.field_name.CREW,
+        proxy.CrewSubmittableLanguage.field_name.LANGUAGE,
     ]

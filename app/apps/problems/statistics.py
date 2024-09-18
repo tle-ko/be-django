@@ -2,14 +2,14 @@ from collections import Counter
 from typing import Iterable
 
 from apps.analyses.enums import ProblemDifficulty
-from apps.analyses.models import ProblemAnalysis
-from apps.analyses.models import ProblemAnalysisTag
+from apps.analyses.models.proxy import ProblemAnalysis
+from apps.analyses.models.proxy import ProblemAnalysisTag
 
 from . import dto
-from . import models
+from .models import proxy
 
 
-def create_statistics(problems: Iterable[models.Problem]) -> dto.ProblemStatisticDTO:
+def create_statistics(problems: Iterable[proxy.Problem]) -> dto.ProblemStatisticDTO:
     problem_count = 0
     difficulty_count = Counter()
     tag_count = Counter()

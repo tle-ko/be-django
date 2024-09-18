@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Union
 
 from . import enums
 
@@ -9,7 +10,8 @@ class BOJLevelDTO:
     value: int
     name: str
 
-    def __init__(self, level: enums.BOJLevel):
+    def __init__(self, level: Union[enums.BOJLevel, int]):
+        level = enums.BOJLevel(level)
         self.value = level.value
         self.name = level.get_name()
 

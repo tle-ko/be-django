@@ -5,11 +5,11 @@ from typing import Union
 from django.db.models import Manager
 from django.db.models import QuerySet
 
-from apps.activities.db import CrewActivityProblemDAO
+from apps.activities.models import CrewActivityProblemDAO
 from users.models import User
 
-from . import db
-from . import dto
+from .. import models
+from .. import dto
 
 
 class SubmissionQuerySet(QuerySet):
@@ -43,7 +43,7 @@ class SubmissionQuerySet(QuerySet):
         return filter_function(**kwargs)
 
 
-class Submission(db.SubmissionDAO):
+class Submission(models.SubmissionDAO):
     objects: SubmissionQuerySet = Manager.from_queryset(SubmissionQuerySet)()
 
     class Meta:
@@ -58,6 +58,6 @@ class Submission(db.SubmissionDAO):
         )
 
 
-class SubmissionComment(db.SubmissionCommentDAO):
+class SubmissionComment(models.SubmissionCommentDAO):
     class Meta:
         proxy = True

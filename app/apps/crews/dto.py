@@ -10,12 +10,14 @@ from . import enums
 
 
 @dataclass
-class CrewDTO:
-    crew_id: int
-    name: str
-    icon: str
-    is_active: bool
-    latest_activity: CrewActivityDTO
+class CrewMemberDTO(UserDTO):
+    is_captain: bool
+
+
+@dataclass
+class CrewMemberCountDTO:
+    count: int
+    max_count: int
 
 
 @dataclass
@@ -26,14 +28,22 @@ class CrewTagDTO:
 
 
 @dataclass
-class CrewMemberDTO(UserDTO):
-    is_captain: bool
+class CrewDTO:
+    crew_id: int
+    name: str
+    icon: str
+    is_active: bool
+    latest_activity: CrewActivityDTO
+    member_count: CrewMemberCountDTO
+    tags: List[CrewTagDTO]
 
 
 @dataclass
-class CrewDashboardDTO(CrewDTO):
+class RecruitingCrewDTO(CrewDTO):
+    is_appliable: bool
+
+
+@dataclass
+class MyCrewDTO(CrewDTO):
     is_captain: bool
     notice: str
-    tags: List[CrewTagDTO]
-    members: List[CrewMemberDTO]
-    activities: List[CrewActivityDTO]

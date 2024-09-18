@@ -4,7 +4,7 @@ from django.db import models
 
 from users.models import User
 
-from . import enums
+from .. import enums
 
 
 class ProblemDAO(models.Model):
@@ -63,8 +63,6 @@ class ProblemDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
-        app_label = 'problems'
-        db_table = 'problems_problem'
         ordering = ['-created_at']
 
     def __str__(self) -> str:

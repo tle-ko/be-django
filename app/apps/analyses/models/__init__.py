@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from django.db import models
 
-from apps.problems.db import ProblemDAO
+from apps.problems.models import ProblemDAO
 
-from . import enums
+from .. import enums
 
 
 class ProblemTagDAO(models.Model):
@@ -30,8 +30,6 @@ class ProblemTagDAO(models.Model):
         NAME_EN = 'name_en'
 
     class Meta:
-        app_label = 'analyses'
-        db_table = 'analyses_problemtag'
         ordering = ['key']
 
     def __repr__(self) -> str:
@@ -56,10 +54,6 @@ class ProblemTagRelationDAO(models.Model):
     class field_name:
         PARENT = 'parent'
         CHILD = 'child'
-
-    class Meta:
-        app_label = 'analyses'
-        db_table = 'analyses_problemtagrelation'
 
     def __str__(self) -> str:
         return f'{self.pk} : #{self.parent.key} <- #{self.child.key}'
@@ -103,8 +97,6 @@ class ProblemAnalysisDAO(models.Model):
         CREATED_AT = 'created_at'
 
     class Meta:
-        app_label = 'analyses'
-        db_table = 'analyses_problemanalysis'
         verbose_name_plural = 'Problem analyses'
         ordering = ['-created_at']
         get_latest_by = ['created_at']
@@ -131,10 +123,6 @@ class ProblemAnalysisTagDAO(models.Model):
     class field_name:
         ANALYSIS = 'analysis'
         TAG = 'tag'
-
-    class Meta:
-        app_label = 'analyses'
-        db_table = 'analyses_problemanalysistag'
 
     def __str__(self):
         return f'{self.analysis.problem} #{self.tag}'

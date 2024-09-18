@@ -1,6 +1,6 @@
 from django.db import models
 
-from . import enums
+from .. import enums
 
 
 class BOJUserDAO(models.Model):
@@ -24,10 +24,6 @@ class BOJUserDAO(models.Model):
         RATING = 'rating'
         UPDATED_AT = 'updated_at'
 
-    class Meta:
-        app_label = 'boj'
-        db_table = 'boj_bojuser'
-
     def __str__(self) -> str:
         return f'{self.username}'
 
@@ -47,10 +43,6 @@ class BOJUserSnapshotDAO(models.Model):
         RATING = 'rating'
         CREATED_AT = 'created_at'
 
-    class Meta:
-        app_label = 'boj'
-        db_table = 'boj_bojusersnapshot'
-
 
 class BOJProblemDAO(models.Model):
     title = models.TextField()
@@ -61,7 +53,3 @@ class BOJProblemDAO(models.Model):
     time_limit = models.FloatField()
     tags = models.JSONField(default=list)
     level = models.IntegerField(choices=enums.BOJLevel.choices)
-
-    class Meta:
-        app_label = 'boj'
-        db_table = 'boj_bojproblem'
