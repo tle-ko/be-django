@@ -19,11 +19,13 @@ class ProblemDTOSerializer(serializers.Serializer):
 
 
 class ProblemDetailDTOSerializer(ProblemDTOSerializer):
+    link = serializers.URLField()
     description = serializers.CharField()
     input_description = serializers.CharField()
     output_description = serializers.CharField()
     memory_limit = serializers.FloatField()
     time_limit = serializers.FloatField()
+    created_at = serializers.DateTimeField()
 
 
 class ProblemDifficultyStatisticDTOSerializer(serializers.Serializer):

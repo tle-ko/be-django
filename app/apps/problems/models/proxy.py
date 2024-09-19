@@ -67,9 +67,11 @@ class Problem(models.ProblemDAO):
     def as_detail_dto(self) -> dto.ProblemDetailDTO:
         return dto.ProblemDetailDTO(
             **self.as_dto().__dict__,
+            link=self.link,
             description=self.description,
             input_description=self.input_description,
             output_description=self.output_description,
             memory_limit=dto.ProblemLimitDTO.mega_byte(self.memory_limit),
             time_limit=dto.ProblemLimitDTO.second(self.time_limit),
+            created_at=self.created_at,
         )

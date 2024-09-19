@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from dataclasses import field
+from datetime import datetime
 from typing import List
 
 from apps.analyses.dto import ProblemAnalysisDTO
@@ -44,11 +44,13 @@ class ProblemLimitDTO:
 
 @dataclass
 class ProblemDetailDTO(ProblemDTO):
+    link: str
     description: str
     input_description: str
     output_description: str
     memory_limit: ProblemLimitDTO
     time_limit: ProblemLimitDTO
+    created_at: datetime
 
 
 @dataclass
