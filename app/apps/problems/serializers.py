@@ -6,6 +6,7 @@ from apps.analyses.serializers import ProblemAnalysisDTOSerializer
 from apps.analyses.serializers import ProblemTagDTOSerializer
 
 from . import models
+from .models import proxy
 
 
 PK = 'id'
@@ -67,7 +68,8 @@ class ProblemDAOSerializer(serializers.ModelSerializer):
 
     @property
     def data(self):
-        obj = models.Problem.objects.get(pk=self.instance.pk)
+        self.instance: models.ProblemDAO
+        obj = proxy.Problem.objects.get(pk=self.instance.pk)
         return asdict(obj.as_detail_dto())
 
 
