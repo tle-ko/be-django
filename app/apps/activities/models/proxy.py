@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List
 from typing import Optional
+from typing import Union
 
 from django.db.models import Manager
 from django.db.models import QuerySet
@@ -53,6 +54,9 @@ class CrewActivity(models.CrewActivityDAO):
     def problems(self) -> QuerySet[CrewActivityProblem]:
         return CrewActivityProblem.objects.filter(activity=self)
 
+    def problem_details(self, user: User) -> List[dto.CrewActivityDetailDTO]:
+        return CrewActivityProblem.objects.filter(activity=self).as_detail_dto(user)
+
     def as_dto(self) -> dto.CrewActivityDTO:
         return dto.CrewActivityDTO(
             activity_id=self.pk,
@@ -64,13 +68,19 @@ class CrewActivity(models.CrewActivityDAO):
             has_ended=self.has_ended(),
         )
 
+    def as_detail_dto(self, user: User) -> dto.CrewActivityDetailDTO:
+        return dto.CrewActivityDetailDTO(
+            **self.as_dto().__dict__,
+            problems=[obj.as_detail_dto(user) for obj in self.problems().all()],
+        )
 
-class CrewActivityProblemManager(Manager):
+
+class CrewActivityQuerySet(QuerySet):
     def filter(self,
                crew: CrewDAO = None,
                activity: models.CrewActivityDAO = None,
                *args,
-               **kwargs) -> QuerySet[CrewActivityProblem]:
+               **kwargs) -> Union[CrewActivityQuerySet, QuerySet[CrewActivityProblem]]:
         if crew is not None:
             assert isinstance(crew, CrewDAO)
             kwargs[CrewActivityProblem.field_name.CREW] = crew
@@ -79,20 +89,25 @@ class CrewActivityProblemManager(Manager):
             kwargs[CrewActivityProblem.field_name.ACTIVITY] = activity
         return super().filter(*args, **kwargs)
 
+    def as_detail_dto(self: QuerySet[CrewActivityProblem], user: User) -> List[dto.CrewActivityProblemDetailDTO]:
+        return [obj.as_detail_dto(user) for obj in self]
+
 
 class CrewActivityProblem(models.CrewActivityProblemDAO):
-    objects: CrewActivityProblemManager = CrewActivityProblemManager()
+    objects: Union[CrewActivityQuerySet, QuerySet[CrewActivityProblem]]
+    objects = Manager.from_queryset(CrewActivityQuerySet)()
 
     class Meta:
         proxy = True
 
     def as_dto(self) -> dto.CrewActivityProblemDTO:
-        return dto.CrewActivityProblemDTO(
+        obj = dto.CrewActivityProblemDTO(
             **self.problem.as_dto().__dict__,
-            problem_id=self.pk,
             problem_ref_id=self.problem.pk,
             order=self.order,
         )
+        obj.problem_id = self.pk
+        return obj
 
     def as_detail_dto(self, user: User) -> dto.CrewActivityProblemDetailDTO:
         return dto.CrewActivityProblemDetailDTO(

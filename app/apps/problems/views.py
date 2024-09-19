@@ -37,7 +37,7 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
-        return proxy.Problem.objects.created_by(self.request.user).search(self.get_query_string())
+        return proxy.Problem.objects.created_by(self.request.user).search(self.get_query_string()).as_dto()
 
     def get_query_string(self) -> str:
         self.request: Request

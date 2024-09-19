@@ -47,6 +47,7 @@ class SubmissionDAO(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self) -> str:
         return f'[{self.pk} : {self.problem}  ← {self.user}]'

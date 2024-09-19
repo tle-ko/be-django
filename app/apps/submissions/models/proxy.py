@@ -17,7 +17,8 @@ class SubmissionQuerySet(QuerySet):
                problem: CrewActivityProblemDAO = None,
                submitted_by: User = None,
                **kwargs) -> Union[SubmissionQuerySet, QuerySet[Submission]]:
-        return self.filter(
+        return self._kwargs_filtering(
+            super().filter,
             problem=problem,
             submitted_by=submitted_by,
             **kwargs,

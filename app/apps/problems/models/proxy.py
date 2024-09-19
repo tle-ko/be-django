@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -33,6 +34,9 @@ class ProblemQuerySet(QuerySet):
         return self.filter(**{
             Problem.field_name.TITLE+'__icontains': q,
         }).order_by(Problem.field_name.TITLE)
+
+    def as_dto(self: QuerySet[Problem]) -> List[dto.ProblemDTO]:
+        return [problem.as_dto() for problem in self]
 
     def _kwargs_filtering(self,
                           filter_function,

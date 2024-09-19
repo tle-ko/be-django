@@ -13,7 +13,7 @@ PK = 'id'
 
 
 class ProblemDTOSerializer(serializers.Serializer):
-    problem_id = serializers.IntegerField(source='pk')
+    problem_id = serializers.IntegerField()
     title = serializers.CharField()
     analysis = ProblemAnalysisDTOSerializer()
 
