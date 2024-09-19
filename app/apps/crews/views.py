@@ -15,7 +15,7 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.RecruitingCrewDTOSerializer
 
     def get_queryset(self):
-        return proxy.Crew.objects.is_recruiting(self.request.user).as_recruiting_dto()
+        return proxy.Crew.objects.is_recruiting(self.request.user).as_recruiting_dto(self.request.user)
 
 
 class MyCrewListAPIView(generics.ListAPIView):
@@ -24,7 +24,7 @@ class MyCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.MyCrewDTOSerializer
 
     def get_queryset(self):
-        return proxy.Crew.objects.as_member(self.request.user).as_my_dto()
+        return proxy.Crew.objects.as_member(self.request.user).as_my_dto(self.request.user)
 
 
 class CrewCreateAPIView(generics.CreateAPIView):

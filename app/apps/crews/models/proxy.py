@@ -49,11 +49,11 @@ class CrewQuerySet(QuerySet):
     def as_dto(self) -> List[dto.CrewDTO]:
         return [obj.as_dto() for obj in self.all()]
 
-    def as_my_dto(self) -> List[dto.MyCrewDTO]:
-        return [obj.as_my_dto() for obj in self.all()]
+    def as_my_dto(self, user: User) -> List[dto.MyCrewDTO]:
+        return [obj.as_my_dto(user) for obj in self.all()]
 
-    def as_recruiting_dto(self) -> List[dto.RecruitingCrewDTO]:
-        return [obj.as_recruiting_dto() for obj in self.all()]
+    def as_recruiting_dto(self, user: User) -> List[dto.RecruitingCrewDTO]:
+        return [obj.as_recruiting_dto(user) for obj in self.all()]
 
     def as_member(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
         return self.filter(as_member=user).order_by(
@@ -154,10 +154,10 @@ class Crew(models.CrewDAO):
             assert self.is_recruiting, (
                 "'크루가 현재 크루원을 모집하고 있지 않습니다."
             )
-            assert CrewMember.objects.crew(self.crew).count() < self.max_members, (
+            assert CrewMember.objects.crew(self).count() < self.max_members, (
                 "크루의 최대 정원을 초과하였습니다."
             )
-            assert not CrewMember.objects.exists(self, self.applicant), (
+            assert not CrewMember.objects.exists(self, user), (
                 "이미 가입한 크루입니다."
             )
             assert (self.min_boj_level is None) or (self.min_boj_level <= boj_user.level), (
