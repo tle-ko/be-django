@@ -44,6 +44,8 @@ class RecruitingCrewDTO(CrewDTO):
 
 
 @dataclass
-class MyCrewDTO(CrewDTO):
-    is_captain: bool
+class CrewDetailDTO(CrewDTO):
     notice: str
+    members: List[CrewMemberDTO]
+    activities: List[CrewActivityDTO]
+    is_captain: bool

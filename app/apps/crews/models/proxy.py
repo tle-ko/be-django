@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List
 from typing import Union
+from typing import Optional
 
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Manager
@@ -48,9 +49,6 @@ class CrewQuerySet(QuerySet):
 
     def as_dto(self) -> List[dto.CrewDTO]:
         return [obj.as_dto() for obj in self.all()]
-
-    def as_my_dto(self, user: User) -> List[dto.MyCrewDTO]:
-        return [obj.as_my_dto(user) for obj in self.all()]
 
     def as_recruiting_dto(self, user: User) -> List[dto.RecruitingCrewDTO]:
         return [obj.as_recruiting_dto(user) for obj in self.all()]
@@ -129,17 +127,19 @@ class Crew(models.CrewDAO):
             tags=self.tags(),
         )
 
+    def as_detail_dto(self, user: Optional[User] = None) -> dto.CrewDetailDTO:
+        return dto.CrewDetailDTO(
+            **self.as_dto().__dict__,
+            notice=self.notice,
+            members=self.members(),
+            activities=self.activities(),
+            is_captain=self.is_captain(user),
+        )
+
     def as_recruiting_dto(self, user: User) -> dto.RecruitingCrewDTO:
         return dto.RecruitingCrewDTO(
             **self.as_dto().__dict__,
             is_appliable=self.is_appliable(user),
-        )
-
-    def as_my_dto(self, user: User) -> dto.MyCrewDTO:
-        return dto.MyCrewDTO(
-            **self.as_dto().__dict__,
-            is_captain=self.is_captain(user),
-            notice=self.notice,
         )
 
     def captain(self) -> CrewMember:
@@ -170,7 +170,9 @@ class Crew(models.CrewDAO):
         else:
             return True
 
-    def is_captain(self, user: User) -> bool:
+    def is_captain(self, user: Optional[User] = None) -> bool:
+        if user is None:
+            return False
         return CrewMember.objects.filter(crew=self, user=user, is_captain=True).exists()
 
     def latest_activity(self) -> dto.CrewActivityDTO:

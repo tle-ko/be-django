@@ -8,10 +8,9 @@ urlpatterns = [
     path("crews/my", views.MyCrewListAPIView.as_view()),
     path("crews/recruiting", views.RecruitingCrewListAPIView.as_view()),
     path("crew", views.CrewCreateAPIView.as_view()),
-    path("crew/<int:crew_id>", views.CrewRetrieveAPIView.as_view()),
+    path("crew/<int:crew_id>", views.CrewRetrieveUpdateAPIView.as_view()),
     path("crew/<int:crew_id>/applications", views.CrewApplicationListAPIView.as_view()),
     path("crew/<int:crew_id>/statistics", views.CrewStatisticsAPIView.as_view()),
-    path("crew/<int:crew_id>/members", views.CrewMemberListAPIView.as_view()),
     # path("/apply", crews.applications.views.CrewApplicantionCreateAPIView.as_view()),
     # path("crew/applications/my", crews.applications.views.CrewApplicationForUserListAPIView.as_view()),
     # path("crew/application/<int:application_id>", include([

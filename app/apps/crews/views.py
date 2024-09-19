@@ -21,10 +21,10 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
 class MyCrewListAPIView(generics.ListAPIView):
     """나의 참여 크루.\n\n."""
     permission_classes = [permissions.IsMember]
-    serializer_class = serializers.MyCrewDTOSerializer
+    serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        return proxy.Crew.objects.as_member(self.request.user).as_my_dto(self.request.user)
+        return proxy.Crew.objects.as_member(self.request.user).as_dto()
 
 
 class CrewCreateAPIView(generics.CreateAPIView):
@@ -34,13 +34,19 @@ class CrewCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.CrewDAOSerializer
 
 
-class CrewRetrieveAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
+class CrewRetrieveUpdateAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveUpdateAPIView):
     """크루 대시보드 홈 API.\n\n."""
     permission_classes = [permissions.IsMember]
-    serializer_class = serializers.MyCrewDTOSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.CrewDetailDTOSerializer
+        return serializers.CrewDAOSerializer
 
     def get_object(self):
-        return self.get_crew().as_my_dto(self.request.user)
+        if self.request.method == 'GET':
+            return self.get_crew().as_detail_dto()
+        return self.get_crew()
 
 
 class CrewUpdateAPIView(mixins.CrewUrlKwargMixin, generics.UpdateAPIView):

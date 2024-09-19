@@ -42,9 +42,11 @@ class RecruitingCrewDTOSerializer(CrewDTOSerializer):
     is_appliable = serializers.BooleanField()
 
 
-class MyCrewDTOSerializer(CrewDTOSerializer):
-    is_captain = serializers.BooleanField()
+class CrewDetailDTOSerializer(CrewDTOSerializer):
     notice = serializers.CharField()
+    members = CrewMemberDTOSerializer(many=True)
+    activities = CrewActivityDTOSerializer(many=True)
+    is_captain = serializers.BooleanField()
 
 
 class CrewDAOSerializer(serializers.ModelSerializer):
