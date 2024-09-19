@@ -131,7 +131,7 @@ class CrewMemberDAO(models.Model):
         ordering = ['created_at']
 
     def __str__(self) -> str:
-        return f'[{self.pk} : "{self.user.username}"@"{self.crew.display_name()}"]'
+        return f'[{self.pk} : "{self.user.username}"@"{self.crew}"]'
 
 
 class CrewSubmittableLanguageDAO(models.Model):
