@@ -3,27 +3,26 @@ from logging import getLogger
 from django.conf import settings
 from google import generativeai as genai
 
-from apps.analyses.analyzers.base import ProblemAnalyzer
-from apps.analyses.analyzers.base import ProblemDTO
-from apps.analyses.analyzers.base import ProblemAnalysisRawDTO
-from apps.analyses.analyzers.gemini import prompts
-from apps.analyses.analyzers.gemini import parsers
+from .. import base
+from . import prompts
+from . import parsers
 
 
 logger = getLogger(__name__)
 
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
-class GeminiProblemAnalyzer(ProblemAnalyzer):
+
+class GeminiProblemAnalyzer(base.ProblemAnalyzer):
     _instance = None
 
     @classmethod
-    def get_instance(cls) -> ProblemAnalyzer:
+    def get_instance(cls) -> base.ProblemAnalyzer:
         if cls._instance is None:
             cls._instance = GeminiProblemAnalyzer()
         return cls._instance
 
     def __init__(self) -> None:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
         self.model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config={
@@ -35,8 +34,9 @@ class GeminiProblemAnalyzer(ProblemAnalyzer):
             },
         )
 
-    def analyze(self, problem_dto: ProblemDTO) -> ProblemAnalysisRawDTO:
-        analysis_dto = ProblemAnalysisRawDTO(
+    def analyze(self, problem_dto: base.ProblemDetailDTO) -> base.ProblemAnalysisRawDTO:
+        assert isinstance(problem_dto, base.ProblemDetailDTO)
+        analysis_dto = base.ProblemAnalysisRawDTO(
             problem_id=problem_dto.problem_id,
             difficulty=None,
             time_complexity=None,
@@ -48,8 +48,13 @@ class GeminiProblemAnalyzer(ProblemAnalyzer):
         chat = self.model.start_chat(history=[])
 
         logger.info(f'... 태그 분석 중...')
+        logger.info(f'... 태그 프롬프트 생성 중...')
         prompt = prompts.get_tags_prompt(problem_dto, analysis_dto)
-        assistant_message = chat.send_message(content=prompt).text
+        logger.info(f'... 태그 프롬프트 질의 중...')
+        response = chat.send_message(content=prompt)
+        logger.info(f'... 태그 프롬프트 질의 답변 수신 완료...')
+        assistant_message = response.text
+        logger.info(f'... 태그 프롬프트 파싱 중...')
         analysis_dto.tags = parsers.parse_tags(assistant_message)
 
         logger.info(f'... 난이도 분석 중...')

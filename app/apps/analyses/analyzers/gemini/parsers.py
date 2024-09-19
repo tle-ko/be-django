@@ -6,7 +6,7 @@ import re
 from sympy import latex
 from sympy.parsing.latex import parse_latex
 
-from apps.analyses.models.proxy import ProblemTag
+from ...models import proxy
 
 
 logger = getLogger(__name__)
@@ -18,7 +18,7 @@ def get_valid_tags() -> List[str]:
 
     비싼 연산이므로 캐시하여 사용한다.
     """
-    return [*ProblemTag.objects.values_list(ProblemTag.field_name.KEY, flat=True)]
+    return [*proxy.ProblemTag.objects.values_list(proxy.ProblemTag.field_name.KEY, flat=True)]
 
 
 def parse_difficulty(assistant_message: str) -> str:

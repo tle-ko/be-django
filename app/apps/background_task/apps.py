@@ -24,6 +24,8 @@ class BackgroundTasksAppConfig(AppConfig):
 
     def ready(self):
         if settings.BACKGROUND_TASK_AUTO_RUN:
+            logger.info('background tasks thread starting...')
+
             from apps.background_task import signals  # noqa
             from apps.background_task.management.commands.process_tasks import Command as ProcessTasksCommand
 
@@ -40,6 +42,8 @@ class BackgroundTasksAppConfig(AppConfig):
             thread = Thread(target=task_runner)
             thread.setDaemon(True)
             thread.start()
+        else:
+            logger.warning('background tasks thread disabled')
 
 
     def backoff(self, instance: Task) -> timedelta:

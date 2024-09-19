@@ -1,15 +1,14 @@
-from apps.problems import dto
-from apps.analyses.analyzers.base import ProblemAnalyzer
+from .. import base
 
 
-class GPTProblemAnalyzer(ProblemAnalyzer):
+class GPTProblemAnalyzer(base.ProblemAnalyzer):
     _instance = None
 
     @classmethod
-    def get_instance(cls) -> ProblemAnalyzer:
+    def get_instance(cls) -> base.ProblemAnalyzer:
         if cls._instance is None:
             cls._instance = GPTProblemAnalyzer()
         return cls._instance
 
-    def analyze(self, problem: dto.ProblemDTO) -> dto.ProblemAnalysisRawDTO:
+    def analyze(self, problem: base.ProblemDetailDTO) -> base.ProblemAnalysisRawDTO:
         raise NotImplementedError

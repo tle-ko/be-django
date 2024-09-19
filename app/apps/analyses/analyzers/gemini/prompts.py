@@ -1,10 +1,10 @@
 from textwrap import dedent
 
-from apps.analyses.analyzers.base import ProblemDTO
-from apps.analyses.analyzers.base import ProblemAnalysisRawDTO
+from .. import base
 
 
-def get_difficulty_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDTO) -> str:
+def get_difficulty_prompt(problem_dto: base.ProblemDetailDTO, analysis_dto: base.ProblemAnalysisRawDTO) -> str:
+    assert isinstance(problem_dto, base.ProblemDetailDTO)
     sys_msg = dedent("""
         You are a helpful, respectful and honest assistant. Always answer clearly as possible.
         First line of your answer must be one of these words "EASY", "NORMAL", "HARD".
@@ -24,7 +24,8 @@ def get_difficulty_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysis
     return build_prompt(sys_msg, usr_msg)
 
 
-def get_tags_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDTO) -> str:
+def get_tags_prompt(problem_dto: base.ProblemDetailDTO, analysis_dto: base.ProblemAnalysisRawDTO) -> str:
+    assert isinstance(problem_dto, base.ProblemDetailDTO)
     sys_msg = dedent("""
         You are a helpful, respectful and honest assistant. Always answer clearly as possible.
         You must answer in English.
@@ -45,7 +46,8 @@ def get_tags_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDTO
     return build_prompt(sys_msg, usr_msg)
 
 
-def get_time_complexity_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDTO) -> str:
+def get_time_complexity_prompt(problem_dto: base.ProblemDetailDTO, analysis_dto: base.ProblemAnalysisRawDTO) -> str:
+    assert isinstance(problem_dto, base.ProblemDetailDTO)
     sys_msg = dedent("""
         You are a helpful, respectful and honest time-complexity analyst. Always answer clearly as possible.
         Analysts don't converse in natural language as people do. They communicate using intricate equations and symbols, typically preferring the syntax of the LaTeX language.
@@ -60,7 +62,8 @@ def get_time_complexity_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAna
     return build_prompt(sys_msg, usr_msg)
 
 
-def get_hints_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDTO) -> str:
+def get_hints_prompt(problem_dto: base.ProblemDetailDTO, analysis_dto: base.ProblemAnalysisRawDTO) -> str:
+    assert isinstance(problem_dto, base.ProblemDetailDTO)
     assert analysis_dto.tags is not None
     assert analysis_dto.difficulty is not None
     assert analysis_dto.time_complexity is not None
@@ -83,16 +86,17 @@ def get_hints_prompt(problem_dto: ProblemDTO, analysis_dto: ProblemAnalysisRawDT
     return build_prompt(sys_msg, usr_msg)
 
 
-def get_problem_message(problem_dto: ProblemDTO) -> str:
+def get_problem_message(problem_dto: base.ProblemDetailDTO) -> str:
+    assert isinstance(problem_dto, base.ProblemDetailDTO)
     return dedent(f"""
         제목
         {problem_dto.title}
 
         메모리 제한
-        {problem_dto.memory_limit} MB
+        {problem_dto.memory_limit.value} {problem_dto.memory_limit.unit.value}
 
         시간 제한
-        {problem_dto.time_limit} 초
+        {problem_dto.time_limit.value} {problem_dto.time_limit.unit.value}
 
         문제
         {problem_dto.description}

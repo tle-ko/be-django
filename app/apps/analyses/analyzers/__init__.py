@@ -27,18 +27,22 @@ def auto_analyze(sender, instance: Problem, created: bool, **kwargs):
 
 @tasks.background
 def schedule_analyze(problem_id: int):
+    analyze(problem_id)
+
+
+def analyze(problem_id: int):
     logger.info(f'PK={problem_id} 문제의 분석 준비중.')
     problem: Problem = Problem.objects.get(pk=problem_id)
-    problem_dto = problem.as_dto()
+    problem_dto = problem.as_detail_dto()
     logger.info('문제 분석기를 불러오는 중.')
     analyzer = get_analyzer()
-    logger.info(f'{problem_dto} 문제의 분석 시작.')
+    logger.info(f'{problem_dto.title} 문제의 분석 시작.')
     analysis_dto = analyzer.analyze(problem_dto)
-    logger.info(f'{problem_dto} 문제의 분석 완료.')
-    logger.info(f'{problem_dto} 문제의 분석 결과를 데이터베이스에 저장하는 중.')
+    logger.info(f'{problem_dto.title} 문제의 분석 완료.')
+    logger.info(f'{problem_dto.title} 문제의 분석 결과를 데이터베이스에 저장하는 중.')
     validate_analysis_dto_tags(analysis_dto)
     proxy.ProblemAnalysis.objects.create_from_dto(analysis_dto)
-    logger.info(f'{problem_dto} 문제의 분석 결과를 데이터베이스에 저장 완료.')
+    logger.info(f'{problem_dto.title} 문제의 분석 결과를 데이터베이스에 저장 완료.')
 
 
 def validate_analysis_dto_tags(analysis_dto: dto.ProblemAnalysisRawDTO):

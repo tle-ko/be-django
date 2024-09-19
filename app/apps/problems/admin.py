@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 
 from apps.analyses.analyzers import schedule_analyze
+from apps.analyses.analyzers import analyze
 from apps.problems.models.proxy import Problem
 from users.models import User
 
@@ -20,10 +21,16 @@ class ProblemModelAdmin(admin.ModelAdmin):
     ]
     ordering = ['-'+Problem.field_name.CREATED_AT]
     actions = [
-        'analyze',
+        'action_analyze',
+        'action_schedule_analyze',
     ]
 
     @admin.action(description="Analyze selected problems.")
-    def analyze(self, request, queryset: QuerySet[Problem]):
+    def action_analyze(self, request, queryset: QuerySet[Problem]):
+        for obj in queryset:
+            analyze(obj.pk)
+
+    @admin.action(description="Schedule to analyze selected problems.")
+    def action_schedule_analyze(self, request, queryset: QuerySet[Problem]):
         for obj in queryset:
             schedule_analyze(obj.pk)
