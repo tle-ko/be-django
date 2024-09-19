@@ -1,26 +1,72 @@
-from collections import Counter
+from __future__ import annotations
+
 from dataclasses import dataclass
 from dataclasses import field
+from typing import List
 
+from apps.analyses.dto import ProblemAnalysisDTO
 from apps.analyses.dto import ProblemTagDTO
+from apps.analyses.enums import ProblemDifficulty
+
+from . import enums
 
 
 @dataclass
 class ProblemDTO:
-    id: int
+    problem_id: int
     title: str
+    analysis: ProblemAnalysisDTO
+
+
+@dataclass
+class UnitDTO:
+    name: str
+    value: str
+
+    def __init__(self, unit: enums.Unit):
+        self.name = unit.label
+        self.value = unit.value
+
+
+@dataclass
+class ProblemLimitDTO:
+    value: float
+    unit: UnitDTO
+
+    @staticmethod
+    def second(value: float) -> ProblemLimitDTO:
+        return ProblemLimitDTO(value=value, unit=UnitDTO(enums.Unit.SECOND))
+
+    @staticmethod
+    def mega_byte(value: float) -> ProblemLimitDTO:
+        return ProblemLimitDTO(value=value, unit=UnitDTO(enums.Unit.MEGA_BYTE))
+
+
+@dataclass
+class ProblemDetailDTO(ProblemDTO):
     description: str
     input_description: str
     output_description: str
-    memory_limit: float
-    time_limit: float
+    memory_limit: ProblemLimitDTO
+    time_limit: ProblemLimitDTO
 
-    def __str__(self) -> str:
-        return f'<ProblemDTO id={self.id} title="{self.title}">'
+
+@dataclass
+class ProblemDifficultyStaticDTO:
+    difficulty: ProblemDifficulty
+    count: int
+    ratio: float
+
+
+@dataclass
+class ProblemTagStaticDTO:
+    tag: ProblemTagDTO
+    count: int
+    ratio: float
 
 
 @dataclass
 class ProblemStatisticDTO:
-    sample_count: int = field(default=0)
-    difficulty: Counter[int] = field(default_factory=Counter)
-    tags: Counter[ProblemTagDTO] = field(default_factory=Counter)
+    problem_count: int
+    difficulties: List[ProblemDifficultyStaticDTO]
+    tags: List[ProblemTagStaticDTO]

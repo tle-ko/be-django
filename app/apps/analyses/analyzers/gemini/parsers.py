@@ -6,7 +6,7 @@ import re
 from sympy import latex
 from sympy.parsing.latex import parse_latex
 
-from apps.analyses.models import ProblemTag
+from apps.analyses.models.proxy import ProblemTag
 
 
 logger = getLogger(__name__)

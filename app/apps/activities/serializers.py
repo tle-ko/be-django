@@ -1,34 +1,28 @@
 from rest_framework import serializers
 
-from apps.activities.models import CrewActivity
+from apps.problems.serializers import ProblemDTOSerializer
+from apps.submissions.serializers import SubmissionDTOSerializer
 
 
-PK = 'id'
+class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
+    problem_ref_id = serializers.IntegerField()
+    order = serializers.IntegerField()
 
 
-class CrewActivitySerializer(serializers.ModelSerializer):
-    date_start_at = serializers.DateTimeField(source=CrewActivity.field_name.START_AT)
-    date_end_at = serializers.DateTimeField(source=CrewActivity.field_name.END_AT)
-
-    class Meta:
-        model = CrewActivity
-        fields = [
-            CrewActivity.field_name.NAME,
-            'date_start_at',
-            'date_end_at',
-        ]
-        read_only_fields = ['__all__']
+class CrewActivityProblemDetailDTOSerializer(CrewActivityProblemDTOSerializer):
+    submissions = SubmissionDTOSerializer(many=True)
+    my_submission = SubmissionDTOSerializer(required=False, default=None)
 
 
-# class CrewActivityProblemSerializer(serializers.ModelSerializer):
-#     problems = fields.CrewAcitivityProblemsField()
+class CrewActivityDTOSerializer(serializers.Serializer):
+    activity_id = serializers.IntegerField()
+    name = serializers.CharField()
+    start_at = serializers.DateTimeField()
+    end_at = serializers.DateTimeField()
+    is_in_progress = serializers.BooleanField()
+    has_started = serializers.BooleanField()
+    has_ended = serializers.BooleanField()
 
-#     class Meta:
-#         model = CrewActivity
-#         fields = [
-#             CrewActivity.field_name.NAME,
-#             CrewActivity.field_name.START_AT,
-#             CrewActivity.field_name.END_AT,
-#             'problems',
-#         ]
-#         read_only_fields = ['__all__']
+
+class CrewActivityDetailDTOSerializer(CrewActivityDTOSerializer):
+    problems = CrewActivityProblemDetailDTOSerializer(many=True)

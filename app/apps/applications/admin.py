@@ -2,19 +2,17 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http.request import HttpRequest
 
-from apps.applications.models import CrewApplication
-from apps.applications.services import accept
-from apps.applications.services import reject
+from .models import proxy
 
 
-@admin.register(CrewApplication)
+@admin.register(proxy.CrewApplication)
 class CrewApplicantModelAdmin(admin.ModelAdmin):
     list_display = [
-        CrewApplication.field_name.CREW,
-        CrewApplication.field_name.APPLICANT,
-        CrewApplication.field_name.IS_ACCEPTED,
-        CrewApplication.field_name.IS_PENDING,
-        CrewApplication.field_name.REVIEWED_BY,
+        proxy.CrewApplication.field_name.CREW,
+        proxy.CrewApplication.field_name.APPLICANT,
+        proxy.CrewApplication.field_name.IS_ACCEPTED,
+        proxy.CrewApplication.field_name.IS_PENDING,
+        proxy.CrewApplication.field_name.REVIEWED_BY,
     ]
     actions = [
         'accept',
@@ -22,11 +20,11 @@ class CrewApplicantModelAdmin(admin.ModelAdmin):
     ]
 
     @admin.action(description="Accept user")
-    def accept(self, request: HttpRequest, queryset: QuerySet[CrewApplication]):
-        for applicant in queryset:
-            accept(applicant, request.user)
+    def accept(self, request: HttpRequest, queryset: QuerySet[proxy.CrewApplication]):
+        for obj in queryset:
+            obj.accept(request.user)
 
     @admin.action(description="Reject user")
-    def reject(self, request: HttpRequest, queryset: QuerySet[CrewApplication]):
-        for applicant in queryset:
-            reject(applicant, request.user)
+    def reject(self, request: HttpRequest, queryset: QuerySet[proxy.CrewApplication]):
+        for obj in queryset:
+            obj.reject(request.user)

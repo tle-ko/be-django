@@ -5,7 +5,7 @@ DIVISION_NAMES = {
     'ko': ['난이도를 매길 수 없음', '브론즈', '실버', '골드', '플래티넘', '다이아몬드', '루비'],
     'en': ['Unrated', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Ruby'],
 }
-ARABIC_NUMERALS = ['', 'I', 'II', 'III', 'IV', 'V']
+ROMAN_NUMERALS = ['', 'I', 'II', 'III', 'IV', 'V']
 
 
 class BOJLevel(IntegerChoices):
@@ -47,7 +47,7 @@ class BOJLevel(IntegerChoices):
             return 0
         return ((self.value-1) // 5)+1
 
-    def get_division_name(self, lang='en') -> str:
+    def get_division_name(self, lang='ko') -> str:
         return DIVISION_NAMES[lang][self.get_division()]
 
     def get_tier(self) -> int:
@@ -55,13 +55,13 @@ class BOJLevel(IntegerChoices):
             return 0
         return 5 - ((self.value-1) % 5)
 
-    def get_tier_name(self, arabic=True) -> str:
+    def get_tier_name(self, roman=True) -> str:
         tier = self.get_tier()
-        if arabic:
-            return ARABIC_NUMERALS[tier]
+        if roman:
+            return ROMAN_NUMERALS[tier]
         return str(tier)
 
-    def get_name(self, lang='en', arabic=True) -> str:
+    def get_name(self, lang='ko', roman=False) -> str:
         if self.value == 0:
             return '사용자 정보를 불러오지 못함'
-        return f'{self.get_division_name(lang=lang)} {self.get_tier_name(arabic=arabic)}'
+        return f'{self.get_division_name(lang=lang)} {self.get_tier_name(roman=roman)}'

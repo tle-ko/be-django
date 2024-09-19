@@ -1,31 +1,12 @@
-from __future__ import annotations
-
-from typing import Union
-
 from django.db import models
 
-from apps.crews.models import Crew
+from apps.crews.models import CrewDAO
 from users.models import User
 
 
-class CrewApplicationManager(models.Manager):
-    def filter(self,
-               crew: Crew = None,
-               applicant: User = None,
-               *args,
-               **kwargs) -> models.QuerySet[CrewApplication]:
-        if crew is not None:
-            assert isinstance(crew, Crew)
-            kwargs[CrewApplication.field_name.CREW] = crew
-        if applicant is not None:
-            assert isinstance(applicant, Crew)
-            kwargs[CrewApplication.field_name.APPLICANT] = applicant
-        return super().filter(*args, **kwargs)
-
-
-class CrewApplication(models.Model):
-    crew = models.ForeignKey[Crew](
-        Crew,
+class CrewApplicationDAO(models.Model):
+    crew = models.ForeignKey[CrewDAO](
+        CrewDAO,
         on_delete=models.CASCADE,
         help_text='크루를 입력해주세요.',
     )
@@ -63,8 +44,6 @@ class CrewApplication(models.Model):
         default=None,
     )
 
-    objects: _CrewApplicationManager = CrewApplicationManager()
-
     class field_name:
         CREW = 'crew'
         APPLICANT = 'applicant'
@@ -76,13 +55,6 @@ class CrewApplication(models.Model):
         REVIEWED_BY = 'reviewed_by'
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['crew', 'applicant'],
-                condition=models.Q(is_pending=True),
-                name='unique_pending_application',
-            ),
-        ]
         ordering = ['reviewed_by', 'created_at']
 
     def __repr__(self) -> str:
@@ -90,7 +62,3 @@ class CrewApplication(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : {self.__repr__()}'
-
-
-_CrewApplicationManager = Union[CrewApplicationManager,
-                                models.Manager[CrewApplication]]

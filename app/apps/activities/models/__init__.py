@@ -1,38 +1,16 @@
-from __future__ import annotations
-
-from typing import Union
-
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 from apps.crews.enums import ProgrammingLanguageChoices
-from apps.crews.models import Crew
-from apps.problems.models import Problem
+from apps.crews.models import CrewDAO
+from apps.problems.models.proxy import Problem
 from users.models import User
 
 
-class CrewActivityManager(models.Manager):
-    def filter(self,
-               crew: Crew = None,
-               has_started: bool = None,
-               in_progress: bool = None,
-               *args,
-               **kwargs) -> models.QuerySet[CrewActivity]:
-        if crew is not None:
-            assert isinstance(crew, Crew)
-            kwargs[CrewActivity.field_name.CREW] = crew
-        if has_started is not None:
-            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
-        if in_progress is not None:
-            kwargs[CrewActivity.field_name.START_AT + '__lte'] = timezone.now()
-            kwargs[CrewActivity.field_name.END_AT + '__gt'] = timezone.now()
-        return super().filter(*args, **kwargs)
-
-
-class CrewActivity(models.Model):
+class CrewActivityDAO(models.Model):
     crew = models.ForeignKey(
-        Crew,
+        CrewDAO,
         on_delete=models.CASCADE,
         help_text='크루를 입력해주세요.',
     )
@@ -46,8 +24,6 @@ class CrewActivity(models.Model):
         help_text='활동 종료 일자를 입력해주세요.',
     )
 
-    objects: _CrewActivityManager = CrewActivityManager()
-
     class field_name:
         CREW = 'crew'
         NAME = 'name'
@@ -59,7 +35,7 @@ class CrewActivity(models.Model):
         get_latest_by = ['end_at']
 
     def __str__(self) -> str:
-        return f'[{self.pk}: "{self.name}"@"{self.crew.display_name()}" ({self.start_at.date()} ~ {self.end_at.date()})]'
+        return f'[{self.pk}: "{self.name}"@"{self.crew.name}" ({self.start_at.date()} ~ {self.end_at.date()})]'
 
     def is_in_progress(self) -> bool:
         return self.has_started() and not self.has_ended()
@@ -71,20 +47,15 @@ class CrewActivity(models.Model):
         return self.end_at < timezone.now()
 
 
-class CrewActivityProblemManager(models.Manager):
-    def crew(self, crew: Crew) -> _CrewActivityProblemManager:
-        return self.filter(**{CrewActivityProblem.field_name.CREW: crew})
-
-
-class CrewActivityProblem(models.Model):
+class CrewActivityProblemDAO(models.Model):
     crew = models.ForeignKey(
-        Crew,
+        CrewDAO,
         on_delete=models.CASCADE,
         blank=False,
         null=False,
     )
     activity = models.ForeignKey(
-        CrewActivity,
+        CrewActivityDAO,
         on_delete=models.CASCADE,
         help_text='활동을 입력해주세요.',
     )
@@ -99,8 +70,6 @@ class CrewActivityProblem(models.Model):
             MinValueValidator(1),
         ],
     )
-
-    objects: _CrewActivityProblemManager = CrewActivityProblemManager()
 
     class field_name:
         # related fields
@@ -131,10 +100,10 @@ class CrewActivityProblem(models.Model):
         return f'{self.pk} : {self.__repr__()}'
 
 
-class CrewActivitySubmission(models.Model):
+class CrewActivitySubmissionDAO(models.Model):
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     problem = models.ForeignKey(
-        CrewActivityProblem,
+        CrewActivityProblemDAO,
         on_delete=models.PROTECT,
         help_text='활동 문제를 입력해주세요.',
     )
@@ -175,8 +144,3 @@ class CrewActivitySubmission(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.pk} : {self.problem}  ← {self.user}]'
-
-
-_CrewActivityManager = Union[CrewActivityManager, models.Manager[CrewActivity]]
-_CrewActivityProblemManager = Union[CrewActivityProblemManager,
-                                    models.Manager[CrewActivityProblem]]

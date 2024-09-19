@@ -4,6 +4,8 @@ from threading import Thread
 from typing import TYPE_CHECKING
 
 from django.apps import AppConfig
+from django.conf import settings
+
 
 
 if TYPE_CHECKING:
@@ -21,22 +23,24 @@ class BackgroundTasksAppConfig(AppConfig):
     verbose_name = 'Background Tasks ({})'.format(version_info)
 
     def ready(self):
-        from apps.background_task import signals  # noqa
-        from apps.background_task.management.commands.process_tasks import Command as ProcessTasksCommand
+        if settings.BACKGROUND_TASK_AUTO_RUN:
+            from apps.background_task import signals  # noqa
+            from apps.background_task.management.commands.process_tasks import Command as ProcessTasksCommand
 
-        def task_runner(*args, **kwargs):
-            logger.info('background tasks thread started')
-            try:
-                command = ProcessTasksCommand()
-                command.handle()
-            except Exception as exception:
-                logger.error(exception)
-            finally:
-                logger.info('shutting down background task thread.')
+            def task_runner(*args, **kwargs):
+                logger.info('background tasks thread started')
+                try:
+                    command = ProcessTasksCommand()
+                    command.handle()
+                except Exception as exception:
+                    logger.error(exception)
+                finally:
+                    logger.info('shutting down background task thread.')
 
-        thread = Thread(target=task_runner)
-        thread.setDaemon(True)
-        thread.start()
+            thread = Thread(target=task_runner)
+            thread.setDaemon(True)
+            thread.start()
+
 
     def backoff(self, instance: Task) -> timedelta:
         return timedelta(seconds=60+instance.attempts)

@@ -19,6 +19,7 @@ class RecruitingCrewListAPIViewTest(TestCase):
         self.assertListEqual(res.json(), [
             {
                 "id": 1,
+                "crew_id": 1,
                 "icon": "🚢",
                 "name": "코딩메리호",
                 "is_joinable": False,
@@ -33,12 +34,13 @@ class RecruitingCrewListAPIViewTest(TestCase):
                 ],
                 "latest_activity": {
                     "name": "등록된 활동 없음",
-                    "date_start_at": None,
-                    "date_end_at": None
+                    "start_at": None,
+                    "end_at": None
                 }
             },
             {
                 "id": 2,
+                "crew_id": 2,
                 "icon": "🚢",
                 "name": "다른사람이크루장",
                 "is_joinable": False,
@@ -50,8 +52,8 @@ class RecruitingCrewListAPIViewTest(TestCase):
                 ],
                 "latest_activity": {
                     "name": "등록된 활동 없음",
-                    "date_start_at": None,
-                    "date_end_at": None
+                    "start_at": None,
+                    "end_at": None
                 }
             },
         ])
@@ -62,6 +64,7 @@ class RecruitingCrewListAPIViewTest(TestCase):
         self.assertListEqual(res.json(), [
             {
                 "id": 2,
+                "crew_id": 2,
                 "icon": "🚢",
                 "name": "다른사람이크루장",
                 "is_joinable": True,
@@ -73,8 +76,8 @@ class RecruitingCrewListAPIViewTest(TestCase):
                 ],
                 "latest_activity": {
                     "name": "등록된 활동 없음",
-                    "date_start_at": None,
-                    "date_end_at": None
+                    "start_at": None,
+                    "end_at": None
                 }
             },
         ])
@@ -99,13 +102,14 @@ class MyCrewListAPIViewTest(TestCase):
         self.assertListEqual(res.json(), [
             {
                 "id": 1,
+                "crew_id": 1,
                 "icon": "🚢",
                 "name": "코딩메리호",
                 "is_active": True,
                 "latest_activity": {
                     "name": "등록된 활동 없음",
-                    "date_start_at": None,
-                    "date_end_at": None
+                    "start_at": None,
+                    "end_at": None
                 }
             },
         ])
@@ -155,7 +159,7 @@ class CrewStatisticsAPIViewTest(TestCase):
             "difficulties": [
                 {
                     "difficulty": 0,
-                    "problem_count": 1,
+                    "count": 1,
                     "ratio": 1,
                 },
             ],

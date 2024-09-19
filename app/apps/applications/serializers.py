@@ -1,61 +1,50 @@
+from dataclasses import asdict
+
 from rest_framework import serializers
 
-from apps.applications.models import CrewApplication
+from apps.boj.serializers import BOJUserDTOSerializer
+from users.serializers import UserDTOSerializer
+
+from .models import proxy
 
 
 PK = 'id'
 
 
-class NoInputSerializer(serializers.Serializer):
-    pass
+class CrewApplicantDTOSerializer(UserDTOSerializer):
+    boj = BOJUserDTOSerializer()
 
 
-class CrewApplicationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CrewApplication
-        read_only_fields = ['__all__']
-
-
-class CrewApplicationCreateSerializer(serializers.ModelSerializer):
+class CrewApplicationDTOSerializer(serializers.Serializer):
+    application_id = serializers.IntegerField()
+    applicant = CrewApplicantDTOSerializer()
     message = serializers.CharField()
+    is_pending = serializers.BooleanField()
+    is_accepted = serializers.BooleanField()
+    created_at = serializers.DateTimeField()
 
+
+class ReviewedCrewApplicationDTOSerializer(CrewApplicationDTOSerializer):
+    reviewed_at = serializers.DateTimeField()
+    reviewed_by = UserDTOSerializer()
+
+
+class CrewApplicationDAOSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CrewApplication
+        model = proxy.CrewApplication
         fields = [
-            CrewApplication.field_name.MESSAGE,
+            proxy.CrewApplication.field_name.CREW,
+            proxy.CrewApplication.field_name.MESSAGE,
+            proxy.CrewApplication.field_name.APPLICANT,
         ]
-        read_only_fields = ['__all__']
+        extra_kwargs = {
+            proxy.CrewApplication.field_name.APPLICANT: {
+                'read_only': True,
+                'default': serializers.CurrentUserDefault(),
+            },
+        }
 
-
-## TEMP
-
-# class CrewApplicationAboutApplicantSerializer(serializers.ModelSerializer):
-#     applicant = fields.CrewApplicationApplicantField()
-
-#     class Meta:
-#         model = models.CrewApplication
-#         fields = [
-#             PK,
-#             models.CrewApplication.field_name.MESSAGE,
-#             models.CrewApplication.field_name.IS_PENDING,
-#             models.CrewApplication.field_name.IS_ACCEPTED,
-#             models.CrewApplication.field_name.CREATED_AT,
-#             'applicant',
-#         ]
-#         read_only_fields = ['__all__']
-
-
-# class CrewApplicationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.CrewApplication
-
-
-# class CrewApplicationCreateSerializer(serializers.ModelSerializer):
-#     message = serializers.CharField()
-
-#     class Meta:
-#         model = models.CrewApplication
-#         fields = [
-#             models.CrewApplication.field_name.MESSAGE,
-#         ]
-#         read_only_fields = ['__all__']
+    @property
+    def data(self):
+        self.instance: proxy.CrewApplication
+        return asdict(self.instance.as_dto())

@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "apps.crews",
     "apps.activities",
     "apps.applications",
-    # "apps.submissions",
+    "apps.submissions",
     "apps.problems",
     "apps.analyses",
 ]
@@ -188,3 +188,4 @@ SWAGGER_SETTINGS = {
 #Django Background Tasks
 
 BACKGROUND_TASK_ASYNC_THREADS = 1
+BACKGROUND_TASK_AUTO_RUN = True

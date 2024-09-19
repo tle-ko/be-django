@@ -1,20 +1,16 @@
 from django.contrib import admin
 from django.db.models import QuerySet
-from django.http.request import HttpRequest
 
-from apps.boj.models import BOJUser
-from apps.boj.models import BOJUserSnapshot
-from apps.boj.services import schedule_update_boj_user_data
-from apps.boj.services import update_boj_user
+from .models import proxy
 
 
-@admin.register(BOJUser)
+@admin.register(proxy.BOJUser)
 class BOJUserModelAdmin(admin.ModelAdmin):
     list_display = [
-        BOJUser.field_name.USERNAME,
-        BOJUser.field_name.LEVEL,
-        BOJUser.field_name.RATING,
-        BOJUser.field_name.UPDATED_AT,
+        proxy.BOJUser.field_name.USERNAME,
+        proxy.BOJUser.field_name.LEVEL,
+        proxy.BOJUser.field_name.RATING,
+        proxy.BOJUser.field_name.UPDATED_AT,
     ]
     actions = [
         'update',
@@ -22,21 +18,21 @@ class BOJUserModelAdmin(admin.ModelAdmin):
     ]
 
     @admin.action(description="Schedule update selected BOJ user data. (via solved.ac API)")
-    def schedule_update(self, request: HttpRequest, queryset: QuerySet[BOJUser]):
+    def schedule_update(self, request, queryset: QuerySet[proxy.BOJUser]):
         for obj in queryset:
-            schedule_update_boj_user_data(obj.username)
+            obj.schedule_update()
 
     @admin.action(description="Update selected BOJ user data right now. (via solved.ac API)")
-    def update(self, request: HttpRequest, queryset: QuerySet[BOJUser]):
+    def update(self, request, queryset: QuerySet[proxy.BOJUser]):
         for obj in queryset:
-            update_boj_user(obj)
+            obj.update()
 
 
-@admin.register(BOJUserSnapshot)
+@admin.register(proxy.BOJUserSnapshot)
 class BOJUserSnapshotModelAdmin(admin.ModelAdmin):
     list_display = [
-        BOJUserSnapshot.field_name.USER,
-        BOJUserSnapshot.field_name.LEVEL,
-        BOJUserSnapshot.field_name.RATING,
-        BOJUserSnapshot.field_name.CREATED_AT,
+        proxy.BOJUserSnapshot.field_name.USER,
+        proxy.BOJUserSnapshot.field_name.LEVEL,
+        proxy.BOJUserSnapshot.field_name.RATING,
+        proxy.BOJUserSnapshot.field_name.CREATED_AT,
     ]

@@ -2,8 +2,6 @@ from django.core.validators import EmailValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from apps.boj.models import BOJUser
-from apps.boj.serializers import BOJUserSerializer
 from users.models import User
 from users.models import UserEmailVerification
 
@@ -11,7 +9,11 @@ from users.models import UserEmailVerification
 PK = 'id'
 
 
-# Username or Email Serializers
+class UserDTOSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    username = serializers.CharField()
+    profile_image = serializers.CharField()
+
 
 class UsabilityEmailField(serializers.Serializer):
     value = serializers.EmailField(read_only=True)
@@ -96,18 +98,7 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
 
 # User Serializers
 
-class BOJField(serializers.SerializerMethodField):
-    def to_representation(self, value: BOJUser):
-        return BOJUserSerializer(value).data
-
-    def get_attribute(self, instance: User) -> BOJUser:
-        assert isinstance(instance, User)
-        return BOJUser.objects.get_by_username(instance.boj_username)
-
-
 class SignInSerializer(serializers.ModelSerializer):
-    boj = BOJField()
-
     class Meta:
         model = User
         fields = [
@@ -118,7 +109,6 @@ class SignInSerializer(serializers.ModelSerializer):
             User.field_name.PROFILE_IMAGE,
             User.field_name.TOKEN,
             User.field_name.REFRESH_TOKEN,
-            'boj',
         ]
         extra_kwargs = {
             PK: {'read_only': True},
@@ -174,22 +164,17 @@ class UsernameSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    boj = BOJField()
-
     class Meta:
         model = User
         fields = [
             PK,
             User.field_name.USERNAME,
             User.field_name.PROFILE_IMAGE,
-            'boj',
         ]
         read_only_fields = ['__all__']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    boj = BOJField()
-
     class Meta:
         model = User
         fields = [
@@ -198,7 +183,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             User.field_name.PROFILE_IMAGE,
             User.field_name.USERNAME,
             User.field_name.BOJ_USERNAME,
-            'boj',
         ]
         extra_kwargs = {
             User.field_name.EMAIL: {'read_only': True},

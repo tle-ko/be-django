@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.db.models import QuerySet
 
-from apps.problems.models import Problem
 from apps.analyses.analyzers import schedule_analyze
+from apps.problems.models.proxy import Problem
 from users.models import User
 
 
