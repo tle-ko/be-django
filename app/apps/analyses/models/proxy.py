@@ -61,7 +61,7 @@ class ProblemAnalysisQuerySet(QuerySet):
 
     def create_from_dto(self, analysis_dto: dto.ProblemAnalysisRawDTO) -> ProblemAnalysis:
         analysis = ProblemAnalysis(**{
-            ProblemAnalysis.field_name.PROBLEM: analysis_dto.problem_id,
+            ProblemAnalysis.field_name.PROBLEM: ProblemDAO.objects.get(pk=analysis_dto.problem_id),
             ProblemAnalysis.field_name.TIME_COMPLEXITY: analysis_dto.time_complexity,
             ProblemAnalysis.field_name.DIFFICULTY: analysis_dto.difficulty,
             ProblemAnalysis.field_name.HINT: analysis_dto.hints,
