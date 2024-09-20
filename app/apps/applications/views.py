@@ -26,7 +26,7 @@ class CrewApplicantionAcceptAPIView(mixins.CrewApplicationUrlKwargMixin, generic
     def post(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.accept(self.request.user)
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(instance.as_dto())
         return Response(serializer.data)
 
 
@@ -38,5 +38,5 @@ class CrewApplicantionRejectAPIView(mixins.CrewApplicationUrlKwargMixin, generic
     def post(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.reject(self.request.user)
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(instance.as_dto())
         return Response(serializer.data)
