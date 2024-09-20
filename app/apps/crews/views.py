@@ -45,7 +45,7 @@ class CrewRetrieveUpdateAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveUpdat
 
     def get_object(self):
         if self.request.method == 'GET':
-            return self.get_crew().as_detail_dto()
+            return self.get_crew().as_detail_dto(self.request.user)
         return self.get_crew()
 
 
