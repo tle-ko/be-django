@@ -4,10 +4,12 @@ from typing import Union
 
 from django.db.models import Manager
 from django.db.models import QuerySet
+from django.db.transaction import atomic
 from django.dispatch import receiver
 from django.utils import timezone
 
 from apps.crews.models import CrewDAO
+from apps.crews.models import CrewMemberDAO
 from users.models import User
 
 from .. import dto
@@ -79,6 +81,13 @@ class CrewApplication(models.CrewApplicationDAO):
             created_at=self.created_at,
         )
 
+    def create_member(self) -> CrewMemberDAO:
+        return CrewMemberDAO.objects.create(**{
+            CrewMemberDAO.field_name.CREW: self.crew,
+            CrewMemberDAO.field_name.USER: self.applicant,
+            CrewMemberDAO.field_name.IS_CAPTAIN: False,
+        })
+
     def accept(self, reviewed_by: User):
         self.review(reviewed_by, is_accepted=True)
 
@@ -90,7 +99,13 @@ class CrewApplication(models.CrewApplicationDAO):
         self.is_accepted = is_accepted
         self.reviewed_by = reviewed_by
         self.reviewed_at = timezone.now()
-        self.save()
+        with atomic():
+            self.save()
+            if self.is_accepted:
+                self.create_member()
+                signals.accepted.send(sender=CrewApplication, instance=self)
+            else:
+                signals.rejected.send(sender=CrewApplication, instance=self)
         signals.reviewed.send(sender=CrewApplication, instance=self)
 
 
@@ -100,10 +115,11 @@ def notify_on_applied(sender, instance: CrewApplication, created: bool, **kwargs
         mail.notify_application_recieved(instance)
 
 
-@receiver(signals.reviewed, sender=CrewApplication)
-def notify_on_reviewed(sender, instance: CrewApplication, **kwargs):
-    assert not instance.is_pending
-    if instance.is_accepted:
-        mail.notify_application_accepted(instance)
-    else:
-        mail.notify_application_rejected(instance)
+@receiver(signals.accepted, sender=CrewApplication)
+def notify_on_accepted(sender, instance: CrewApplication, **kwargs):
+    mail.notify_application_accepted(instance)
+
+
+@receiver(signals.rejected, sender=CrewApplication)
+def notify_on_rejected(sender, instance: CrewApplication, **kwargs):
+    mail.notify_application_rejected(instance)
