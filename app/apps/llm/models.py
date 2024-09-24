@@ -6,10 +6,10 @@ from django.dispatch import receiver
 from apps.background_task.tasks import tasks
 from apps.problems.proxy import Problem
 
-from .. import dto
-from .. import proxy
 from . import base
+from . import dto
 from . import gemini
+from . import models
 
 
 logger = getLogger(__name__)
@@ -41,18 +41,18 @@ def analyze(problem_id: int):
     logger.info(f'{problem_dto.title} 문제의 분석 완료.')
     logger.info(f'{problem_dto.title} 문제의 분석 결과를 데이터베이스에 저장하는 중.')
     validate_analysis_dto_tags(analysis_dto)
-    proxy.ProblemAnalysis.objects.create_from_dto(analysis_dto)
+    models.ProblemAnalysis.objects.create_from_dto(analysis_dto)
     logger.info(f'{problem_dto.title} 문제의 분석 결과를 데이터베이스에 저장 완료.')
 
 
 def validate_analysis_dto_tags(analysis_dto: dto.ProblemAnalysisRawDTO):
     for tag_key in analysis_dto.tags:
         try:
-            proxy.ProblemTag.objects.get_by_key(tag_key)
-        except proxy.ProblemTag.DoesNotExist:
+            models.ProblemTag.objects.get_by_key(tag_key)
+        except models.ProblemTag.DoesNotExist:
             logger.warn(f'문제 분석 결과에 알 수 없는 태그 [{tag_key}] 가 포함된 것을 발견하였습니다.')
-            proxy.ProblemTag.objects.create(**{
-                proxy.ProblemTag.field_name.KEY: tag_key,
-                proxy.ProblemTag.field_name.NAME_KO: f'존재하지 않는 태그: [{tag_key}]',
-                proxy.ProblemTag.field_name.NAME_EN: f'존재하지 않는 태그: [{tag_key}]',
+            models.ProblemTag.objects.create(**{
+                models.ProblemTag.field_name.KEY: tag_key,
+                models.ProblemTag.field_name.NAME_KO: f'존재하지 않는 태그: [{tag_key}]',
+                models.ProblemTag.field_name.NAME_EN: f'존재하지 않는 태그: [{tag_key}]',
             })
