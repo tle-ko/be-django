@@ -51,10 +51,11 @@ INSTALLED_APPS = [
     "apps.boj",
     "apps.crews",
     "apps.activities",
-    "apps.applications",
-    "apps.submissions",
-    "apps.problems",
     "apps.analyses",
+    "apps.applications",
+    "apps.llms",
+    "apps.problems",
+    "apps.submissions",
 ]
 
 MIDDLEWARE = [
