@@ -12,3 +12,9 @@ class BOJUserDTOSerializer(serializers.Serializer):
     level = BOJLevelDTOSerializer()
     rating = serializers.IntegerField()
     updated_at = serializers.DateTimeField()
+
+
+class BOJTagDTOSerializer(serializers.Serializer):
+    key = serializers.CharField()
+    name_ko = serializers.CharField()
+    name_en = serializers.CharField()

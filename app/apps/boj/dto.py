@@ -23,3 +23,13 @@ class BOJUserDTO:
     level: BOJLevelDTO
     rating: int
     updated_at: datetime
+
+
+@dataclass
+class BOJTagDTO:
+    key: str
+    name_ko: str
+    name_en: str
+
+    def __hash__(self) -> int:
+        return hash(self.key)

@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import timedelta
 from json import JSONDecodeError
 from logging import getLogger
+from typing import Union
 
 from django.db.models import Manager
+from django.db.models import QuerySet
 from django.dispatch import receiver
 from django.utils import timezone
 from rest_framework import status
@@ -52,11 +54,11 @@ class BOJUser(models.BOJUserDAO):
 
     def as_dto(self) -> dto.BOJUserDTO:
         return dto.BOJUserDTO(
-            username = self.username,
-            profile_url = f'https://boj.kr/{self.username}',
-            level = dto.BOJLevelDTO(self.level),
-            rating = self.rating,
-            updated_at = self.updated_at,
+            username=self.username,
+            profile_url=f'https://boj.kr/{self.username}',
+            level=dto.BOJLevelDTO(self.level),
+            rating=self.rating,
+            updated_at=self.updated_at,
         )
 
     def create_snapshot(self) -> BOJUserSnapshot:
@@ -80,6 +82,36 @@ class BOJUser(models.BOJUserDAO):
 
 
 class BOJUserSnapshot(models.BOJUserSnapshotDAO):
+    class Meta:
+        proxy = True
+
+
+class BOJProblem(models.BOJProblemDAO):
+    class Meta:
+        proxy = True
+
+
+class BOJTagQuerySet(QuerySet):
+    def get_by_key(self, key: str) -> BOJTag:
+        return self.get(**{BOJTag.field_name.KEY: key})
+
+
+class BOJTag(models.BOJTagDAO):
+    objects: Union[BOJTagQuerySet, QuerySet[BOJTag]]
+    objects = Manager.from_queryset(BOJTagQuerySet)()
+
+    class Meta:
+        proxy = True
+
+    def as_dto(self) -> dto.BOJTagDTO:
+        return dto.BOJTagDTO(
+            key=self.key,
+            name_ko=self.name_ko,
+            name_en=self.name_en,
+        )
+
+
+class BOJTagRelation(models.BOJTagRelationDAO):
     class Meta:
         proxy = True
 
