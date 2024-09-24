@@ -16,6 +16,9 @@ class ProblemCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
 
+    def perform_create(self, serializer: serializers.ProblemDAOSerializer):
+        return serializer.save(created_by=self.request.user)
+
 
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """문제 상세 조회, 수정, 삭제 API.\n\n."""

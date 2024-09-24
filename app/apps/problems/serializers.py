@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from apps.analyses.serializers import ProblemAnalysisDTOSerializer
 from apps.analyses.serializers import ProblemTagDTOSerializer
+from users.models import User
 
 from . import models
 from . import proxy
@@ -62,11 +63,12 @@ class ProblemDAOSerializer(serializers.ModelSerializer):
         read_only_fields = [
             models.ProblemDAO.field_name.CREATED_BY,
         ]
-        extra_kwargs = {
-            models.ProblemDAO.field_name.CREATED_BY: {
-                'default': serializers.CurrentUserDefault(),
-            },
-        }
+
+    def save(self, created_by: User, **kwargs):
+        return super().save(**{
+            **kwargs,
+            models.ProblemDAO.field_name.CREATED_BY: created_by,
+        })
 
     @property
     def data(self):
