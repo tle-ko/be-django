@@ -33,6 +33,7 @@ class CrewDTO:
     name: str
     icon: str
     is_active: bool
+    is_recruiting: bool
     latest_activity: CrewActivityDTO
     member_count: CrewMemberCountDTO
     tags: List[CrewTagDTO]

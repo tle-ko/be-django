@@ -122,6 +122,7 @@ class Crew(models.CrewDAO):
             name=self.name,
             icon=self.icon,
             is_active=self.is_active,
+            is_recruiting=self.is_recruiting,
             latest_activity=self.latest_activity(),
             member_count=self.member_count(),
             tags=self.tags(),

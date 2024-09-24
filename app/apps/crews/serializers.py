@@ -33,6 +33,7 @@ class CrewDTOSerializer(serializers.Serializer):
     name = serializers.CharField()
     icon = serializers.CharField()
     is_active = serializers.BooleanField()
+    is_recruiting = serializers.BooleanField()
     latest_activity = CrewActivityDTOSerializer()
     member_count = CrewMemberCountDTOSerializer()
     tags = CrewTagDTOSerializer(many=True)
