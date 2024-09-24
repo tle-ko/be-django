@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from apps.activities.models.proxy import CrewActivity
-from apps.applications.models.proxy import CrewApplication
+from apps.activities.proxy import CrewActivity
+from apps.applications.proxy import CrewApplication
 from users.models import User
 
-from .models import proxy
+from . import proxy
 
 
 @admin.register(proxy.Crew)

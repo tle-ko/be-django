@@ -12,10 +12,10 @@ from apps.crews.models import CrewDAO
 from apps.crews.models import CrewMemberDAO
 from users.models import User
 
-from .. import dto
-from .. import mail
-from .. import models
-from .. import signals
+from . import dto
+from . import mail
+from . import models
+from . import signals
 
 
 class CrewApplicationQuerySet(QuerySet):

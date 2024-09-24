@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from apps.problems.models.proxy import Problem
+from apps.problems.proxy import Problem
 
-from .models import proxy
+from . import proxy
 
 
 @admin.register(proxy.ProblemAnalysis)

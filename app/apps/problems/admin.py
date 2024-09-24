@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 
 from apps.analyses.analyzers import schedule_analyze
 from apps.analyses.analyzers import analyze
-from apps.problems.models.proxy import Problem
+from apps.problems.proxy import Problem
 from users.models import User
 
 

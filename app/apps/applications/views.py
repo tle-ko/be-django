@@ -5,7 +5,7 @@ from . import models
 from . import mixins
 from . import permissions
 from . import serializers
-from .models import proxy
+from . import proxy
 
 
 class CrewApplicationCreateAPIView(generics.CreateAPIView):

@@ -6,7 +6,7 @@ import re
 from sympy import latex
 from sympy.parsing.latex import parse_latex
 
-from ...models import proxy
+from ... import proxy
 
 
 logger = getLogger(__name__)

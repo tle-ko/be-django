@@ -5,7 +5,7 @@ from django.db import models
 from apps.boj.enums import BOJLevel
 from users.models import User
 
-from .. import enums
+from . import enums
 
 
 class CrewDAO(models.Model):

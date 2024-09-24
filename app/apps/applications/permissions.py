@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from apps.crews.models.proxy import Crew
+from apps.crews.proxy import Crew
 from apps.crews.permissions import IsCaptain as _IsCaptain
 
 from . import models

@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from apps.crews.models.proxy import Crew
+from apps.crews.proxy import Crew
 
-from .models import proxy
+from . import proxy
 
 
 admin.site.register([

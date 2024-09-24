@@ -5,7 +5,7 @@ from rest_framework import serializers
 from apps.boj.serializers import BOJUserDTOSerializer
 from users.serializers import UserDTOSerializer
 
-from .models import proxy
+from . import proxy
 
 
 PK = 'id'

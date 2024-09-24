@@ -6,7 +6,7 @@ from apps.problems.serializers import ProblemStatisticDTOSerializer
 from . import mixins
 from . import permissions
 from . import serializers
-from .models import proxy
+from . import proxy
 
 
 class RecruitingCrewListAPIView(generics.ListAPIView):

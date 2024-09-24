@@ -13,7 +13,7 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .. import dto
+from . import dto
 
 
 def get_profile_image_path(user: User, filename: str) -> str:

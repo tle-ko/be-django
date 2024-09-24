@@ -2,11 +2,11 @@ from collections import Counter
 from typing import Iterable
 
 from apps.analyses.enums import ProblemDifficulty
-from apps.analyses.models.proxy import ProblemAnalysis
-from apps.analyses.models.proxy import ProblemAnalysisTag
+from apps.analyses.proxy import ProblemAnalysis
+from apps.analyses.proxy import ProblemAnalysisTag
 
 from . import dto
-from .models import proxy
+from . import proxy
 
 
 def create_statistics(problems: Iterable[proxy.Problem]) -> dto.ProblemStatisticDTO:

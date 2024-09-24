@@ -1,6 +1,6 @@
 from django.db import models
 
-from .. import enums
+from . import enums
 
 
 class BOJUserDAO(models.Model):

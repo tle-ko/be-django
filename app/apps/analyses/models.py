@@ -4,7 +4,7 @@ from django.db import models
 
 from apps.problems.models import ProblemDAO
 
-from .. import enums
+from . import enums
 
 
 class ProblemTagDAO(models.Model):

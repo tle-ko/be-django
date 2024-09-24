@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from apps.crews.enums import ProgrammingLanguageChoices
 from apps.crews.models import CrewDAO
-from apps.problems.models.proxy import Problem
+from apps.problems.proxy import Problem
 from users.models import User
 
 

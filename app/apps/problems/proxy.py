@@ -7,11 +7,11 @@ from typing import Union
 from django.db.models import Manager
 from django.db.models import QuerySet
 
-from apps.analyses.models.proxy import ProblemAnalysis
+from apps.analyses.proxy import ProblemAnalysis
 from users.models import User
 
-from .. import dto
-from .. import models
+from . import dto
+from . import models
 
 
 class ProblemQuerySet(QuerySet):

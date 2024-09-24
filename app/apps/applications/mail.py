@@ -4,13 +4,13 @@ from textwrap import dedent
 from typing import TYPE_CHECKING
 
 from apps.boj.enums import BOJLevel
-from apps.boj.models.proxy import BOJUser
+from apps.boj.proxy import BOJUser
 from apps.crews.models import CrewMemberDAO
 from common.mail import schedule_mail
 from users.models import User
 
 if TYPE_CHECKING:
-    from .models import proxy
+    from . import proxy
 
 
 def _get_captain(instance: proxy.CrewApplication) -> CrewMemberDAO:

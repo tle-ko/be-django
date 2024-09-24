@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from apps.boj.dto import BOJUserDTO
-from apps.boj.models.proxy import BOJUser
+from apps.boj.proxy import BOJUser
 from users.dto import UserDTO
 from users.models import User
 

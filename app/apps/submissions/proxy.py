@@ -8,8 +8,8 @@ from django.db.models import QuerySet
 from apps.activities.models import CrewActivityProblemDAO
 from users.models import User
 
-from .. import models
-from .. import dto
+from . import models
+from . import dto
 
 
 class SubmissionQuerySet(QuerySet):

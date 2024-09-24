@@ -6,7 +6,7 @@ from apps.analyses.serializers import ProblemAnalysisDTOSerializer
 from apps.analyses.serializers import ProblemTagDTOSerializer
 
 from . import models
-from .models import proxy
+from . import proxy
 
 
 PK = 'id'

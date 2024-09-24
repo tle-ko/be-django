@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http.request import HttpRequest
 
-from .models import proxy
+from . import proxy
 
 
 @admin.register(proxy.CrewApplication)

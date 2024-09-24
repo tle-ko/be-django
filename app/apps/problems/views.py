@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from common.pagination import LargeResultsSetPagination
 
 from . import serializers
-from .models import proxy
+from . import proxy
 
 
 class ProblemCreateAPIView(generics.CreateAPIView):

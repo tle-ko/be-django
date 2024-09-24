@@ -13,10 +13,10 @@ import requests
 from apps.background_task import background
 from users.models import User
 
-from .. import dto
-from .. import enums
-from .. import models
-from .. import signals
+from . import dto
+from . import enums
+from . import models
+from . import signals
 
 
 logger = getLogger(__name__)

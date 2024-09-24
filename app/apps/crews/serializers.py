@@ -7,7 +7,7 @@ from users.serializers import UserDTOSerializer
 
 from . import enums
 from . import models
-from .models import proxy
+from . import proxy
 
 
 PK = 'id'

@@ -4,10 +4,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.background_task.tasks import tasks
-from apps.problems.models.proxy import Problem
+from apps.problems.proxy import Problem
 
 from .. import dto
-from ..models import proxy
+from .. import proxy
 from . import base
 from . import gemini
 

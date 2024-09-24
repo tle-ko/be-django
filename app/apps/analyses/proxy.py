@@ -10,9 +10,9 @@ from django.db.transaction import atomic
 
 from apps.problems.models import ProblemDAO
 
-from .. import dto
-from .. import enums
-from .. import models
+from . import dto
+from . import enums
+from . import models
 
 
 class ProblemTagQuerySet(QuerySet):

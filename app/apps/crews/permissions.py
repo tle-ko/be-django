@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from apps.crews.models import CrewDAO
-from apps.crews.models.proxy import CrewMember
+from apps.crews.proxy import CrewMember
 
 
 class IsMember(IsAuthenticated):

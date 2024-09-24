@@ -10,11 +10,11 @@ from django.utils import timezone
 
 from apps.crews.models import CrewDAO
 from apps.submissions.dto import SubmissionDTO
-from apps.submissions.models.proxy import Submission
+from apps.submissions.proxy import Submission
 from users.models import User
 
-from .. import dto
-from .. import models
+from . import dto
+from . import models
 
 
 class CrewActivityManager(Manager):

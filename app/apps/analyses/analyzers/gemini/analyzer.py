@@ -4,8 +4,8 @@ from django.conf import settings
 from google import generativeai as genai
 
 from .. import base
-from . import prompts
 from . import parsers
+from . import prompts
 
 
 logger = getLogger(__name__)

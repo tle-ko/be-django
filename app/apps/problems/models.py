@@ -4,7 +4,7 @@ from django.db import models
 
 from users.models import User
 
-from .. import enums
+from . import enums
 
 
 class ProblemDAO(models.Model):
