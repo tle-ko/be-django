@@ -1,5 +1,10 @@
 systemctl stop uwsgi
 
+export BASEDIR=$(dirname $(dirname $(dirname "$0")))
+export PATH=$BASEDIR/venv/bin/:$PATH
+
+cd $BASEDIR/app
+
 # Make Snapshot of database
 ./manage.py dumpdata > "logs/db-snapshot-$(date '+%Y-%m-%d-%H%M%S').json"
 git pull
@@ -11,3 +16,4 @@ git restore '**/migrations/*'
 ./manage.py migrate
 
 systemctl restart uwsgi
+systemctl status uwsgi
