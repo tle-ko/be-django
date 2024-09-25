@@ -34,6 +34,13 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_superuser(self, *args, **kwargs):
+        user = self.create(*args, **kwargs)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return user
+
     def filter(self,
                email: Optional[str] = None,
                username: Optional[str] = None,
