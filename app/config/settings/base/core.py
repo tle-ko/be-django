@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     "apps.boj",
     "apps.crews",
     "apps.activities",
-    "apps.analyses",
     "apps.applications",
     "apps.llms",
     "apps.problems",

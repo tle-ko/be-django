@@ -1,11 +1,8 @@
 from collections import Counter
 from typing import Iterable
 
-from apps.analyses.enums import ProblemDifficulty
-from apps.analyses.proxy import ProblemAnalysis
-from apps.analyses.proxy import ProblemAnalysisTag
-
 from . import dto
+from . import enums
 from . import proxy
 
 
@@ -16,15 +13,15 @@ def create_statistics(problems: Iterable[proxy.Problem]) -> dto.ProblemStatistic
     for problem in problems:
         problem_count += 1
         try:
-            analysis = ProblemAnalysis.objects.get_by_problem(problem)
-        except ProblemAnalysis.DoesNotExist:
-            difficulty = ProblemDifficulty.UNDER_ANALYSIS
+            analysis = proxy.ProblemAnalysis.objects.get_by_problem(problem)
+        except proxy.ProblemAnalysis.DoesNotExist:
+            difficulty = enums.ProblemDifficulty.UNDER_ANALYSIS
             tags = []
         else:
-            difficulty = ProblemDifficulty(analysis.difficulty)
+            difficulty = enums.ProblemDifficulty(analysis.difficulty)
             tags = [
                 obj.as_dto()
-                for obj in ProblemAnalysisTag.objects.analysis(analysis).select_related(ProblemAnalysisTag.field_name.TAG)
+                for obj in proxy.ProblemAnalysisTag.objects.analysis(analysis).select_related(proxy.ProblemAnalysisTag.field_name.TAG)
             ]
         difficulty_count[difficulty] += 1
         for tag_dto in tags:
@@ -37,7 +34,7 @@ def create_statistics(problems: Iterable[proxy.Problem]) -> dto.ProblemStatistic
         return dto.ProblemStatisticDTO(
             problem_count=problem_count,
             difficulties=[
-                dto.ProblemDifficultyStaticDTO(
+                dto.enums.ProblemDifficultyStaticDTO(
                     difficulty=difficulty,
                     count=count,
                     ratio=count*ratio_denominator,
