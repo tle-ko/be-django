@@ -1,6 +1,8 @@
 import typing
 
+from django.db.models.signals import post_save
 from django.db.transaction import atomic
+from django.dispatch import receiver
 
 from apps.background_task.tasks import tasks
 from apps.boj.proxy import BOJTag

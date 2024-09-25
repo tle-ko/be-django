@@ -24,12 +24,29 @@ class ProblemModelAdmin(admin.ModelAdmin):
     ordering = ['-'+proxy.Problem.field_name.CREATED_AT]
     actions = [
         'action_schedule_analyze',
+        'action_copy',
     ]
 
     @admin.action(description="Schedule to analyze selected problems.")
     def action_schedule_analyze(self, request, queryset: QuerySet[proxy.Problem]):
         for obj in queryset:
             obj.analyze()
+
+    @admin.action(description="Create copies of selected problems.")
+    def action_copy(self, request, queryset: QuerySet[proxy.Problem]):
+        for obj in queryset:
+            proxy.Problem.objects.create(
+                title=obj.title,
+                link=obj.link,
+                description=obj.description,
+                input_description=obj.input_description,
+                output_description=obj.output_description,
+                memory_limit=obj.memory_limit,
+                memory_limit_unit=obj.memory_limit_unit,
+                time_limit=obj.time_limit,
+                time_limit_unit=obj.time_limit_unit,
+                created_by=obj.created_by,
+            )
 
 
 @admin.register(proxy.ProblemAnalysis)

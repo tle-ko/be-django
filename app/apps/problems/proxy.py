@@ -6,9 +6,7 @@ from typing import Union
 
 from django.db.models import Manager
 from django.db.models import QuerySet
-from django.db.models.signals import post_save
 from django.db.transaction import atomic
-from django.dispatch import receiver
 
 from apps.boj.proxy import BOJTag
 from users.models import User
@@ -87,12 +85,6 @@ class Problem(models.ProblemDAO):
             time_limit=dto.ProblemLimitDTO.second(self.time_limit),
             created_at=self.created_at,
         )
-
-
-@receiver(post_save, sender=models.ProblemDAO)
-def on_problem_created(sender, instance: models.ProblemDAO, created: bool, **kwargs):
-    if created:
-        analyzer.schedule_analysis(instance.pk)
 
 
 class ProblemAnalysisQuerySet(QuerySet):

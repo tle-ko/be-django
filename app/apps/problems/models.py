@@ -69,6 +69,11 @@ class ProblemDAO(models.Model):
     def __str__(self) -> str:
         return f'[{self.pk} : {self.title}]'
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from . import analyzer
+        analyzer.schedule_analysis(self.pk)
+
 
 class ProblemAnalysisDAO(models.Model):
     problem = models.ForeignKey(
