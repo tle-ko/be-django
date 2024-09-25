@@ -10,3 +10,13 @@ class SubmissionDTO:
     is_correct: bool
     submitted_at: datetime
     submitted_by: UserDTO
+
+
+@dataclass
+class SubmissionCommentDTO:
+    comment_id: int
+    content: str
+    line_number_start: int
+    line_number_end: int
+    created_at: datetime
+    created_by: UserDTO

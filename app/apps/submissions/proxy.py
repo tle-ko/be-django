@@ -6,6 +6,7 @@ from django.db.models import Manager
 from django.db.models import QuerySet
 
 from apps.activities.models import CrewActivityProblemDAO
+from users.dto import UserDTO
 from users.models import User
 
 from . import models
@@ -57,6 +58,13 @@ class Submission(models.SubmissionDAO):
             submitted_at=self.created_at,
             submitted_by=self.user.as_dto(),
         )
+    
+    def get_user_dto(self) -> UserDTO:
+        return self.user.as_dto()
+    
+    def comments(self) -> QuerySet[SubmissionComment]:
+        return SubmissionComment.objects.filter(submission=self)
+
 
 
 class SubmissionComment(models.SubmissionCommentDAO):

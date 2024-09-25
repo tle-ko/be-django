@@ -11,6 +11,7 @@ import apps.applications.urls
 import apps.crews.urls
 import apps.problems.urls
 import users.urls
+import apps.submissions.urls
 
 
 schema_view = get_schema_view(
@@ -31,6 +32,7 @@ urlpatterns = [
         *apps.activities.urls.urlpatterns,
         *apps.applications.urls.urlpatterns,
         *apps.crews.urls.urlpatterns,
+        *apps.submissions.urls.urlpatterns,
         *apps.problems.urls.urlpatterns,
         *users.urls.urlpatterns,
     ])),
