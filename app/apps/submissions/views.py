@@ -64,3 +64,40 @@ class SubmissionDetailAPIView(generics.RetrieveAPIView):
     serializer_class = SubmissionDetailSerializer
     lookup_field = 'id'
     queryset = Submission.objects.all()
+
+class DeleteSubmissionAPIView(generics.DestroyAPIView):
+    """
+    제출된 코드를 삭제하는 API
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Submission.objects.all()
+    lookup_field = 'id'
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_204_NO_CONTENT: 'No Content',
+            status.HTTP_404_NOT_FOUND: 'Submission not found.',
+        }
+    )
+    def delete(self, request, *args, **kwargs):
+        
+        return self.destroy(request, *args, **kwargs)
+    
+class DeleteCommentAPIView(generics.DestroyAPIView):
+    """
+    제출된 코드에 대한 댓글을 삭제하는 API
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SubmissionCommentSerializer
+    queryset = SubmissionComment.objects.all()
+    lookup_field = 'id'
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_204_NO_CONTENT: 'No Content',
+            status.HTTP_404_NOT_FOUND: 'Comment not found.',
+        }
+    )
+    def delete(self, request, *args, **kwargs):
+       
+        return self.destroy(request, *args, **kwargs)
