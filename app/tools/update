@@ -1,0 +1,13 @@
+systemctl stop uwsgi
+
+# Make Snapshot of database
+./manage.py dumpdata > "logs/db-snapshot-$(date '+%Y-%m-%d-%H%M%S').json"
+git pull
+
+# Update Database Scheme
+find . -type d -name migrations -exec rm -rf {} \;
+git restore '**/migrations/*'
+./manage.py makemigrations
+./manage.py migrate
+
+systemctl restart uwsgi
