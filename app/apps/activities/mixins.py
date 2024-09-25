@@ -10,3 +10,9 @@ class CrewActivityUrlKwargMixin:
 
     def get_activity(self: generics.GenericAPIView) -> proxy.CrewActivity:
         return CrewActivityUrlKwargMixin.queryset.objects.get(pk=self.kwargs[self.lookup_url_kwarg])
+
+
+class CrewActivityProblemUrlKwargMixin:
+    queryset = proxy.CrewActivityProblem
+    lookup_field = 'id'
+    lookup_url_kwarg = 'problem_id'
