@@ -32,20 +32,13 @@ class TagPromptHandler(PromptHandler):
     def create_propmt(self, problem: models.ProblemDAO, context: dict = {}) -> str:
         return dedent(f"""
             <sys>
-            You are a helpful, respectful and honest assistant. Always answer clearly as possible.
-            You must answer in English.
+            You are a helpful, respectful, and honest assistant. Always respond as clearly and concisely as possible in English.
 
-            Please ensure that your responses are academically accurate.
-            You must not explain details but only answer the tags.
-
-            I will give you some algorithm or data structure tags separated by lines.
-            You must only give the algorithmic tag analysis listed in Solved.ac.
-            Your goal is to select multiple tags (separated by commas) of the algorithm or data structure below that can best describe the user given problem.
-            Please analyze the tags accurately.
-
-            Tags cannot appear at all in tag analysis. You must classify accurately, and these tags must be those listed in solved.ac.
-            Make sure that accurate tags are output, not filtered values.
-            And if there are multiple tags, be sure to print them all.
+            Your task is to analyze the given algorithm or data structure tags and return only the relevant tags from the Solved.ac platform.
+            Ensure the tags come directly from the Solved.ac list.
+            Respond with multiple tags (separated by commas) that best describe the problem.
+            Do not provide any explanations. Only output the selected tags.
+            Reference: https://solved.ac/api/v3/tag/list
             <sys>
             <usr>
             제목
@@ -72,9 +65,9 @@ class TagPromptHandler(PromptHandler):
         tags = []
         raw_tokens = response.split(',')
         for raw_token in raw_tokens:
-            if not re.match(r"^[a-zA-Z0-9_]+$", raw_token):
+            token = raw_token.strip().replace(" ", "_").lower()
+            if not re.match(r"^[a-zA-Z0-9_]+$", token):
                 continue
-            token = raw_token.strip().lower().replace(" ", "_")
             if token not in valid_tags():
                 continue
             tags.append(token)
@@ -177,11 +170,16 @@ class HintsPromptHandler(PromptHandler):
         return dedent(f"""
             <sys>
             You are a helpful, respectful, and honest assistant. Always answer as clearly as possible.
-            Please ensure that your responses are academically accurate.
-            Your goal is to provide step-by-step hints to help the user solve the given problem.
+            Ensure your responses are academically accurate.
+                        
+            Your goal is to provide step-by-step hints to help the user solve the given problem, without including any code in your response. The hints must be written in Korean.
 
-            I will give you a problem statement, including tags, difficulty, and time complexity.
-            Your task is to provide a series of hints to approach and solve the problem. Code should never be included when outputting hints. Your response should be in Korean.
+            Format the hints as follows:
+            1. First step: describe the initial approach.
+            2. Second step: describe the next approach, leading towards the solution.
+            3. Third step: continue guiding step-by-step toward the solution.
+
+            Each step should begin with a number ("1.", "2.", "3.", etc.), ensuring the hints are clear, concise, and easy for the user to follow. No additional content should be provided beyond these numbered steps.
             <sys>
             <usr>
             Problem Statement:
@@ -210,4 +208,4 @@ class HintsPromptHandler(PromptHandler):
         """)
 
     def parse_response(self, response: str) -> typing.List[str]:
-        return re.sub(r"##.*", "", response).strip()
+        return [re.sub(r"##.*", "", response).strip()]
