@@ -58,10 +58,16 @@ class Submission(models.SubmissionDAO):
             submitted_at=self.created_at,
             submitted_by=self.user.as_dto(),
         )
-    
+
+    def as_detail_dto(self) -> dto.SubmissionDetailDTO:
+        return dto.SubmissionDetailDTO(
+            **self.as_dto().__dict__,
+            comments=[obj.as_dto() for obj in self.comments()],
+        )
+
     def get_user_dto(self) -> UserDTO:
         return self.user.as_dto()
-    
+
     def comments(self) -> QuerySet[SubmissionComment]:
         return SubmissionComment.objects.filter(submission=self)
 
@@ -70,3 +76,13 @@ class Submission(models.SubmissionDAO):
 class SubmissionComment(models.SubmissionCommentDAO):
     class Meta:
         proxy = True
+
+    def as_dto(self) -> dto.SubmissionCommentDTO:
+        return dto.SubmissionCommentDTO(
+            comment_id=self.pk,
+            content=self.content,
+            line_number_start=self.line_number_start,
+            line_number_end=self.line_number_end,
+            created_at=self.created_at,
+            created_by=self.created_by.as_dto(),
+        )

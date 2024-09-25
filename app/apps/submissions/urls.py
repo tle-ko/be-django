@@ -1,17 +1,10 @@
 from django.urls import path
-from .views import (
-    CreateSubmissionAPIView,
-    SubmissionDetailAPIView,
-    CreateCommentAPIView,
-    DeleteSubmissionAPIView,
-    DeleteCommentAPIView,
-)
+
+from . import views
 
 urlpatterns = [
-
-    path('submissions/', CreateSubmissionAPIView.as_view(), name='create-submission'),
-    path('submissions/<int:id>/', SubmissionDetailAPIView.as_view(), name='submission-detail'),
-    path('submissions/<int:id>/delete/', DeleteSubmissionAPIView.as_view(), name='delete-submission'),
-    path('submissions/<int:submission_id>/comments/', CreateCommentAPIView.as_view(), name='create-comment'),
-    path('submissions/<int:submission_id>/comments/<int:id>/delete/', DeleteCommentAPIView.as_view(), name='delete-comment'),
+    path('crew/activity/problem/<int:problem_id>/submission', views.SubmissionCreateAPIView.as_view()),
+    path('crew/activity/problem/submission/<int:submission_id>', views.SubmissionRetrieveDestroyAPIView.as_view()),
+    path('crew/activity/problem/submission/<int:submission_id>/comment', views.SubmissionCommentCreateAPIView.as_view()),
+    path('crew/activity/problem/submission/comment/<int:comment_id>', views.SubmissionCommentDestroyAPIView.as_view()),
 ]

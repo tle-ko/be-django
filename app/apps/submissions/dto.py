@@ -1,10 +1,11 @@
-from dataclasses import dataclass
 from datetime import datetime
+import dataclasses
+import typing
 
 from users.dto import UserDTO
 
 
-@dataclass
+@dataclasses.dataclass
 class SubmissionDTO:
     submission_id: int
     is_correct: bool
@@ -12,7 +13,7 @@ class SubmissionDTO:
     submitted_by: UserDTO
 
 
-@dataclass
+@dataclasses.dataclass
 class SubmissionCommentDTO:
     comment_id: int
     content: str
@@ -20,3 +21,8 @@ class SubmissionCommentDTO:
     line_number_end: int
     created_at: datetime
     created_by: UserDTO
+
+
+@dataclasses.dataclass
+class SubmissionDetailDTO(SubmissionDTO):
+    comments: typing.List[SubmissionCommentDTO] = dataclasses.field

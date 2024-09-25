@@ -1,42 +1,9 @@
 from rest_framework import serializers
-from .proxy import Submission, SubmissionComment
-from users.dto import UserDTO
-from users.models import User
-from users.serializers import UserSerializer
+
 from users.serializers import UserDTOSerializer
-from .dto import SubmissionDTO
 
+from . import proxy
 
-class SubmissionSerializer(serializers.ModelSerializer):
-    """
-    문제에 대한 코드를 제출하는 Serializer
-    """
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Submission
-        fields = ['problem', 'user', 'code', 'language', 'is_correct', 'is_help_needed']
-        ref_name = 'SubmissionSerializer'
-
-class SubmissionCommentSerializer(serializers.ModelSerializer):
-    """
-    제출된 코드에 대한 리뷰 댓글 Serializer
-    """
-    created_by = UserSerializer()
-
-    class Meta:
-        model = SubmissionComment
-        fields = ['id', 'line_number_start', 'line_number_end', 'content', 'created_by', 'created_at']
-        ref_name = 'SubmissionCommentSerializer'
-
-class SubmissionDetailSerializer(serializers.ModelSerializer):
-    comments = SubmissionCommentSerializer(many=True)  # Submission과 관련된 댓글들
-    user = UserDTOSerializer(source='get_user_dto')  
-
-    class Meta:
-        model = Submission  # Django의 Submission 모델을 사용
-        fields = ['id', 'problem', 'code', 'language', 'is_correct', 'is_help_needed', 'created_at', 'user', 'comments']
-        ref_name = 'SubmissionDetailSerializer' 
 
 class SubmissionDTOSerializer(serializers.Serializer):
     submission_id = serializers.IntegerField()
@@ -44,23 +11,49 @@ class SubmissionDTOSerializer(serializers.Serializer):
     submitted_at = serializers.DateTimeField()
     submitted_by = UserDTOSerializer()
 
+
+class SubmissionCommentDTOSerializer(serializers.Serializer):
+    comment_id = serializers.IntegerField()
+    content = serializers.CharField()
+    line_number_start = serializers.IntegerField()
+    line_number_end = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+    created_by = UserDTOSerializer()
+
+
+class SubmissionDetailDTOSerializer(SubmissionDTOSerializer):
+    comments = SubmissionCommentDTOSerializer(many=True)
+
+
+class SubmissionDAOSerializer(serializers.ModelSerializer):
     class Meta:
-        ref_name = 'SubmissionDTOSerializer'
+        model = proxy.Submission
+        fields = [
+            proxy.Submission.field_name.CODE,
+            proxy.Submission.field_name.USER,
+            proxy.Submission.field_name.LANGUAGE,
+            proxy.Submission.field_name.IS_CORRECT,
+        ]
+        extra_kwargs = {
+            proxy.Submission.field_name.USER: {'read_only': True},
+        }
 
-class SubmissionCommentSerializer(serializers.ModelSerializer):
-    """
-    제출된 코드에 대한 리뷰 댓글 Serializer
-    """
-    created_by = UserSerializer(read_only=True)
+    @property
+    def data(self):
+        self.instance: proxy.Submission
+        return SubmissionDetailDTOSerializer(self.instance.as_detail_dto()).data
 
+
+class SubmissionCommentDAOSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubmissionComment
-        fields = ['id', 'line_number_start', 'line_number_end', 'content', 'created_by', 'created_at']
+        model = proxy.SubmissionComment
+        fields = [
+            proxy.SubmissionComment.field_name.CONTENT,
+            proxy.SubmissionComment.field_name.LINE_NUMBER_START,
+            proxy.SubmissionComment.field_name.LINE_NUMBER_END,
+        ]
 
-    def create(self, validated_data):
-        # 댓글 생성 시 created_by와 submission을 저장합니다.
-        return SubmissionComment.objects.create(
-            created_by=validated_data.pop('created_by'),
-            submission=validated_data.pop('submission'),
-            **validated_data
-        )
+    @property
+    def data(self):
+        self.instance: proxy.SubmissionComment
+        return SubmissionCommentDTOSerializer(self.instance.as_dto()).data
