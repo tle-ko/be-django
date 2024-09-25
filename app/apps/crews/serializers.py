@@ -80,7 +80,8 @@ class CrewDAOSerializer(serializers.ModelSerializer):
 
     @property
     def data(self):
-        return proxy.Crew.as_dto(self.instance)
+        obj: proxy.Crew = proxy.Crew.objects.get(pk=self.instance.pk)
+        return CrewDTOSerializer(obj.as_dto()).data
 
     def save(self, **kwargs):
         return super().save(**kwargs)
