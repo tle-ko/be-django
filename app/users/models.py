@@ -93,6 +93,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['username']
 
     class field_name:
+        PK = 'pk'
         PROFILE_IMAGE = 'profile_image'
         USERNAME = 'username'
         EMAIL = 'email'
