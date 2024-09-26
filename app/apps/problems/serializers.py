@@ -32,13 +32,23 @@ class ProblemDTOSerializer(serializers.Serializer):
     analysis = ProblemAnalysisDTOSerializer()
 
 
+class UnitDTOSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.CharField()
+
+
+class ProblemLimitDTOSerializer(serializers.Serializer):
+    value = serializers.FloatField()
+    unit = UnitDTOSerializer()
+
+
 class ProblemDetailDTOSerializer(ProblemDTOSerializer):
     link = serializers.URLField()
     description = serializers.CharField()
     input_description = serializers.CharField()
     output_description = serializers.CharField()
-    memory_limit = serializers.FloatField()
-    time_limit = serializers.FloatField()
+    memory_limit = ProblemLimitDTOSerializer()
+    time_limit = ProblemLimitDTOSerializer()
     created_at = serializers.DateTimeField()
 
 
@@ -85,9 +95,8 @@ class ProblemDAOSerializer(serializers.ModelSerializer):
 
     @property
     def data(self):
-        self.instance: models.ProblemDAO
-        obj = proxy.Problem.objects.get(pk=self.instance.pk)
-        return asdict(obj.as_detail_dto())
+        self.instance = proxy.Problem.objects.get(pk=self.instance.pk)
+        return ProblemDetailDTOSerializer(self.instance.as_detail_dto()).data
 
 
 class ProblemSearchQueryParamSerializer(serializers.Serializer):
