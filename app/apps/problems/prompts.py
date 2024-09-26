@@ -180,6 +180,8 @@ class HintsPromptHandler(PromptHandler):
             3. Third step: continue guiding step-by-step toward the solution.
 
             Each step should begin with a number ("1.", "2.", "3.", etc.), ensuring the hints are clear, concise, and easy for the user to follow. No additional content should be provided beyond these numbered steps.
+                      
+            Please ensure the hints are provided using the same format, separated by `\n`, to allow easy parsing on the client side.
             <sys>
             <usr>
             Problem Statement:
@@ -208,4 +210,5 @@ class HintsPromptHandler(PromptHandler):
         """)
 
     def parse_response(self, response: str) -> typing.List[str]:
-        return [re.sub(r"##.*", "", response).strip()]
+        cleaned_response = re.sub(r"##.*", "", response).strip()  # ## 이후 부분 제거
+        return cleaned_response.split('\n')  # \n을 기준으로 분리하여 리스트로 반환
