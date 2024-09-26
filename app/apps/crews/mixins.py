@@ -1,12 +1,18 @@
-from rest_framework import generics
+from rest_framework.generics import GenericAPIView
 
+from . import dto
 from . import proxy
 
 
-class CrewUrlKwargMixin:
+class CrewUrlKwargMixin(GenericAPIView):
     queryset = proxy.Crew
     lookup_field = 'id'
     lookup_url_kwarg = 'crew_id'
 
-    def get_crew(self: generics.GenericAPIView) -> proxy.Crew:
-        return CrewUrlKwargMixin.queryset.objects.get(pk=self.kwargs[self.lookup_url_kwarg])
+    def get_object(self) -> proxy.Crew:
+        return super().get_object()
+
+
+class CrewDTOUrlKwargMixin(CrewUrlKwargMixin):
+    def get_object(self) -> dto.CrewDTO:
+        return super().get_object().as_dto()
