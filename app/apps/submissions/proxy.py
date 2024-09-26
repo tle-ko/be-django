@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
+import typing
 
 from django.db.models import Manager
 from django.db.models import QuerySet
@@ -17,7 +17,7 @@ class SubmissionQuerySet(QuerySet):
     def filter(self,
                problem: CrewActivityProblemDAO = None,
                submitted_by: User = None,
-               **kwargs) -> Union[SubmissionQuerySet, QuerySet[Submission]]:
+               **kwargs) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
         return self._kwargs_filtering(
             super().filter,
             problem=problem,
@@ -25,10 +25,10 @@ class SubmissionQuerySet(QuerySet):
             **kwargs,
         )
 
-    def problem(self, problem: CrewActivityProblemDAO) -> Union[SubmissionQuerySet, QuerySet[Submission]]:
+    def problem(self, problem: CrewActivityProblemDAO) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
         return self.filter(problem=problem)
 
-    def submitted_by(self, submitted_by: User) -> Union[SubmissionQuerySet, QuerySet[Submission]]:
+    def submitted_by(self, submitted_by: User) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
         return self.filter(submitted_by=submitted_by)
 
     def _kwargs_filtering(self,
@@ -57,6 +57,7 @@ class Submission(models.SubmissionDAO):
             is_correct=self.is_correct,
             submitted_at=self.created_at,
             submitted_by=self.user.as_dto(),
+            reviewers=self.reviewers(),
         )
 
     def as_detail_dto(self) -> dto.SubmissionDetailDTO:
@@ -71,6 +72,12 @@ class Submission(models.SubmissionDAO):
     def comments(self) -> QuerySet[SubmissionComment]:
         return SubmissionComment.objects.filter(submission=self)
 
+    def reviewers(self) -> typing.List[UserDTO]:
+        reviewer_id_list = models.SubmissionCommentDAO.objects \
+            .filter(**{models.SubmissionCommentDAO.field_name.SUBMISSION: self}) \
+            .values_list(models.SubmissionCommentDAO.field_name.CREATED_BY, flat=True) \
+            .distinct()
+        return [obj.as_dto() for obj in User.objects.filter(pk__in=reviewer_id_list)]
 
 
 class SubmissionComment(models.SubmissionCommentDAO):

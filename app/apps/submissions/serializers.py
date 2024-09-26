@@ -10,6 +10,7 @@ class SubmissionDTOSerializer(serializers.Serializer):
     is_correct = serializers.BooleanField()
     submitted_at = serializers.DateTimeField()
     submitted_by = UserDTOSerializer()
+    reviewers = UserDTOSerializer(many=True)
 
 
 class SubmissionCommentDTOSerializer(serializers.Serializer):

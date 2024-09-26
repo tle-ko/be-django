@@ -11,6 +11,7 @@ class SubmissionDTO:
     is_correct: bool
     submitted_at: datetime
     submitted_by: UserDTO
+    reviewers: typing.List[UserDTO]
 
 
 @dataclasses.dataclass
