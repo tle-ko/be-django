@@ -46,8 +46,8 @@ class CrewActivityRetrieveUpdateAPIView(mixins.CrewActivityUrlKwargMixin, generi
 
 class CrewActivityProblemRetrieveAPIView(mixins.CrewActivityProblemUrlKwargMixin, generics.RetrieveAPIView):
     """크루 활동 문제 상세 조회 API.\n\n."""
-    serializer_class = serializers.CrewActivityProblemExtraDetailDTOSerializer
+    serializer_class = serializers.CrewActivityProblemDetailDTOSerializer
     permission_classes = [permissions.IsMemberAndReadOnly]
 
     def get_object(self):
-        return mixins.CrewActivityProblemUrlKwargMixin.get_object(self).as_extra_detail_dto(self.request.user)
+        return super().get_object().as_detail_dto()

@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 
 from apps.problems.dto import ProblemDTO
+from apps.problems.dto import ProblemDetailDTO
 from apps.submissions.dto import SubmissionDTO
 
 
@@ -16,12 +17,14 @@ class CrewActivityProblemDTO(ProblemDTO):
 
 
 @dataclass
-class CrewActivityProblemDetailDTO(CrewActivityProblemDTO):
-    submissions: List[SubmissionDTO]
+class CrewActivityProblemDetailDTO(ProblemDetailDTO):
+    problem_ref_id: int  # 원본 문제 ID
+    order: int  # 문제 번호
 
 
 @dataclass
-class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDetailDTO):
+class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDTO):
+    submissions: List[SubmissionDTO]
     my_submission: Optional[SubmissionDTO]
 
 

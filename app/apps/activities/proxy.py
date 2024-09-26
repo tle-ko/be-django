@@ -116,14 +116,18 @@ class CrewActivityProblem(models.CrewActivityProblemDAO):
         return obj
 
     def as_detail_dto(self) -> dto.CrewActivityProblemDetailDTO:
-        return dto.CrewActivityProblemDetailDTO(
-            **self.as_dto().__dict__,
-            submissions=self.submissions(),
+        obj = dto.CrewActivityProblemDetailDTO(
+            **self.problem.as_detail_dto().__dict__,
+            problem_ref_id=self.problem.pk,
+            order=self.order,
         )
+        obj.problem_id = self.pk
+        return obj
 
     def as_extra_detail_dto(self, user: User) -> dto.CrewActivityProblemExtraDetailDTO:
         return dto.CrewActivityProblemExtraDetailDTO(
-            **self.as_detail_dto().__dict__,
+            **self.as_dto().__dict__,
+            submissions=self.submissions(),
             my_submission=self.submission_of_user(user),
         )
 
