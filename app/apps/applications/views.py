@@ -30,6 +30,7 @@ class CrewApplicationCreateAPIView(generics.CreateAPIView):
 class CrewApplicantionAcceptAPIView(mixins.CrewApplicationUrlKwargMixin, generics.GenericAPIView):
     """크루 가입 수락 API.\n\n."""
     permission_classes = [permissions.IsCaptain]
+    serializer_class = serializers.serializers.Serializer
 
     @swagger_auto_schema(responses={200: serializers.CrewApplicationDTOSerializer})
     def post(self, request, *args, **kwargs):
@@ -41,6 +42,7 @@ class CrewApplicantionAcceptAPIView(mixins.CrewApplicationUrlKwargMixin, generic
 class CrewApplicantionRejectAPIView(mixins.CrewApplicationUrlKwargMixin, generics.GenericAPIView):
     """크루 가입 거부 API.\n\n."""
     permission_classes = [permissions.IsCaptain]
+    serializer_class = serializers.serializers.Serializer
 
     @swagger_auto_schema(responses={200: serializers.CrewApplicationDTOSerializer})
     def post(self, request, *args, **kwargs):
