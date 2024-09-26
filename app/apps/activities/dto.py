@@ -18,6 +18,10 @@ class CrewActivityProblemDTO(ProblemDTO):
 @dataclass
 class CrewActivityProblemDetailDTO(CrewActivityProblemDTO):
     submissions: List[SubmissionDTO]
+
+
+@dataclass
+class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDetailDTO):
     my_submission: Optional[SubmissionDTO]
 
 
@@ -46,4 +50,9 @@ class CrewActivityDTO:
 
 @dataclass
 class CrewActivityDetailDTO(CrewActivityDTO):
-    problems: List[CrewActivityProblemDetailDTO]
+    problems: List[CrewActivityProblemDTO]
+
+
+@dataclass
+class CrewActivityExtraDetailDTO(CrewActivityDTO):
+    problems: List[CrewActivityProblemExtraDetailDTO]

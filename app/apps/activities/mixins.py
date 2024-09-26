@@ -1,5 +1,7 @@
 from rest_framework.generics import GenericAPIView
 
+from apps.crews.mixins import CrewUrlKwargMixin
+
 from . import proxy
 
 

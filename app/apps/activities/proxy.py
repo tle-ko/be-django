@@ -54,7 +54,7 @@ class CrewActivity(models.CrewActivityDAO):
     def problems(self) -> QuerySet[CrewActivityProblem]:
         return CrewActivityProblem.objects.filter(activity=self)
 
-    def problem_details(self, user: User) -> List[dto.CrewActivityDetailDTO]:
+    def problem_details(self, user: User) -> List[dto.CrewActivityExtraDetailDTO]:
         return CrewActivityProblem.objects.filter(activity=self).as_detail_dto(user)
 
     def as_dto(self) -> dto.CrewActivityDTO:
@@ -68,10 +68,16 @@ class CrewActivity(models.CrewActivityDAO):
             has_ended=self.has_ended(),
         )
 
-    def as_detail_dto(self, user: User) -> dto.CrewActivityDetailDTO:
+    def as_detail_dto(self) -> dto.CrewActivityDetailDTO:
         return dto.CrewActivityDetailDTO(
             **self.as_dto().__dict__,
-            problems=[obj.as_detail_dto(user) for obj in self.problems().all()],
+            problems=[obj.as_dto() for obj in self.problems()],
+        )
+
+    def as_extra_detail_dto(self, user: User) -> dto.CrewActivityExtraDetailDTO:
+        return dto.CrewActivityExtraDetailDTO(
+            **self.as_dto().__dict__,
+            problems=[obj.as_extra_detail_dto(user) for obj in self.problems()],
         )
 
 
@@ -89,8 +95,8 @@ class CrewActivityQuerySet(QuerySet):
             kwargs[CrewActivityProblem.field_name.ACTIVITY] = activity
         return super().filter(*args, **kwargs)
 
-    def as_detail_dto(self: QuerySet[CrewActivityProblem], user: User) -> List[dto.CrewActivityProblemDetailDTO]:
-        return [obj.as_detail_dto(user) for obj in self]
+    def as_detail_dto(self: QuerySet[CrewActivityProblem], user: User) -> List[dto.CrewActivityProblemExtraDetailDTO]:
+        return [obj.as_extra_detail_dto(user) for obj in self]
 
 
 class CrewActivityProblem(models.CrewActivityProblemDAO):
@@ -109,10 +115,15 @@ class CrewActivityProblem(models.CrewActivityProblemDAO):
         obj.problem_id = self.pk
         return obj
 
-    def as_detail_dto(self, user: User) -> dto.CrewActivityProblemDetailDTO:
+    def as_detail_dto(self) -> dto.CrewActivityProblemDetailDTO:
         return dto.CrewActivityProblemDetailDTO(
             **self.as_dto().__dict__,
             submissions=self.submissions(),
+        )
+
+    def as_extra_detail_dto(self, user: User) -> dto.CrewActivityProblemExtraDetailDTO:
+        return dto.CrewActivityProblemExtraDetailDTO(
+            **self.as_detail_dto().__dict__,
             my_submission=self.submission_of_user(user),
         )
 
