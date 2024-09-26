@@ -1,18 +1,24 @@
+from django.http import HttpRequest
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
+from rest_framework.permissions import SAFE_METHODS
 
-from apps.crews.models import CrewDAO
-from apps.crews.proxy import CrewMember
+from . import proxy
+from . import models
 
 
 class IsMember(IsAuthenticated):
-    def has_object_permission(self, request: Request, view, obj: CrewDAO):
-        assert isinstance(obj, CrewDAO)
-        return CrewMember.objects.filter(crew=obj, user=request.user).exists()
+    def has_object_permission(self, request: HttpRequest, view, obj: models.CrewDAO):
+        assert isinstance(obj, models.CrewDAO)
+        return proxy.CrewMember.objects.filter(crew=obj, user=request.user).exists()
+
+
+class IsMemberAndReadOnly(IsMember):
+    def has_permission(self, request: HttpRequest, view) -> bool:
+        return super().has_permission(request, view) and (request.method in SAFE_METHODS)
 
 
 class IsCaptain(IsAuthenticated):
-    def has_object_permission(self, request: Request, view, obj: CrewDAO) -> bool:
-        assert isinstance(obj, CrewDAO)
-        return CrewMember.objects.filter(crew=obj, user=request.user, is_captain=True).exists()
+    def has_object_permission(self, request: HttpRequest, view, obj: models.CrewDAO) -> bool:
+        assert isinstance(obj, models.CrewDAO)
+        return proxy.CrewMember.objects.filter(crew=obj, user=request.user, is_captain=True).exists()

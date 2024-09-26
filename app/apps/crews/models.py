@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from django.contrib import admin
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -68,6 +71,7 @@ class CrewDAO(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
+        PK = 'pk'
         NAME = 'name'
         ICON = 'icon'
         MAX_MEMBERS = 'max_members'
@@ -80,8 +84,16 @@ class CrewDAO(models.Model):
         CREATED_BY = 'created_by'
         UPDATED_AT = 'updated_at'
 
+    class method_name:
+        GET_DISPLAY_NAME = 'get_display_name'
+
     class Meta:
+        verbose_name = 'Crew'
+        verbose_name_plural = 'Crews'
         ordering = ['-updated_at']
+
+    def __str__(self) -> str:
+        return f'[{self.pk} : {self.icon} "{self.name}"]'
 
     def save(self, *args, **kwargs):
         retval = super().save(*args, **kwargs)
@@ -94,8 +106,9 @@ class CrewDAO(models.Model):
             })
         return retval
 
-    def __str__(self) -> str:
-        return f'[{self.pk} : {self.icon} "{self.name}"]'
+    @admin.display(description='Display Name')
+    def get_display_name(self) -> str:
+        return f'{self.icon} {self.name}'
 
 
 class CrewMemberDAO(models.Model):
@@ -116,12 +129,15 @@ class CrewMemberDAO(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class field_name:
+        PK = 'pk'
         CREW = 'crew'
         USER = 'user'
         IS_CAPTAIN = 'is_captain'
         CREATED_AT = 'created_at'
 
     class Meta:
+        verbose_name = 'Crew Member'
+        verbose_name_plural = 'Crew Members'
         constraints = [
             models.UniqueConstraint(
                 fields=['crew', 'user'],
@@ -145,10 +161,13 @@ class CrewSubmittableLanguageDAO(models.Model):
     )
 
     class field_name:
+        PK = 'pk'
         CREW = 'crew'
         LANGUAGE = 'language'
 
     class Meta:
+        verbose_name = 'Crew Submittable Language'
+        verbose_name_plural = 'Crew Submittable Languages'
         ordering = ['crew']
 
     def __str__(self) -> str:

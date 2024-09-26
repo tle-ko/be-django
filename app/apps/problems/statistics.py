@@ -34,7 +34,7 @@ def create_statistics(problems: Iterable[proxy.Problem]) -> dto.ProblemStatistic
         return dto.ProblemStatisticDTO(
             problem_count=problem_count,
             difficulties=[
-                dto.enums.ProblemDifficultyStaticDTO(
+                dto.ProblemDifficultyStaticDTO(
                     difficulty=difficulty,
                     count=count,
                     ratio=count*ratio_denominator,

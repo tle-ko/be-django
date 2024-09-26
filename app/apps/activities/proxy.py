@@ -126,8 +126,3 @@ class CrewActivityProblem(models.CrewActivityProblemDAO):
             return None
         else:
             return obj.as_dto()
-
-
-class CrewActivitySubmission(models.CrewActivitySubmissionDAO):
-    class Meta:
-        proxy = True

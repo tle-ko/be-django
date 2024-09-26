@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from apps.activities.serializers import CrewActivityDTOSerializer
 
+from users.models import User
 from users.serializers import UserDTOSerializer
 
 from . import enums
@@ -80,8 +81,9 @@ class CrewDAOSerializer(serializers.ModelSerializer):
 
     @property
     def data(self):
-        obj: proxy.Crew = proxy.Crew.objects.get(pk=self.instance.pk)
-        return CrewDTOSerializer(obj.as_dto()).data
+        instance: proxy.Crew = proxy.Crew.objects.get(pk=self.instance.pk)
+        dto = instance.as_detail_dto(self.context['request'].user)
+        return CrewDetailDTOSerializer(dto).data
 
     def save(self, **kwargs):
         return super().save(**kwargs)
