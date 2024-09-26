@@ -3,6 +3,8 @@ from rest_framework import serializers
 from apps.problems.serializers import ProblemDTOSerializer
 from apps.submissions.serializers import SubmissionDTOSerializer
 
+from . import proxy
+
 
 class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
     problem_ref_id = serializers.IntegerField()
@@ -26,3 +28,18 @@ class CrewActivityDTOSerializer(serializers.Serializer):
 
 class CrewActivityDetailDTOSerializer(CrewActivityDTOSerializer):
     problems = CrewActivityProblemDetailDTOSerializer(many=True)
+
+
+class CrewActivityDAOSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = proxy.CrewActivity
+        fields = [
+            proxy.CrewActivity.field_name.NAME,
+            proxy.CrewActivity.field_name.START_AT,
+            proxy.CrewActivity.field_name.END_AT,
+        ]
+
+    @property
+    def data(self):
+        self.instance: proxy.CrewActivity
+        return CrewActivityDTOSerializer(self.instance.as_dto()).data

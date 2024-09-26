@@ -9,4 +9,12 @@ class CrewActivityRetrieveAPIView(mixins.CrewActivityUrlKwargMixin, generics.Ret
     serializer_class = serializers.CrewActivityDetailDTOSerializer
 
     def get_object(self):
-        return self.get_activity().as_detail_dto(self.request.user)
+        return mixins.CrewActivityUrlKwargMixin.get_object(self).as_detail_dto(self.request.user)
+
+
+class CrewActivityProblemRetrieveAPIView(mixins.CrewActivityProblemUrlKwargMixin, generics.RetrieveAPIView):
+    """크루 활동 문제 상세 조회 API.\n\n."""
+    serializer_class = serializers.CrewActivityProblemDetailDTOSerializer
+
+    def get_object(self):
+        return mixins.CrewActivityProblemUrlKwargMixin.get_object(self).as_detail_dto(self.request.user)

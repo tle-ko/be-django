@@ -1,4 +1,6 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import status
 
 from apps.applications.serializers import CrewApplicationDTOSerializer
 from apps.problems.serializers import ProblemStatisticDTOSerializer
@@ -33,44 +35,29 @@ class CrewCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.CrewDAOSerializer
 
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class CrewRetrieveUpdateAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveUpdateAPIView):
-    """크루 대시보드 홈 API.\n\n."""
-    permission_classes = [permissions.IsMember]
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return serializers.CrewDetailDTOSerializer
-        return serializers.CrewDAOSerializer
-
-    def get_object(self):
-        if self.request.method == 'GET':
-            return self.get_crew().as_detail_dto(self.request.user)
-        return self.get_crew()
-
-
-class CrewUpdateAPIView(mixins.CrewUrlKwargMixin, generics.UpdateAPIView):
-    """크루 수정 API.\n\n."""
-    permission_classes = [permissions.IsCaptain]
+    """크루 상세 조회/수정 API.\n\n대시보드에 사용된다.."""
+    permission_classes = [permissions.IsCaptain |
+                          permissions.IsMemberAndReadOnly]
     serializer_class = serializers.CrewDAOSerializer
 
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class CrewApplicationListAPIView(mixins.CrewUrlKwargMixin, generics.ListAPIView):
-    """크루 가입 신청 목록 API.\n\n."""
-    permission_classes = [permissions.IsCaptain]
-    serializer_class = CrewApplicationDTOSerializer
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
 
-    def get_queryset(self):
-        return self.get_crew().applications()
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
-
-class CrewMemberListAPIView(mixins.CrewUrlKwargMixin, generics.ListAPIView):
-    """크루 멤버 목록 API.\n\n."""
-    permission_classes = [permissions.IsMember]
-    serializer_class = serializers.CrewMemberDTOSerializer
-
-    def get_queryset(self):
-        return self.get_crew().members()
 
 
 class CrewStatisticsAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
@@ -80,4 +67,4 @@ class CrewStatisticsAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
     serializer_class = ProblemStatisticDTOSerializer
 
     def get_object(self):
-        return self.get_crew().statistics()
+        return super().get_object().statistics()

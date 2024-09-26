@@ -7,7 +7,6 @@ from . import proxy
 
 admin.site.register([
     proxy.CrewActivityProblem,
-    proxy.CrewActivitySubmission,
 ])
 
 
