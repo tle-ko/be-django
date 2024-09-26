@@ -63,6 +63,7 @@ class Submission(models.SubmissionDAO):
     def as_detail_dto(self) -> dto.SubmissionDetailDTO:
         return dto.SubmissionDetailDTO(
             **self.as_dto().__dict__,
+            code=self.code,
             comments=[obj.as_dto() for obj in self.comments()],
         )
 

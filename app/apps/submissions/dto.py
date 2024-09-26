@@ -26,4 +26,5 @@ class SubmissionCommentDTO:
 
 @dataclasses.dataclass
 class SubmissionDetailDTO(SubmissionDTO):
-    comments: typing.List[SubmissionCommentDTO] = dataclasses.field
+    code: str
+    comments: typing.List[SubmissionCommentDTO] = dataclasses.field(default_factory=list)
