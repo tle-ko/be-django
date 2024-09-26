@@ -15,5 +15,7 @@ git restore '**/migrations/*'
 ./manage.py makemigrations
 ./manage.py migrate
 
+sleep 5  # wait for port to be released
+
 systemctl restart uwsgi
 systemctl status uwsgi
