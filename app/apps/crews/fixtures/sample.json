@@ -1,0 +1,83 @@
+[
+    {
+        "model": "crews.crew",
+        "pk": 1,
+        "fields": {
+            "name": "코딩메리호",
+            "icon": "🚢",
+            "max_members": 8,
+            "notice": "공지사항 테스트입니다.",
+            "custom_tags": [
+                "삼성코테준비",
+                "상명인 모여라"
+            ],
+            "min_boj_level": 6,
+            "is_recruiting": true,
+            "is_active": true,
+            "created_at": "2024-08-14T17:44:45.983",
+            "created_by": 1,
+            "updated_at": "2024-08-14T17:44:45.983"
+        }
+    },
+    {
+        "model": "crews.crew",
+        "pk": 2,
+        "fields": {
+            "name": "다른사람이크루장",
+            "icon": "🚢",
+            "max_members": 6,
+            "notice": "공지사항 테스트입니다.",
+            "custom_tags": [],
+            "min_boj_level": 2,
+            "is_recruiting": true,
+            "is_active": true,
+            "created_at": "2024-08-14T17:44:45.983",
+            "created_by": 2,
+            "updated_at": "2024-08-14T17:44:45.983"
+        }
+    },
+    {
+        "model": "crews.crewsubmittablelanguage",
+        "pk": 1,
+        "fields": {
+            "crew": 1,
+            "language": "java"
+        }
+    },
+    {
+        "model": "crews.crewsubmittablelanguage",
+        "pk": 2,
+        "fields": {
+            "crew": 1,
+            "language": "kotlin"
+        }
+    },
+    {
+        "model": "crews.crewsubmittablelanguage",
+        "pk": 3,
+        "fields": {
+            "crew": 2,
+            "language": "python"
+        }
+    },
+    {
+        "model": "crews.crewmember",
+        "pk": 1,
+        "fields": {
+            "crew": 1,
+            "user": 1,
+            "is_captain": true,
+            "created_at": "2024-08-14T17:44:45.983"
+        }
+    },
+    {
+        "model": "crews.crewmember",
+        "pk": 2,
+        "fields": {
+            "crew": 2,
+            "user": 2,
+            "is_captain": true,
+            "created_at": "2024-08-14T17:44:45.983"
+        }
+    }
+]

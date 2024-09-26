@@ -1,0 +1,22 @@
+[
+    {
+        "model": "boj.bojuser",
+        "pk": 1,
+        "fields": {
+            "username": "hepheir",
+            "level": 17,
+            "rating": 1801,
+            "updated_at": "2024-08-30T04:02:23.327"
+        }
+    },
+    {
+        "model": "boj.bojuser",
+        "pk": 2,
+        "fields": {
+            "username": "test",
+            "level": 1,
+            "rating": 20,
+            "updated_at": "2024-08-30T04:02:23.327"
+        }
+    }
+]

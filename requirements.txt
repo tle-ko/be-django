@@ -1,0 +1,17 @@
+setuptools
+wheel
+uwsgi # might require "apt install python3-dev"
+django
+# django-background-tasks # 폴더 채로 들고왔으므로 설치 불필요
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg
+Pillow
+psycopg2 # PostgreSQL. May require "apt install libpq-dev", "apt install postgresql"
+six # background tasks dependency
+
+# LLMs
+google-generativeai
+sympy
+antlr4-python3-runtime==4.11 # sympy dependency for latex parsing
