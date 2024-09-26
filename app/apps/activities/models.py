@@ -31,6 +31,8 @@ class CrewActivityDAO(models.Model):
         END_AT = 'end_at'
 
     class Meta:
+        verbose_name = 'Crew Activity'
+        verbose_name_plural = 'Crew Activities'
         ordering = ['start_at']
         get_latest_by = ['end_at']
 
@@ -81,6 +83,8 @@ class CrewActivityProblemDAO(models.Model):
         ORDER = 'order'
 
     class Meta:
+        verbose_name = 'Crew Activity Problem'
+        verbose_name_plural = 'Crew Activity Problems'
         constraints = [
             models.UniqueConstraint(
                 fields=['activity', 'order'],

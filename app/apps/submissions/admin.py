@@ -1,23 +1,23 @@
 from django.contrib import admin
 
-from . import proxy
+from . import models
 
 
-@admin.register(proxy.Submission)
+@admin.register(models.SubmissionDAO)
 class SubmissionModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.Submission.field_name.PROBLEM,
-        proxy.Submission.field_name.USER,
-        proxy.Submission.field_name.IS_CORRECT,
-        proxy.Submission.field_name.CREATED_AT,
+        models.SubmissionDAO.field_name.PROBLEM,
+        models.SubmissionDAO.field_name.USER,
+        models.SubmissionDAO.field_name.IS_CORRECT,
+        models.SubmissionDAO.field_name.CREATED_AT,
     ]
 
 
-@admin.register(proxy.SubmissionComment)
+@admin.register(models.SubmissionCommentDAO)
 class SubmissionCommentModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.SubmissionComment.field_name.SUBMISSION,
-        proxy.SubmissionComment.field_name.CONTENT,
-        proxy.SubmissionComment.field_name.CREATED_BY,
-        proxy.SubmissionComment.field_name.CREATED_AT,
+        models.SubmissionCommentDAO.field_name.SUBMISSION,
+        models.SubmissionCommentDAO.field_name.CONTENT,
+        models.SubmissionCommentDAO.field_name.CREATED_BY,
+        models.SubmissionCommentDAO.field_name.CREATED_AT,
     ]
