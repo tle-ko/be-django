@@ -4,6 +4,7 @@ from rest_framework import validators
 
 from apps.problems.proxy import Problem
 from apps.problems.serializers import ProblemDTOSerializer
+from apps.problems.serializers import ProblemDetailDTOSerializer
 from apps.submissions.serializers import SubmissionDTOSerializer
 
 from . import proxy
@@ -14,11 +15,13 @@ class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
     order = serializers.IntegerField()
 
 
-class CrewActivityProblemDetailDTOSerializer(CrewActivityProblemDTOSerializer):
+class CrewActivityProblemDetailDTOSerializer(ProblemDetailDTOSerializer):
+    problem_ref_id = serializers.IntegerField()
+    order = serializers.IntegerField()
+
+
+class CrewActivityProblemExtraDetailDTOSerializer(CrewActivityProblemDTOSerializer):
     submissions = SubmissionDTOSerializer(many=True)
-
-
-class CrewActivityProblemExtraDetailDTOSerializer(CrewActivityProblemDetailDTOSerializer):
     my_submission = SubmissionDTOSerializer(required=False, default=None)
 
 
