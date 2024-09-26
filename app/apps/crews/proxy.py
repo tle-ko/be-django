@@ -45,7 +45,10 @@ class CrewQuerySet(QuerySet):
         return self._kwargs_filtering(super().filter, as_captain, as_member, is_recruiting, *args, **kwargs)
 
     def is_recruiting(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
-        return self.filter(is_recruiting=True).exclude(as_member=user)
+        queryset = self.filter(is_recruiting=True)
+        if user.is_authenticated:
+            queryset = queryset.exclude(as_member=user)
+        return queryset
 
     def as_dto(self) -> List[dto.CrewDTO]:
         return [obj.as_dto() for obj in self.all()]
@@ -150,6 +153,8 @@ class Crew(models.CrewDAO):
         return f'{self.icon} {self.name}'
 
     def is_appliable(self, user: User, raise_exception=False) -> bool:
+        if user.is_anonymous:
+            return False
         try:
             boj_user = BOJUser.objects.get(user.boj_username)
             assert self.is_recruiting, (
