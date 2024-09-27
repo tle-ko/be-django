@@ -190,7 +190,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
                 'write_only': True,
                 'style': {'input_type': 'password'},
             },
-            User.field_name.BOJ_USERNAME: {'write_only': True}
         }
 
     def is_valid(self, *, raise_exception=False):
