@@ -128,16 +128,11 @@ class CrewActivityProblem(models.CrewActivityProblemDAO):
         return dto.CrewActivityProblemExtraDetailDTO(
             **self.as_dto().__dict__,
             submissions=self.submissions(),
-            my_submission=self.submission_of_user(user),
+            has_submitted=self.has_submitted(user),
         )
 
     def submissions(self) -> List[SubmissionDTO]:
         return [obj.as_dto() for obj in Submission.objects.problem(self)]
 
-    def submission_of_user(self, user: User) -> Optional[SubmissionDTO]:
-        try:
-            obj = Submission.objects.problem(self).submitted_by(user).latest()
-        except Submission.DoesNotExist:
-            return None
-        else:
-            return obj.as_dto()
+    def has_submitted(self, user: User) -> bool:
+        return Submission.objects.problem(self).submitted_by(user).exists()

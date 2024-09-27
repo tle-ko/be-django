@@ -31,7 +31,7 @@ class CrewActivityRetrieveUpdateAPIView(mixins.CrewActivityUrlKwargMixin, generi
     serializer_class = serializers.CrewActivityDAOSerializer
     permission_classes = [permissions.IsCaptain | permissions.IsMemberAndReadOnly]
 
-    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializers.CrewActivityProblemDetailDTOSerializer})
+    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializers.CrewActivityExtraDetailDTOSerializer})
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 

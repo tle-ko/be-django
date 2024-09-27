@@ -25,7 +25,7 @@ class CrewActivityProblemDetailDTO(ProblemDetailDTO):
 @dataclass
 class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDTO):
     submissions: List[SubmissionDTO]
-    my_submission: Optional[SubmissionDTO]
+    has_submitted: bool
 
 
 @dataclass

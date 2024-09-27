@@ -22,7 +22,7 @@ class CrewActivityProblemDetailDTOSerializer(ProblemDetailDTOSerializer):
 
 class CrewActivityProblemExtraDetailDTOSerializer(CrewActivityProblemDTOSerializer):
     submissions = SubmissionDTOSerializer(many=True)
-    my_submission = SubmissionDTOSerializer(required=False, default=None)
+    has_submitted = serializers.BooleanField()
 
 
 class CrewActivityDTOSerializer(serializers.Serializer):
@@ -57,7 +57,9 @@ class CrewActivityDAOSerializer(serializers.ModelSerializer):
     @property
     def data(self):
         self.instance: proxy.CrewActivity
-        return CrewActivityDetailDTOSerializer(self.instance.as_detail_dto()).data
+        user = self.context['request'].user
+        assert user.is_authenticated
+        return CrewActivityExtraDetailDTOSerializer(self.instance.as_extra_detail_dto(user)).data
 
     def save(self, **kwargs):
         problem_ref_ids = self.validated_data.pop('problem_refs')
