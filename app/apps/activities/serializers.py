@@ -6,18 +6,26 @@ from apps.problems.proxy import Problem
 from apps.problems.serializers import ProblemDTOSerializer
 from apps.problems.serializers import ProblemDetailDTOSerializer
 from apps.submissions.serializers import SubmissionDTOSerializer
+from common.mixins import SerializerCurrentUserMixin
 
-from . import proxy
+from . import dto
+from . import models
 
 
 class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
+    __dto__ = dto.CrewActivityProblemDTO
+
     problem_id = serializers.IntegerField()
     order = serializers.IntegerField()
 
 
 class CrewActivityProblemDetailDTOSerializer(ProblemDetailDTOSerializer):
+    __dto__ = dto.CrewActivityProblemDetailDTO
+
     problem_id = serializers.IntegerField()
     order = serializers.IntegerField()
+    submission_id = serializers.IntegerField()
+    has_submitted = serializers.BooleanField()
 
 
 class CrewActivityProblemExtraDetailDTOSerializer(CrewActivityProblemDTOSerializer):
@@ -43,20 +51,20 @@ class CrewActivityExtraDetailDTOSerializer(CrewActivityDTOSerializer):
     problems = CrewActivityProblemExtraDetailDTOSerializer(many=True)
 
 
-class CrewActivityDAOSerializer(serializers.ModelSerializer):
+class CrewActivityDAOSerializer(SerializerCurrentUserMixin, serializers.ModelSerializer):
     problem_refs = serializers.ListField(child=serializers.IntegerField())
 
     class Meta:
-        model = proxy.CrewActivity
+        model = models.CrewActivityDAO
         fields = [
-            proxy.CrewActivity.field_name.START_AT,
-            proxy.CrewActivity.field_name.END_AT,
+            models.CrewActivityDAO.field_name.START_AT,
+            models.CrewActivityDAO.field_name.END_AT,
             'problem_refs',
         ]
 
     @property
     def data(self):
-        self.instance: proxy.CrewActivity
+        self.instance: models.CrewActivityDAO
         user = self.context['request'].user
         assert user.is_authenticated
         return CrewActivityExtraDetailDTOSerializer(self.instance.as_extra_detail_dto(user)).data
@@ -73,14 +81,14 @@ class CrewActivityDAOSerializer(serializers.ModelSerializer):
                 f'Invalid problem_ref_id: {problem_ref_id}')
         with atomic():
             super().save(**kwargs)
-            proxy.CrewActivityProblem.objects.filter(activity=self.instance).delete()
+            models.CrewActivityProblemDAO.objects.filter(activity=self.instance).delete()
             problems = []
             for order, problem_ref in enumerate(problem_refs, start=1):
-                problems.append(proxy.CrewActivityProblem(
+                problems.append(models.CrewActivityProblemDAO(
                     crew=self.instance.crew,
                     activity=self.instance,
                     problem=problem_ref,
                     order=order,
                 ))
-            proxy.CrewActivityProblem.objects.bulk_create(problems)
+            models.CrewActivityProblemDAO.objects.bulk_create(problems)
         return self.instance

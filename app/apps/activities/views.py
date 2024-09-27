@@ -2,6 +2,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
 
+from . import converters
 from . import mixins
 from . import permissions
 from . import proxy
@@ -29,7 +30,8 @@ class CrewActivityCreateAPIView(mixins.CrewUrlKwargMixin, generics.CreateAPIView
 class CrewActivityRetrieveUpdateAPIView(mixins.CrewActivityUrlKwargMixin, generics.RetrieveUpdateAPIView):
     """크루 활동 상세 조회 API.\n\n."""
     serializer_class = serializers.CrewActivityDAOSerializer
-    permission_classes = [permissions.IsCaptain | permissions.IsMemberAndReadOnly]
+    permission_classes = [permissions.IsCaptain |
+                          permissions.IsMemberAndReadOnly]
 
     @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializers.CrewActivityExtraDetailDTOSerializer})
     def get(self, request, *args, **kwargs):
@@ -50,4 +52,4 @@ class CrewActivityProblemRetrieveAPIView(mixins.CrewActivityProblemUrlKwargMixin
     permission_classes = [permissions.IsMemberAndReadOnly]
 
     def get_object(self):
-        return super().get_object().as_detail_dto()
+        return converters.CrewActivityProblemDetailConverter(self.request.user).instance_to_dto(super().get_object())
