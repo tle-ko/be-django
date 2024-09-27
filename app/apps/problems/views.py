@@ -27,7 +27,7 @@ class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAP
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
     lookup_field = 'id'
-    lookup_url_kwarg = 'problem_id'
+    lookup_url_kwarg = 'problem_ref_id'
 
 
 class ProblemSearchListAPIView(generics.ListAPIView):

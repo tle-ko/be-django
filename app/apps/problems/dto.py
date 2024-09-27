@@ -28,7 +28,7 @@ class ProblemDifficultyDTO:
 
 @dataclass
 class ProblemAnalysisDTO:
-    problem_id: int
+    problem_ref_id: int
     is_analyzed: bool
     time_complexity: str
     difficulty: ProblemDifficultyDTO
@@ -36,9 +36,9 @@ class ProblemAnalysisDTO:
     tags: List[BOJTagDTO] = field(default_factory=list)
 
     @staticmethod
-    def none(problem_id: int) -> ProblemAnalysisDTO:
+    def none(problem_ref_id: int) -> ProblemAnalysisDTO:
         return ProblemAnalysisDTO(
-            problem_id=problem_id,
+            problem_ref_id=problem_ref_id,
             is_analyzed=False,
             time_complexity='',
             difficulty=ProblemDifficultyDTO.none(),
@@ -49,7 +49,7 @@ class ProblemAnalysisDTO:
 
 @dataclass
 class ProblemDTO:
-    problem_id: int
+    problem_ref_id: int
     title: str
     analysis: ProblemAnalysisDTO
 

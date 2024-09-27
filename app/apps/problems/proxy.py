@@ -69,7 +69,7 @@ class Problem(models.ProblemDAO):
 
     def as_dto(self) -> dto.ProblemDTO:
         return dto.ProblemDTO(
-            problem_id=self.pk,
+            problem_ref_id=self.pk,
             title=self.title,
             analysis=self.analysis(),
         )
@@ -108,7 +108,7 @@ class ProblemAnalysisQuerySet(QuerySet):
 
     def create_from_dto(self, analysis_dto: dto.ProblemAnalysisRawDTO) -> ProblemAnalysis:
         analysis = ProblemAnalysis(**{
-            ProblemAnalysis.field_name.PROBLEM: models.ProblemDAO.objects.get(pk=analysis_dto.problem_id),
+            ProblemAnalysis.field_name.PROBLEM: models.ProblemDAO.objects.get(pk=analysis_dto.problem_ref_id),
             ProblemAnalysis.field_name.TIME_COMPLEXITY: analysis_dto.time_complexity,
             ProblemAnalysis.field_name.DIFFICULTY: analysis_dto.difficulty,
             ProblemAnalysis.field_name.HINTS: analysis_dto.hints,
@@ -152,7 +152,7 @@ class ProblemAnalysis(models.ProblemAnalysisDAO):
 
     def as_dto(self) -> dto.ProblemAnalysisDTO:
         return dto.ProblemAnalysisDTO(
-            problem_id=self.problem.pk,
+            problem_ref_id=self.problem.pk,
             is_analyzed=True,
             time_complexity=self.time_complexity,
             difficulty=self.as_difficulty_dto(),

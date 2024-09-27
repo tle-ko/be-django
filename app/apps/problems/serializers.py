@@ -19,7 +19,7 @@ class ProblemDifficultyDTOSerializer(serializers.Serializer):
 
 
 class ProblemAnalysisDTOSerializer(serializers.Serializer):
-    problem_id = serializers.IntegerField()
+    problem_ref_id = serializers.IntegerField()
     time_complexity = serializers.CharField()
     difficulty = ProblemDifficultyDTOSerializer()
     tags = BOJTagDTOSerializer(many=True)
@@ -27,7 +27,7 @@ class ProblemAnalysisDTOSerializer(serializers.Serializer):
 
 
 class ProblemDTOSerializer(serializers.Serializer):
-    problem_id = serializers.IntegerField()
+    problem_ref_id = serializers.IntegerField()
     title = serializers.CharField()
     analysis = ProblemAnalysisDTOSerializer()
 
