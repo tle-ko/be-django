@@ -49,6 +49,7 @@ class CrewActivityProblemDetailConverter(ModelConverter[models.CrewActivityProbl
         problem_dto = instance.problem.as_detail_dto()
         obj.analysis = problem_dto.analysis
         obj.problem_ref_id = problem_dto.problem_ref_id
+        obj.title = problem_dto.title
         obj.link = problem_dto.link
         obj.description = problem_dto.description
         obj.input_description = problem_dto.input_description
