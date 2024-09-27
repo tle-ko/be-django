@@ -12,13 +12,13 @@ from apps.submissions.dto import SubmissionDTO
 
 @dataclass
 class CrewActivityProblemDTO(ProblemDTO):
-    problem_ref_id: int  # 원본 문제 ID
+    problem_id: int  # 원본 문제 ID
     order: int  # 문제 번호
 
 
 @dataclass
 class CrewActivityProblemDetailDTO(ProblemDetailDTO):
-    problem_ref_id: int  # 원본 문제 ID
+    problem_id: int  # 원본 문제 ID
     order: int  # 문제 번호
 
 

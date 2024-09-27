@@ -107,22 +107,18 @@ class CrewActivityProblem(models.CrewActivityProblemDAO):
         proxy = True
 
     def as_dto(self) -> dto.CrewActivityProblemDTO:
-        obj = dto.CrewActivityProblemDTO(
+        return dto.CrewActivityProblemDTO(
             **self.problem.as_dto().__dict__,
-            problem_ref_id=self.problem.pk,
+            problem_id=self.pk,
             order=self.order,
         )
-        obj.problem_id = self.pk
-        return obj
 
     def as_detail_dto(self) -> dto.CrewActivityProblemDetailDTO:
-        obj = dto.CrewActivityProblemDetailDTO(
+        return dto.CrewActivityProblemDetailDTO(
             **self.problem.as_detail_dto().__dict__,
-            problem_ref_id=self.problem.pk,
+            problem_id=self.pk,
             order=self.order,
         )
-        obj.problem_id = self.pk
-        return obj
 
     def as_extra_detail_dto(self, user: User) -> dto.CrewActivityProblemExtraDetailDTO:
         return dto.CrewActivityProblemExtraDetailDTO(

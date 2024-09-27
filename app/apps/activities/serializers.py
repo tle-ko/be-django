@@ -11,12 +11,12 @@ from . import proxy
 
 
 class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
-    problem_ref_id = serializers.IntegerField()
+    problem_id = serializers.IntegerField()
     order = serializers.IntegerField()
 
 
 class CrewActivityProblemDetailDTOSerializer(ProblemDetailDTOSerializer):
-    problem_ref_id = serializers.IntegerField()
+    problem_id = serializers.IntegerField()
     order = serializers.IntegerField()
 
 
