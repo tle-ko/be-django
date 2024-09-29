@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from apps.crews.enums import ProgrammingLanguageChoices
 from apps.crews.models import CrewDAO
 from apps.problems.proxy import Problem
-from users.models import User
 
 
 class CrewActivityDAO(models.Model):
@@ -85,13 +85,8 @@ class CrewActivityProblemDAO(models.Model):
     class Meta:
         verbose_name = 'Crew Activity Problem'
         verbose_name_plural = 'Crew Activity Problems'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['activity', 'order'],
-                name='unique_order_per_activity_problem',
-            ),
-        ]
         ordering = ['order']
+        unique_together = ['activity', 'problem']
 
     def save(self, *args, **kwargs) -> None:
         assert self.crew == self.activity.crew

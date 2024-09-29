@@ -13,19 +13,16 @@ from apps.submissions.dto import SubmissionDTO
 class CrewActivityProblemDTO(ProblemDTO):
     problem_id: int  # 원본 문제 ID
     order: int  # 문제 번호
+    submission_id: typing.Optional[int]  # 내가 제출한 submission ID
+    has_submitted: bool
+    submissions: typing.List[SubmissionDTO]
 
 
 @dataclasses.dataclass
 class CrewActivityProblemDetailDTO(ProblemDetailDTO):
     problem_id: int  # 원본 문제 ID
     order: int  # 문제 번호
-    submission_id: typing.Optional[int] # 내가 제출한 submission ID
-    has_submitted: bool
-
-
-@dataclasses.dataclass
-class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDTO):
-    submissions: typing.List[SubmissionDTO]
+    submission_id: typing.Optional[int]  # 내가 제출한 submission ID
     has_submitted: bool
 
 
@@ -39,24 +36,7 @@ class CrewActivityDTO:
     has_started: bool
     has_ended: bool
 
-    @staticmethod
-    def none(name: str) -> CrewActivityDTO:
-        return CrewActivityDTO(
-            activity_id=None,
-            name=name,
-            start_at=None,
-            end_at=None,
-            is_in_progress=False,
-            has_started=False,
-            has_ended=False,
-        )
-
 
 @dataclasses.dataclass
 class CrewActivityDetailDTO(CrewActivityDTO):
-    problems: typing.List[CrewActivityProblemDTO]
-
-
-@dataclasses.dataclass
-class CrewActivityExtraDetailDTO(CrewActivityDTO):
-    problems: typing.List[CrewActivityProblemExtraDetailDTO]
+    problems: typing.List[CrewActivityProblemDetailDTO]

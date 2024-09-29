@@ -107,9 +107,6 @@ class Crew(models.CrewDAO):
     def activities(self) -> List[dto.CrewActivityDTO]:
         return [obj.as_dto() for obj in CrewActivity.objects.filter(crew=self)]
 
-    def applications(self) -> List[CrewApplicantDTO]:
-        return [obj.as_dto() for obj in CrewApplication.objects.crew(self)]
-
     def apply(self, user: User, message: str) -> CrewApplication:
         self.is_appliable(user, raise_exception=True)
         return CrewApplication.objects.create(
