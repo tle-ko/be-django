@@ -112,8 +112,9 @@ class CrewActivityDAOSerializer(GenericModelToDTOSerializer):
         for order, problem_ref_id in enumerate(problem_ref_ids, start=order_start_at):
             obj = None
             try:
-                problem = Problem.objects.get(
-                    **{Problem.field_name.PK: problem_ref_id})
+                problem = Problem.objects \
+                    .filter(**{Problem.field_name.CREATED_BY: self.get_authenticated_user()}) \
+                    .get(**{Problem.field_name.PK: problem_ref_id})
             except Problem.DoesNotExist:
                 raise validators.ValidationError(
                     f'Invalid problem_ref_id: {problem_ref_id}',
