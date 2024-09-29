@@ -1,8 +1,9 @@
-from dataclasses import asdict
+from typing import Optional
 
 from rest_framework import serializers
 
 from apps.boj.serializers import BOJTagDTOSerializer
+from common.mixins import SerializerCurrentUserMixin
 from users.models import User
 
 from . import models
@@ -70,7 +71,7 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
     tags = ProblemTagStaticDTOSerializer(many=True)
 
 
-class ProblemDAOSerializer(serializers.ModelSerializer):
+class ProblemDAOSerializer(SerializerCurrentUserMixin, serializers.ModelSerializer):
     class Meta:
         model = models.ProblemDAO
         fields = [
@@ -87,11 +88,10 @@ class ProblemDAOSerializer(serializers.ModelSerializer):
             models.ProblemDAO.field_name.CREATED_BY,
         ]
 
-    def save(self, created_by: User, **kwargs):
-        return super().save(**{
-            **kwargs,
-            models.ProblemDAO.field_name.CREATED_BY: created_by,
-        })
+    def save(self, **kwargs):
+        if self.instance.created_by is None:
+            kwargs[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
+        return super().save(**kwargs)
 
     @property
     def data(self):
