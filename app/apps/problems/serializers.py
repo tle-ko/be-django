@@ -1,10 +1,7 @@
-from typing import Optional
-
 from rest_framework import serializers
 
 from apps.boj.serializers import BOJTagDTOSerializer
 from common.mixins import SerializerCurrentUserMixin
-from users.models import User
 
 from . import models
 from . import proxy
@@ -89,9 +86,12 @@ class ProblemDAOSerializer(SerializerCurrentUserMixin, serializers.ModelSerializ
         ]
 
     def save(self, **kwargs):
-        if self.instance.created_by is None:
+        if self.is_creating():
             kwargs[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
         return super().save(**kwargs)
+
+    def is_creating(self) -> bool:
+        return (self.instance is None) or (self.instance.created_by is None)
 
     @property
     def data(self):
