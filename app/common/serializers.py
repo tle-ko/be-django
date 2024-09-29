@@ -7,7 +7,10 @@ from rest_framework import serializers
 from users.models import User
 
 
-class GenericModelSerializer(serializers.ModelSerializer):
+ModelType = typing.TypeVar('ModelType')
+
+
+class GenericModelSerializer(typing.Generic[ModelType], serializers.ModelSerializer):
     serializer_class: serializers.Serializer = None
 
     def get_any_user(self) -> User:
@@ -23,7 +26,7 @@ class GenericModelSerializer(serializers.ModelSerializer):
             return None
         return self.serializer_class(*args, **kwargs)
 
-    def get_object(self):
+    def get_object(self) -> ModelType:
         return self.instance
 
     @property
