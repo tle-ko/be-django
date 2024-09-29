@@ -6,12 +6,23 @@ from rest_framework import serializers
 
 from users.models import User
 
+from . import converters
 
-ModelType = typing.TypeVar('ModelType')
 
+class GenericModelToDTOSerializer(serializers.ModelSerializer):
+    model_converter_class: typing.Type[converters.ModelConverter] = None
+    dto_serializer_class: typing.Type[serializers.Serializer] = None
 
-class GenericModelSerializer(typing.Generic[ModelType], serializers.ModelSerializer):
-    serializer_class: serializers.Serializer = None
+    def get_model_converter(self, *args, **kwargs) -> converters.ModelConverter:
+        return self.model_converter_class(*args, **kwargs)
+
+    def get_dto_serializer(self, *args, **kwargs) -> serializers.Serializer:
+        return self.dto_serializer_class(*args, **kwargs)
+
+    @property
+    def data(self):
+        obj = self.get_model_converter().instance_to_dto(self.instance)
+        return self.get_dto_serializer(obj).data
 
     def get_any_user(self) -> User:
         return self.context['request'].user
@@ -20,15 +31,3 @@ class GenericModelSerializer(typing.Generic[ModelType], serializers.ModelSeriali
         instance = self.get_any_user()
         assert instance.is_authenticated, 'The user must be authenticated'
         return instance
-
-    def get_serializer(self, *args, **kwargs) -> typing.Optional[serializers.Serializer]:
-        if self.serializer_class is None:
-            return None
-        return self.serializer_class(*args, **kwargs)
-
-    def get_object(self) -> ModelType:
-        return self.instance
-
-    @property
-    def data(self):
-        return self.get_serializer(self.get_object()).data
