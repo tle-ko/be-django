@@ -7,6 +7,19 @@ from . import dto
 from . import models
 
 
+class CrewActivityConverter(ModelConverter[models.CrewActivityDAO, dto.CrewActivityDTO]):
+    def instance_to_dto(self, instance: models.CrewActivityDAO) -> dto.CrewActivityDTO:
+        return dto.CrewActivityDTO(
+            activity_id=instance.pk,
+            name=instance.name,
+            start_at=instance.start_at,
+            end_at=instance.end_at,
+            is_in_progress=instance.is_in_progress(),
+            has_started=instance.has_started(),
+            has_ended=instance.has_ended(),
+        )
+
+
 class CrewActivityProblemConverter(ModelConverter[models.CrewActivityProblemDAO, dto.CrewActivityProblemDTO]):
     def instance_to_dto(self, instance: models.CrewActivityProblemDAO) -> dto.CrewActivityProblemDTO:
         return dto.CrewActivityProblemDTO(
