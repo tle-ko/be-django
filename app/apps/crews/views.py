@@ -2,8 +2,9 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
 
-from apps.applications.serializers import CrewApplicationDTOSerializer
 from apps.problems.serializers import ProblemStatisticDTOSerializer
+from apps.problems.converters import ProblemStatisticConverter
+from apps.activities.models import CrewActivityProblemDAO
 
 from . import mixins
 from . import permissions
@@ -67,4 +68,7 @@ class CrewStatisticsAPIView(mixins.CrewUrlKwargMixin, generics.RetrieveAPIView):
     serializer_class = ProblemStatisticDTOSerializer
 
     def get_object(self):
-        return super().get_object().statistics()
+        queryset = CrewActivityProblemDAO.objects \
+            .filter(**{CrewActivityProblemDAO.field_name.CREW: super().get_object()}) \
+            .values_list(CrewActivityProblemDAO.field_name.PROBLEM, flat=True)
+        return ProblemStatisticConverter().problem_ref_ids_to_dto(queryset)

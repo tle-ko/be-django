@@ -19,3 +19,18 @@ class BOJUserConverter(ModelConverter[models.BOJUserDAO, dto.BOJUserDTO]):
             models.BOJUserDAO.field_name.USERNAME: username,
         })[0]
         return self.instance_to_dto(instance)
+
+
+class BOJTagConverter(ModelConverter[models.BOJTagDAO, dto.BOJTagDTO]):
+    def instance_to_dto(self, instance: models.BOJTagDAO) -> dto.BOJTagDTO:
+        return dto.BOJTagDTO(
+            key=instance.key,
+            name_ko=instance.name_ko,
+            name_en=instance.name_en,
+        )
+
+    def key_to_dto(self, key: str) -> dto.BOJTagDTO:
+        instance = models.BOJTagDAO.objects.get(**{
+            models.BOJTagDAO.field_name.KEY: key,
+        })
+        return self.instance_to_dto(instance)

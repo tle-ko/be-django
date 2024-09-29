@@ -50,6 +50,7 @@ class ProblemDAO(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class field_name:
+        PK = 'pk'
         TITLE = 'title'
         LINK = 'link'
         DESCRIPTION = 'description'

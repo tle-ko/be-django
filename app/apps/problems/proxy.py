@@ -12,6 +12,7 @@ from apps.boj.proxy import BOJTag
 from users.models import User
 
 from . import analyzer
+from . import converters
 from . import dto
 from . import enums
 from . import models
@@ -62,7 +63,7 @@ class Problem(models.ProblemDAO):
         try:
             return ProblemAnalysis.objects.get_by_problem(self).as_dto()
         except ProblemAnalysis.DoesNotExist:
-            return dto.ProblemAnalysisDTO.none(self.pk)
+            return converters.ProblemAnalysisConverter().problem_to_dto(self)
 
     def analyze(self) -> ProblemAnalysis:
         analyzer.schedule_analysis(self.pk)
@@ -161,7 +162,7 @@ class ProblemAnalysis(models.ProblemAnalysisDAO):
         )
 
     def as_difficulty_dto(self) -> dto.ProblemDifficultyDTO:
-        return dto.ProblemDifficultyDTO(enums.ProblemDifficulty(super().difficulty))
+        return converters.ProblemDifficultyConverter().value_to_dto(self.difficulty)
 
     def tags(self) -> List[dto.BOJTagDTO]:
         return [obj.as_dto() for obj in ProblemAnalysisTag.objects.filter(analysis=self)]

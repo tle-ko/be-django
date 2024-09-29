@@ -14,7 +14,7 @@ class CrewApplicationListAPIView(mixins.CrewUrlKwargMixin, generics.ListAPIView)
     serializer_class = serializers.CrewApplicationDTOSerializer
 
     def get_queryset(self):
-        return super().get_object().applications()
+        return [obj.as_dto() for obj in proxy.CrewApplication.objects.crew(super().get_object())]
 
 
 class CrewApplicationCreateAPIView(generics.CreateAPIView):

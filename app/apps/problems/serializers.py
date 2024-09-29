@@ -1,13 +1,10 @@
-from typing import Optional
-
 from rest_framework import serializers
 
 from apps.boj.serializers import BOJTagDTOSerializer
-from common.mixins import SerializerCurrentUserMixin
-from users.models import User
+from common.serializers import GenericModelToDTOSerializer
 
+from . import converters
 from . import models
-from . import proxy
 
 
 PK = 'id'
@@ -71,7 +68,9 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
     tags = ProblemTagStaticDTOSerializer(many=True)
 
 
-class ProblemDAOSerializer(SerializerCurrentUserMixin, serializers.ModelSerializer):
+class ProblemDAOSerializer(GenericModelToDTOSerializer):
+    serializer_class = ProblemDetailDTOSerializer
+
     class Meta:
         model = models.ProblemDAO
         fields = [
@@ -88,16 +87,14 @@ class ProblemDAOSerializer(SerializerCurrentUserMixin, serializers.ModelSerializ
             models.ProblemDAO.field_name.CREATED_BY,
         ]
 
-    def save(self, **kwargs):
-        if self.instance.created_by is None:
-            kwargs[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
-        return super().save(**kwargs)
+    def get_object(self):
+        instance = super().get_object()
+        return converters.ProblemDetailConverter().instance_to_dto(instance)
 
-    @property
-    def data(self):
-        self.instance = proxy.Problem.objects.get(pk=self.instance.pk)
-        return ProblemDetailDTOSerializer(self.instance.as_detail_dto()).data
+    def create(self, validated_data):
+        validated_data[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
+        return super().create(validated_data)
 
 
 class ProblemSearchQueryParamSerializer(serializers.Serializer):
-    q = serializers.CharField(required=False, default=None)
+    q = serializers.CharField(required=False, default='')
