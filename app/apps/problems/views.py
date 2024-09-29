@@ -1,20 +1,25 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework import permissions
+from rest_framework import status
 from rest_framework.request import Request
 
 from common.pagination import LargeResultsSetPagination
 
+from . import models
+from . import permissions
 from . import serializers
-from . import proxy
 
 
 class ProblemCreateAPIView(generics.CreateAPIView):
     """문제 생성 API.\n\n."""
 
-    queryset = proxy.Problem
+    queryset = models.ProblemDAO
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
+
+    @swagger_auto_schema(request_body=serializer_class.serializer_class)
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer: serializers.ProblemDAOSerializer):
         return serializer.save(created_by=self.request.user)
@@ -23,11 +28,23 @@ class ProblemCreateAPIView(generics.CreateAPIView):
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """문제 상세 조회, 수정, 삭제 API.\n\n."""
 
-    queryset = proxy.Problem
-    permission_classes = [permissions.IsAuthenticated]
+    queryset = models.ProblemDAO
+    permission_classes = [permissions.IsProblemCreator | permissions.IsReadOnly]
     serializer_class = serializers.ProblemDAOSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'problem_ref_id'
+
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
 
 class ProblemSearchListAPIView(generics.ListAPIView):
@@ -39,16 +56,17 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     serializer_class = serializers.ProblemDTOSerializer
     pagination_class = LargeResultsSetPagination
 
-    def get_queryset(self):
-        return proxy.Problem.objects.created_by(self.request.user).search(self.get_query_string()).as_dto()
-
-    def get_query_string(self) -> str:
-        self.request: Request
-        data = self.request.query_params
-        serializer = serializers.ProblemSearchQueryParamSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        return serializer.validated_data['q']
-
     @swagger_auto_schema(query_serializer=serializers.ProblemSearchQueryParamSerializer)
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return models.ProblemDAO.objects.filter(**{
+            models.ProblemDAO.field_name.TITLE + '__icontains': self.get_query_params(self.request),
+            models.ProblemDAO.field_name.CREATED_BY: self.request.user,
+        })
+
+    def get_query_params(self, request: Request) -> str:
+        serializer = serializers.ProblemSearchQueryParamSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data['q']
