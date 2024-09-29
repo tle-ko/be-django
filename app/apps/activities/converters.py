@@ -1,4 +1,5 @@
 from apps.submissions.models import SubmissionDAO
+from apps.problems.converters import ProblemAnalysisConverter
 from common.converters import ModelConverter
 from users.models import User
 
@@ -8,13 +9,12 @@ from . import models
 
 class CrewActivityProblemConverter(ModelConverter[models.CrewActivityProblemDAO, dto.CrewActivityProblemDTO]):
     def instance_to_dto(self, instance: models.CrewActivityProblemDAO) -> dto.CrewActivityProblemDTO:
-        obj = instance.problem.as_dto()
         return dto.CrewActivityProblemDTO(
             problem_id=instance.pk,
-            problem_ref_id=obj.problem_id,
             order=instance.order,
-            analysis=obj.analysis,
-            title=obj.title,
+            problem_ref_id=instance.problem.pk,
+            title=instance.problem.title,
+            analysis=ProblemAnalysisConverter().problem_to_dto(instance.problem),
         )
 
 
