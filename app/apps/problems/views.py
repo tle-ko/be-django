@@ -1,10 +1,11 @@
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import filters
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.request import Request
 
 from common.pagination import LargeResultsSetPagination
 
+from . import converters
 from . import models
 from . import permissions
 from . import serializers
@@ -17,12 +18,9 @@ class ProblemCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
 
-    @swagger_auto_schema(request_body=serializer_class.serializer_class)
+    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.serializer_class})
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
-    def perform_create(self, serializer: serializers.ProblemDAOSerializer):
-        return serializer.save(created_by=self.request.user)
 
 
 class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -55,18 +53,14 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDTOSerializer
     pagination_class = LargeResultsSetPagination
-
-    @swagger_auto_schema(query_serializer=serializers.ProblemSearchQueryParamSerializer)
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    filter_backends = [filters.SearchFilter]
+    search_fields = [models.ProblemDAO.field_name.TITLE]
 
     def get_queryset(self):
         return models.ProblemDAO.objects.filter(**{
-            models.ProblemDAO.field_name.TITLE + '__icontains': self.get_query_params(self.request),
             models.ProblemDAO.field_name.CREATED_BY: self.request.user,
         })
 
-    def get_query_params(self, request: Request) -> str:
-        serializer = serializers.ProblemSearchQueryParamSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        return serializer.validated_data['q']
+    def get_serializer(self, queryset, *args, **kwargs):
+        queryset = converters.ProblemConverter().queryset_to_dto(queryset)
+        return super().get_serializer(queryset, *args, **kwargs)

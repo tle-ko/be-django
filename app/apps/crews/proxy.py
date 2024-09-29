@@ -16,7 +16,6 @@ from apps.applications.proxy import CrewApplication
 from apps.boj.enums import BOJLevel
 from apps.boj.proxy import BOJUser
 from apps.problems.dto import ProblemStatisticDTO
-from apps.problems.statistics import create_statistics
 from users.models import User
 
 from . import dto
@@ -199,10 +198,6 @@ class Crew(models.CrewDAO):
 
     def members(self) -> List[dto.CrewMemberDTO]:
         return [obj.as_dto() for obj in CrewMember.objects.filter(crew=self)]
-
-    def statistics(self) -> ProblemStatisticDTO:
-        queryset = CrewActivityProblem.objects.filter(crew=self)
-        return create_statistics(obj.problem for obj in queryset)
 
     def tags(self) -> List[dto.CrewTagDTO]:
         return self.tags__language() + self.tags__level() + self.tags__custom()

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.boj.serializers import BOJTagDTOSerializer
-from common.serializers import GenericModelSerializer
+from common.serializers import GenericModelToDTOSerializer
 
 from . import converters
 from . import models
@@ -68,7 +68,7 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
     tags = ProblemTagStaticDTOSerializer(many=True)
 
 
-class ProblemDAOSerializer(GenericModelSerializer):
+class ProblemDAOSerializer(GenericModelToDTOSerializer):
     serializer_class = ProblemDetailDTOSerializer
 
     class Meta:
@@ -88,7 +88,8 @@ class ProblemDAOSerializer(GenericModelSerializer):
         ]
 
     def get_object(self):
-        return converters.ProblemDetailConverter().instance_to_dto(self.instance)
+        instance = super().get_object()
+        return converters.ProblemDetailConverter().instance_to_dto(instance)
 
     def create(self, validated_data):
         validated_data[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
@@ -96,4 +97,4 @@ class ProblemDAOSerializer(GenericModelSerializer):
 
 
 class ProblemSearchQueryParamSerializer(serializers.Serializer):
-    q = serializers.CharField(required=False, default=None)
+    q = serializers.CharField(required=False, default='')

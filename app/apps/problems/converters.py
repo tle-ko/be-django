@@ -1,5 +1,6 @@
 import typing
 
+from apps.boj.converters import BOJTagConverter
 from apps.boj.models import BOJTagDAO
 from common import converters
 
@@ -56,7 +57,7 @@ class ProblemAnalysisConverter(converters.ModelConverter[models.ProblemAnalysisD
         return dto.ProblemAnalysisDTO(
             problem_ref_id=instance.problem.pk,
             time_complexity=instance.time_complexity,
-            hints=instance.hints,
+            hints=self._hints(instance),
             difficulty=self._difficulty(instance),
             tags=self._tags(instance),
             is_analyzed=self._is_analyzed(instance),
@@ -79,9 +80,16 @@ class ProblemAnalysisConverter(converters.ModelConverter[models.ProblemAnalysisD
         return ProblemDifficultyConverter().value_to_dto(instance.difficulty)
 
     def _tags(self, instance: models.ProblemAnalysisDAO) -> typing.List[dto.BOJTagDTO]:
-        queryset = models.ProblemAnalysisTagDAO.objects.filter(
-            **{models.ProblemAnalysisTagDAO.field_name.ANALYSIS: instance})
+        queryset = models.ProblemAnalysisTagDAO.objects.filter(**{
+            models.ProblemAnalysisTagDAO.field_name.ANALYSIS: instance,
+        })
         return ProblemTagConverter().queryset_to_dto(queryset)
+
+    def _hints(self, instance: models.ProblemAnalysisDAO) -> typing.List[str]:
+        if isinstance(instance.hints, list):
+            return instance.hints
+        else:
+            return [instance.hints]
 
 
 class ProblemDifficultyConverter(converters.ModelConverter[models.ProblemAnalysisDAO, dto.ProblemDifficultyDTO]):
@@ -109,3 +117,49 @@ class ProblemTagConverter(converters.ModelConverter[models.ProblemAnalysisTagDAO
             models.ProblemAnalysisTagDAO.field_name.TAG+"__"+BOJTagDAO.field_name.KEY: key,
         })
         return self.instance_to_dto(instance)
+
+
+class ProblemStatisticConverter:
+    def problem_ref_ids_to_dto(self, problem_ref_ids: typing.List[int]) -> dto.ProblemStatisticDTO:
+        if not problem_ref_ids:
+            return dto.ProblemStatisticDTO(problem_count=0, difficulties=[], tags=[])
+        else:
+            return dto.ProblemStatisticDTO(
+                problem_count=len(problem_ref_ids),
+                difficulties=self._difficulties(problem_ref_ids),
+                tags=self._tags(problem_ref_ids),
+            )
+
+    def _difficulties(self, problem_ref_ids: typing.List[int]) -> typing.List[dto.ProblemDifficultyStaticDTO]:
+        TARGET_FIELD = models.ProblemAnalysisDAO.field_name.DIFFICULTY
+        COUNT_FIELD = 'count'
+        queryset = models.ProblemAnalysisDAO.objects \
+            .filter(**{models.ProblemAnalysisDAO.field_name.PROBLEM+"__in": problem_ref_ids}) \
+            .values(TARGET_FIELD) \
+            .annotate(**{COUNT_FIELD: models.models.Count(TARGET_FIELD)}) \
+            .order_by(COUNT_FIELD)
+        return [
+            dto.ProblemDifficultyStaticDTO(
+                difficulty=row[TARGET_FIELD],
+                count=row[COUNT_FIELD],
+                ratio=row[COUNT_FIELD]/len(problem_ref_ids),
+            )
+            for row in queryset
+        ]
+
+    def _tags(self, problem_ref_ids: typing.List[int]) -> typing.List[dto.ProblemTagStaticDTO]:
+        TARGET_FIELD = models.ProblemAnalysisTagDAO.field_name.TAG
+        COUNT_FIELD = 'count'
+        queryset = models.ProblemAnalysisTagDAO.objects \
+            .filter(**{models.ProblemAnalysisTagDAO.field_name.ANALYSIS+"__"+models.ProblemAnalysisDAO.field_name.PROBLEM+"__in": problem_ref_ids}) \
+            .values(TARGET_FIELD) \
+            .annotate(**{COUNT_FIELD: models.models.Count(TARGET_FIELD)}) \
+            .order_by(COUNT_FIELD)
+        return [
+            dto.ProblemTagStaticDTO(
+                tag=BOJTagConverter().instance_to_dto(BOJTagDAO.objects.get(pk=row[TARGET_FIELD])),
+                count=row[COUNT_FIELD],
+                ratio=row[COUNT_FIELD]/len(problem_ref_ids),
+            )
+            for row in queryset
+        ]
