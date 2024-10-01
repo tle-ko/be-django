@@ -10,8 +10,11 @@ class UserConverter(ModelConverter[models.User, dto.UserDTO]):
         return dto.UserDTO(
             user_id=instance.pk,
             username=instance.username,
-            profile_image=instance.profile_image,
+            profile_image=self._profile_image(instance),
         )
+
+    def _profile_image(self, instance: models.User):
+        return instance.profile_image.url if instance.profile_image else None
 
     def instance_to_manage_dto(self, instance: models.User) -> dto.UserManageDTO:
         return dto.UserManageDTO(
