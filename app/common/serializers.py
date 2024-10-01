@@ -14,7 +14,10 @@ class GenericModelToDTOSerializer(serializers.ModelSerializer):
     dto_serializer_class: typing.Type[serializers.Serializer] = None
 
     def get_model_converter(self, *args, **kwargs) -> converters.ModelConverter:
-        return self.model_converter_class(*args, **kwargs)
+        if isinstance(self.model_converter_class, converters.UserRequiredModelConverter):
+            return self.model_converter_class(self.get_authenticated_user(), *args, **kwargs)
+        else:
+            return self.model_converter_class(*args, **kwargs)
 
     def get_dto_serializer(self, *args, **kwargs) -> serializers.Serializer:
         return self.dto_serializer_class(*args, **kwargs)
