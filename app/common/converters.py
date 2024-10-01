@@ -1,6 +1,8 @@
+import typing
+
 from django.db.models import QuerySet
 
-import typing
+from users.models import User
 
 
 ModelType = typing.TypeVar('ModelType')
@@ -13,3 +15,9 @@ class ModelConverter(typing.Generic[ModelType, DTOType]):
 
     def instance_to_dto(self, instance: ModelType) -> DTOType:
         raise NotImplementedError
+
+
+class UserRequiredModelConverter(ModelConverter[ModelType, DTOType]):
+    def __init__(self, user: User) -> None:
+        assert isinstance(user, User)
+        self.user = user
