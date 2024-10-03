@@ -141,11 +141,16 @@ class UsabilityAPITest(TestCase):
 class UserManageAPITest(TestCase):
     fixtures = ['tests/users.json']
 
-    def setUp(self) -> None:
-        self.client.force_login(self.get_user())
+    @staticmethod
+    def get_user() -> models.User:
+        return models.User.objects.get(pk=1)
 
-    def get_user(self) -> models.User:
-        return models.User.objects.get(username='test')
+    def setUp(self) -> None:
+        user = self.get_user()
+        assert user.username == 'test'
+        assert user.email == 'test@example.com'
+        assert user.check_password('passw0rd@test')
+        self.client.force_login(user)
 
     # 권한 테스트
 
@@ -185,8 +190,9 @@ class UserManageAPITest(TestCase):
         self.assertEqual(self.get_user().username, 'alt_test')
 
     def test_200_PATCH_비밀번호_수정하기(self):
+        new_password = "passw0rd@new_password"
         res = self.client.patch("/api/v1/user/manage", {
-            "password": "passw0rd@new_password",
+            "password": new_password,
         }, content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertTrue(self.get_user().check_password("passw0rd@new_password"))
+        self.assertTrue(self.get_user().check_password(new_password))
