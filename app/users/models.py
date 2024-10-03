@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from hashlib import sha256
 from random import randint
-from typing import Optional
+from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
@@ -34,12 +34,16 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_user(self, *args, **kwargs):
+        instance = self.create(*args, **kwargs)
+        return instance
+
     def create_superuser(self, *args, **kwargs):
-        user = self.create(*args, **kwargs)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        return user
+        instance = self.create(*args, **kwargs)
+        instance.is_staff = True
+        instance.is_superuser = True
+        instance.save()
+        return instance
 
     def filter(self,
                email: Optional[str] = None,
@@ -122,21 +126,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
+    def get_profile_image_url(self) -> Optional[str]:
+        return self.profile_image.url if self.profile_image else None
+
     def rotate_token(self):
         token: RefreshToken = RefreshToken.for_user(self)
         self.token = str(token.access_token)
         self.refresh_token = token.token
-        self.save()
-
-    def as_dto(self) -> dto.UserDTO:
-        return dto.UserDTO(
-            user_id=self.pk,
-            username=self.username,
-            profile_image=self.get_profile_image_url(),
-        )
-
-    def get_profile_image_url(self) -> Optional[str]:
-        return self.profile_image.url if self.profile_image else None
 
 
 class UserEmailVerificationManager(BaseUserManager):

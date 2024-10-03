@@ -11,6 +11,11 @@ class UserDTO:
 
 
 @dataclass
-class UserManageDTO(UserDTO):
+class UserDetailDTO(UserDTO):
     email: str
     boj: BOJUserDTO
+
+
+@dataclass
+class UserCredentialDTO(UserDTO):
+    token: str

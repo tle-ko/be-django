@@ -1,15 +1,20 @@
+from django.contrib import auth
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from apps.boj.serializers import BOJUserDTOSerializer
+from common.serializers import GenericModelToDTOSerializer
 
 from . import converters
-from users.models import User
-from users.models import UserEmailVerification
+from . import dto
+from . import models
 
 
 PK = 'id'
+
+
+Serializer = serializers.Serializer
 
 
 class UserDTOSerializer(serializers.Serializer):
@@ -18,9 +23,131 @@ class UserDTOSerializer(serializers.Serializer):
     profile_image = serializers.CharField()
 
 
-class UserManageDTOSerializer(UserDTOSerializer):
+class UserDetailDTOSerializer(UserDTOSerializer):
     email = serializers.EmailField()
     boj = BOJUserDTOSerializer()
+
+
+class UserCredentialDTOSerializer(UserDTOSerializer):
+    token = serializers.CharField()
+
+
+class UserDAOSerializer(GenericModelToDTOSerializer[models.User, dto.UserDetailDTO]):
+    model_converter_class = converters.UserDetailConverter
+    dto_serializer_class = UserDetailDTOSerializer
+
+    class Meta:
+        model = models.User
+        fields = [
+            models.User.field_name.PASSWORD,
+            models.User.field_name.USERNAME,
+            models.User.field_name.BOJ_USERNAME,
+            models.User.field_name.PROFILE_IMAGE,
+        ]
+        extra_kwargs = {
+            models.User.field_name.PASSWORD: {'style': {'input_type': 'password'}},
+        }
+
+    def is_valid(self, *, raise_exception=False):
+        if models.User.field_name.EMAIL in self.initial_data:
+            if raise_exception:
+                raise serializers.ValidationError('이메일은 수정할 수 없습니다.')
+            return False
+        return super().is_valid(raise_exception=raise_exception)
+
+    def save(self, **kwargs):
+        instance: models.User = super().save(**kwargs)
+        validated_data = {**self.validated_data, **kwargs}
+        if models.User.field_name.PASSWORD in validated_data:
+            new_password = validated_data[models.User.field_name.PASSWORD]
+            instance.set_password(new_password)
+            instance.save()
+
+
+class UserDAOSignInSerializer(GenericModelToDTOSerializer[models.User, dto.UserDTO]):
+    model_converter_class = converters.UserCredentialConverter
+    dto_serializer_class = UserCredentialDTOSerializer
+
+    class Meta:
+        model = models.User
+        fields = [
+            models.User.field_name.EMAIL,
+            models.User.field_name.PASSWORD,
+        ]
+        extra_kwargs = {
+            models.User.field_name.EMAIL: {'validators': [EmailValidator]},
+            models.User.field_name.PASSWORD: {'style': {'input_type': 'password'}},
+        }
+
+    def create(self, validated_data: dict):
+        instance: models.User
+        instance = auth.authenticate(self.get_request(), **validated_data)
+        if instance is None:
+            raise serializers.ValidationError('이메일 혹은 비밀번호가 올바르지 않습니다.')
+        auth.login(self.get_request(), instance)
+        instance.rotate_token()
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError
+
+
+class UserDAOSignUpSerializer(GenericModelToDTOSerializer[models.User, dto.UserDTO]):
+    model_converter_class = converters.UserConverter
+    dto_serializer_class = UserDTOSerializer
+
+    verification_token = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = models.User
+        fields = [
+            models.User.field_name.EMAIL,
+            models.User.field_name.PASSWORD,
+            models.User.field_name.USERNAME,
+            models.User.field_name.BOJ_USERNAME,
+            models.User.field_name.PROFILE_IMAGE,
+            'verification_token',
+        ]
+        extra_kwargs = {
+            models.User.field_name.PASSWORD: {'style': {'input_type': 'password'}},
+        }
+
+    def is_valid(self, *, raise_exception=False):
+        if not super().is_valid(raise_exception=raise_exception):
+            return False
+        email: str = self.validated_data['email']
+        token: str = self.validated_data.pop('verification_token')
+        try:
+            instance: models.UserEmailVerification
+            instance = models.UserEmailVerification.objects.get(**{
+                models.UserEmailVerification.field_name.EMAIL: email,
+            })
+            assert instance.verification_token == token
+        except models.UserEmailVerification.DoesNotExist:
+            self._validated_data = {}
+            self._errors = {'verification_token': ['이메일 인증 토큰이 발급되지 않았습니다.']}
+        except AssertionError:
+            self._validated_data = {}
+            self._errors = {'verification_token': ['이메일 인증 토큰이 올바르지 않습니다.']}
+        else:
+            self._errors = {}
+
+        if self._errors and raise_exception:
+            raise ValidationError(self.errors)
+
+        return not bool(self._errors)
+
+    def save(self, **kwargs):
+        instance: models.User = super().save(**kwargs)
+        validated_data = {**self.validated_data, **kwargs}
+        if models.User.field_name.PASSWORD in validated_data:
+            new_password = validated_data[models.User.field_name.PASSWORD]
+            instance.set_password(new_password)
+            instance.save()
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError
 
 
 class UsabilityEmailField(serializers.Serializer):
@@ -35,7 +162,7 @@ class UsabilityEmailField(serializers.Serializer):
         if 'email' in instance:
             email = instance['email']
             data['value'] = email
-            data['is_usable'] = not User.objects.filter(email=email).exists()
+            data['is_usable'] = not models.User.objects.filter(email=email).exists()
         return data
 
 
@@ -51,7 +178,7 @@ class UsabilityUsernameField(serializers.Serializer):
         if 'username' in instance:
             name = instance['username']
             data['value'] = name
-            data['is_usable'] = not User.objects.filter(username=name).exists()
+            data['is_usable'] = not models.User.objects.filter(username=name).exists()
         return data
 
 
@@ -74,23 +201,23 @@ class UsabilitySerializer(serializers.Serializer):
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserEmailVerification
+        model = models.UserEmailVerification
         fields = [
-            UserEmailVerification.field_name.EMAIL,
-            UserEmailVerification.field_name.VERIFICATION_CODE,
-            UserEmailVerification.field_name.VERIFICATION_TOKEN,
-            UserEmailVerification.field_name.EXPIRES_AT,
+            models.UserEmailVerification.field_name.EMAIL,
+            models.UserEmailVerification.field_name.VERIFICATION_CODE,
+            models.UserEmailVerification.field_name.VERIFICATION_TOKEN,
+            models.UserEmailVerification.field_name.EXPIRES_AT,
         ]
         extra_kwargs = {
-            UserEmailVerification.field_name.EMAIL: {'validators': [EmailValidator]},
-            UserEmailVerification.field_name.VERIFICATION_CODE: {'write_only': True},
-            UserEmailVerification.field_name.VERIFICATION_TOKEN: {'read_only': True},
-            UserEmailVerification.field_name.EXPIRES_AT: {'read_only': True},
+            models.UserEmailVerification.field_name.EMAIL: {'validators': [EmailValidator]},
+            models.UserEmailVerification.field_name.VERIFICATION_CODE: {'write_only': True},
+            models.UserEmailVerification.field_name.VERIFICATION_TOKEN: {'read_only': True},
+            models.UserEmailVerification.field_name.EXPIRES_AT: {'read_only': True},
         }
 
-    def update(self, instance: UserEmailVerification, validated_data: dict):
+    def update(self, instance: models.UserEmailVerification, validated_data: dict):
         verification_code = validated_data.get(
-            UserEmailVerification.field_name.VERIFICATION_CODE, None)
+            models.UserEmailVerification.field_name.VERIFICATION_CODE, None)
         if verification_code is None:
             # 코드가 없다면 코드를 만들어 주자.
             instance.revoke_token()
@@ -104,128 +231,5 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         return instance
 
 
-# User Serializers
-
-class SignInSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            PK,
-            User.field_name.EMAIL,
-            User.field_name.PASSWORD,
-            User.field_name.USERNAME,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.TOKEN,
-            User.field_name.REFRESH_TOKEN,
-        ]
-        extra_kwargs = {
-            PK: {'read_only': True},
-            User.field_name.EMAIL: {
-                'write_only': True,
-                'validators': [EmailValidator],
-            },
-            User.field_name.PASSWORD: {
-                'write_only': True,
-                'style': {'input_type': 'password'},
-            },
-            User.field_name.USERNAME: {'read_only': True},
-            User.field_name.PROFILE_IMAGE: {'read_only': True},
-            User.field_name.TOKEN: {'read_only': True},
-            User.field_name.REFRESH_TOKEN: {'read_only': True},
-        }
-
-
-class SignUpSerializer(serializers.ModelSerializer):
-    verification_token = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = [
-            PK,
-            User.field_name.EMAIL,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.PASSWORD,
-            User.field_name.BOJ_USERNAME,
-            'verification_token',
-        ]
-        extra_kwargs = {
-            PK: {'read_only': True},
-            User.field_name.EMAIL: {'write_only': True},
-            User.field_name.PASSWORD: {'write_only': True, 'style': {'input_type': 'password'}},
-        }
-
-    def create(self, validated_data: dict):
-        email = validated_data.get('email')
-        verification_token = validated_data.pop('verification_token')
-        try:
-            email_verification = UserEmailVerification.objects.get(email=email)
-        except UserEmailVerification.DoesNotExist:
-            raise ValidationError('이메일 인증 토큰이 발급되지 않았습니다.')
-        if email_verification.verification_token != verification_token:
-            raise ValidationError('이메일 인증 토큰이 올바르지 않습니다.')
-        return super().create(validated_data)
-
-
 class UsernameSerializer(serializers.Serializer):
     username = serializers.CharField()
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            PK,
-            User.field_name.USERNAME,
-            User.field_name.PROFILE_IMAGE,
-        ]
-        read_only_fields = ['__all__']
-
-
-class UserUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            User.field_name.EMAIL,
-            User.field_name.PASSWORD,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-            User.field_name.BOJ_USERNAME,
-        ]
-        extra_kwargs = {
-            User.field_name.PASSWORD: {'style': {'input_type': 'password'}},
-        }
-
-    @property
-    def data(self):
-        obj = converters.UserConverter().instance_to_manage_dto(self.instance)
-        return UserManageDTOSerializer(obj).data
-
-    def is_valid(self, *, raise_exception=False):
-        try:
-            assert User.field_name.EMAIL not in self.initial_data, (
-                '이메일은 수정할 수 없습니다.'
-            )
-        except AssertionError as exception:
-            if raise_exception:
-                raise ValidationError(exception)
-            else:
-                return (False, None)
-        return super().is_valid(raise_exception=raise_exception)
-
-    def save(self, **kwargs):
-        self.instance: User = super().save(**kwargs)
-        if User.field_name.PASSWORD in self.validated_data:
-            self.instance.set_password(self.validated_data[User.field_name.PASSWORD])
-            self.instance.save()
-
-
-class UserMinimalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            PK,
-            User.field_name.PROFILE_IMAGE,
-            User.field_name.USERNAME,
-        ]
-        read_only_fields = ['__all__']
