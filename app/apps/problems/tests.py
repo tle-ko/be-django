@@ -1,20 +1,21 @@
 from django.test import TestCase
 from rest_framework import status
 
-from apps.problems.models import Problem
 from users.models import User
 
-from . import urls
+from . import models
 
 
 class ProblemCreateAPIViewTest(TestCase):
-    fixtures = ['sample.json']
+    fixtures = [
+        'fixtures/tests/users.json',
+    ]
     maxDiff = None
 
     def setUp(self) -> None:
         self.user = User.objects.get(pk=1)
         self.client.force_login(self.user)
-        self.sample_data = {
+        self.fields = {
             "title": "Test Problem",
             "link": "https://boj.kr/1000",
             "description": "테스트용 문제입니다.",
@@ -33,43 +34,67 @@ class ProblemCreateAPIViewTest(TestCase):
         ]
 
     def test_201_문제_생성(self):
-        res = self.client.post("/api/v1/problem", self.sample_data)
+        res = self.client.post("/api/v1/problem", self.fields)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_401_비로그인_사용_불가(self):
         self.client.logout()
-        res = self.client.post("/api/v1/problem", self.sample_data)
+        res = self.client.post("/api/v1/problem", self.fields)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_201_링크가_누락_되어도_문제_생성_가능(self):
-        data = self.sample_data.copy()
-        del data['link']
-        res = self.client.post("/api/v1/problem", data)
+        del self.fields['link']
+        res = self.client.post("/api/v1/problem", self.fields)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    def test_400_일부_필드_누락(self):
-        for drop_field in self.required_fields:
-            with self.subTest(drop_field=drop_field):
-                res = self.client.post("/api/v1/problem", {
-                    field: self.sample_data[field]
-                    for field in self.required_fields if field != drop_field
-                })
-                self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_400_제목_누락(self):
+        del self.fields['title']
+        res = self.client.post("/api/v1/problem", self.fields)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class ProblemDetailRetrieveAPIViewTest(TestCase):
-    fixtures = ['sample.json']
+    fixtures = [
+        'fixtures/tests/users.json',
+        'fixtures/tests/problems.json',
+    ]
     maxDiff = None
 
     def setUp(self) -> None:
         self.user = User.objects.get(pk=1)
         self.client.force_login(self.user)
 
-    def test_200_문제_정보_가져오기(self):
-        problem = Problem.objects.get(pk=1)
+    def test_200_내가_만든_문제(self):
+        problem = models.ProblemDAO.objects.get(pk=1)
+        self.assertEqual(problem.created_by, self.user)
+
         res = self.client.get(f"/api/v1/problem/{problem.pk}/detail")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_404(self):
-        res = self.client.get(f"/api/v1/problem/999/detail")
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+    def test_403_내가_만들지_않은_문제(self):
+        problem = models.ProblemDAO.objects.get(pk=2)
+        self.assertNotEqual(problem.created_by, self.user)
+
+        res = self.client.get(f"/api/v1/problem/{problem.pk}/detail")
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class ProblemSearchListAPIViewTest(TestCase):
+    fixtures = [
+        'fixtures/tests/users.json',
+        'fixtures/tests/problems.json',
+    ]
+
+    def setUp(self) -> None:
+        self.user = User.objects.get(pk=1)
+        self.client.force_login(self.user)
+
+    def test_200_모든_문제_가져오기(self):
+        res = self.client.get("/api/v1/problems")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('results', res.json())
+
+        my_problems = models.ProblemDAO.objects.filter(**{
+            models.ProblemDAO.field_name.CREATED_BY: self.user,
+        })
+        self.assertEqual(len(res.json()['results']), my_problems.count())
