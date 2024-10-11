@@ -1,12 +1,9 @@
 import typing
 
-from django.db.models.signals import post_save
 from django.db.transaction import atomic
-from django.dispatch import receiver
 
 from apps.background_task.tasks import tasks
-from apps.boj.proxy import BOJTag
-from apps.llms.proxy import TextGeneration
+from apps.llms.models import TextGenerationDAO
 
 from . import enums
 from . import models
@@ -14,15 +11,14 @@ from . import prompts
 
 
 def text_generate(prompt: str) -> int:
-    obj = TextGeneration(**{
-        TextGeneration.field_name.REQUEST: prompt,
-    })
-    obj.generate()
-    return obj.pk
+    instance = TextGenerationDAO.objects.create(prompt=prompt)
+    instance.generate()
+    return instance.pk
 
 
 def load_generated_text(text_generation_id: int) -> str:
-    return TextGeneration.objects.get(pk=text_generation_id).response
+    instance: TextGenerationDAO = TextGenerationDAO.objects.get(pk=text_generation_id)
+    return instance.response
 
 
 @tasks.background
@@ -80,6 +76,9 @@ def schedule_analysis(problem_ref_id: int,
         'difficulty': prompts.DifficultyPromptHandler().parse_response(load_generated_text(difficulty_text_generation_id)),
         'hints': prompts.HintsPromptHandler().parse_response(load_generated_text(hints_text_generation_id)),
     }
+    boj_tags = models.BOJTagDAO.objects.filter(**{
+        models.BOJTagDAO.field_name.KEY+'__in': context['tags'],
+    })
     with atomic():
         analysis = models.ProblemAnalysisDAO.objects.create(**{
             models.ProblemAnalysisDAO.field_name.PROBLEM: problem,
@@ -87,9 +86,10 @@ def schedule_analysis(problem_ref_id: int,
             models.ProblemAnalysisDAO.field_name.TIME_COMPLEXITY: context['time_complexity'],
             models.ProblemAnalysisDAO.field_name.HINTS: context['hints'],
         })
-        for tag_key in context['tags']:
-            tag = BOJTag.objects.get_by_key(tag_key)
-            models.ProblemAnalysisTagDAO.objects.create(**{
+        models.ProblemAnalysisDAO.objects.bulk_create([
+            models.ProblemAnalysisTagDAO(**{
                 models.ProblemAnalysisTagDAO.field_name.ANALYSIS: analysis,
                 models.ProblemAnalysisTagDAO.field_name.TAG: tag,
             })
+            for tag in boj_tags
+        ])

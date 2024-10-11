@@ -18,7 +18,7 @@ class ProblemCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
 
-    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.serializer_class})
+    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -27,20 +27,20 @@ class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAP
     """문제 상세 조회, 수정, 삭제 API.\n\n."""
 
     queryset = models.ProblemDAO
-    permission_classes = [permissions.IsProblemCreator | permissions.IsReadOnly]
+    permission_classes = [permissions.IsProblemCreator]
     serializer_class = serializers.ProblemDAOSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'problem_ref_id'
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.serializer_class})
+    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 

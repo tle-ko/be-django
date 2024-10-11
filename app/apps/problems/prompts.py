@@ -6,15 +6,13 @@ import re
 from sympy import latex
 from sympy.parsing.latex import parse_latex
 
-from apps.boj.proxy import BOJTag
-
 from . import models
 
 
 @lru_cache
 def valid_tags() -> typing.List[str]:
     """허용되는 태그의 목록을 가져온다."""
-    return BOJTag.objects.values_list(BOJTag.field_name.KEY, flat=True)
+    return models.BOJTagDAO.objects.values_list(models.BOJTagDAO.field_name.KEY, flat=True)
 
 
 class PromptHandler:
@@ -171,7 +169,7 @@ class HintsPromptHandler(PromptHandler):
             <sys>
             You are a helpful, respectful, and honest assistant. Always answer as clearly as possible.
             Ensure your responses are academically accurate.
-                        
+
             Your goal is to provide step-by-step hints to help the user solve the given problem, without including any code in your response. The hints must be written in Korean.
 
             Format the hints as follows:
@@ -180,7 +178,7 @@ class HintsPromptHandler(PromptHandler):
             3. Third step: continue guiding step-by-step toward the solution.
 
             Each step should begin with a number ("1.", "2.", "3.", etc.), ensuring the hints are clear, concise, and easy for the user to follow. No additional content should be provided beyond these numbered steps.
-                      
+
             Please ensure the hints are provided using the same format, separated by `\n`, to allow easy parsing on the client side.
             <sys>
             <usr>

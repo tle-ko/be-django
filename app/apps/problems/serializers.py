@@ -4,6 +4,7 @@ from apps.boj.serializers import BOJTagDTOSerializer
 from common.serializers import GenericModelToDTOSerializer
 
 from . import converters
+from . import dto
 from . import models
 
 
@@ -68,8 +69,9 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
     tags = ProblemTagStaticDTOSerializer(many=True)
 
 
-class ProblemDAOSerializer(GenericModelToDTOSerializer):
-    serializer_class = ProblemDetailDTOSerializer
+class ProblemDAOSerializer(GenericModelToDTOSerializer[models.ProblemDAO, dto.ProblemDetailDTO]):
+    model_converter_class = converters.ProblemDetailConverter
+    dto_serializer_class = ProblemDetailDTOSerializer
 
     class Meta:
         model = models.ProblemDAO
@@ -83,17 +85,12 @@ class ProblemDAOSerializer(GenericModelToDTOSerializer):
             models.ProblemDAO.field_name.TIME_LIMIT,
             models.ProblemDAO.field_name.CREATED_BY,
         ]
-        read_only_fields = [
-            models.ProblemDAO.field_name.CREATED_BY,
-        ]
-
-    def get_object(self):
-        instance = super().get_object()
-        return converters.ProblemDetailConverter().instance_to_dto(instance)
-
-    def create(self, validated_data):
-        validated_data[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
-        return super().create(validated_data)
+        extra_kwargs = {
+            models.ProblemDAO.field_name.CREATED_BY: {
+                'read_only': True,
+                'default': serializers.CurrentUserDefault(),
+            },
+        }
 
 
 class ProblemSearchQueryParamSerializer(serializers.Serializer):
