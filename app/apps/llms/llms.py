@@ -1,21 +1,21 @@
+from __future__ import annotations
+
 from django.conf import settings
-from django.utils import timezone
 from google import generativeai as genai
 
-from . import models
+
+def get_model_name() -> str:
+    return Gemini.model_name
+
+
+def prompt(prompt: str) -> str:
+    return Gemini().perform_prompt(prompt)
 
 
 class FoundationModel:
     model_name = '<REPLACE_THIS>'
 
-    def generate(self, obj: models.TextGenerationDAO) -> None:
-        obj.requested_at = timezone.now()
-        obj.foundation_model = self.__class__.model_name
-        self.perform_generate(obj)
-        obj.responsed_at = timezone.now()
-        obj.save()
-
-    def perform_generate(self, obj: models.TextGenerationDAO) -> None:
+    def perform_prompt(self, prompt: str) -> str:
         raise NotImplementedError
 
 
@@ -40,5 +40,5 @@ class Gemini(FoundationModel):
         )
         self.chat = self.model.start_chat(history=[])
 
-    def perform_generate(self, obj: models.TextGenerationDAO) -> None:
-        obj.response = self.chat.send_message(content=obj.request).text
+    def perform_prompt(self, prompt: str) -> None:
+        return self.chat.send_message(content=prompt).text
