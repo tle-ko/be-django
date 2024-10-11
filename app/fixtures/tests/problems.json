@@ -1,6 +1,6 @@
 [
     {
-        "model": "problems.problem",
+        "model": "problems.problemdao",
         "pk": 1,
         "fields": {
             "title": "A+B",
@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "problems.problem",
+        "model": "problems.problemdao",
         "pk": 2,
         "fields": {
             "title": "움",
@@ -36,7 +36,7 @@
         }
     },
     {
-        "model": "problems.problem",
+        "model": "problems.problemdao",
         "pk": 3,
         "fields": {
             "title": "칵테일",
