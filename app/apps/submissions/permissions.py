@@ -18,8 +18,8 @@ class IsCrewMember(IsMember):
         if isinstance(obj, models.SubmissionCommentDAO):
             obj: models.SubmissionCommentDAO
             return super().has_object_permission(request, view, obj.submission.problem.crew)
-        if isinstance(obj, models.CrewActivityProblemDAO):
-            obj: models.CrewActivityProblemDAO
+        if isinstance(obj, models.CrewProblemDAO):
+            obj: models.CrewProblemDAO
             return super().has_object_permission(request, view, obj.crew)
         raise ValueError(f'Unsupported object type: {type(obj)}')
 

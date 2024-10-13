@@ -77,6 +77,13 @@ class ProblemDAO(models.Model):
         from . import analyzer
         analyzer.schedule_analysis(self.pk)
 
+    def add_analysis(self, difficulty: enums.ProblemDifficulty, **kwargs) -> ProblemAnalysisDAO:
+        return ProblemAnalysisDAO.objects.create(**{
+            ProblemAnalysisDAO.field_name.PROBLEM: self,
+            ProblemAnalysisDAO.field_name.DIFFICULTY: difficulty,
+            **kwargs,
+        })
+
 
 class ProblemAnalysisDAO(models.Model):
     problem = models.ForeignKey(

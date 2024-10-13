@@ -1,9 +1,18 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import GenericAPIView
 
-from apps.activities.mixins import CrewActivityProblemUrlKwargMixin
-
+from apps.crews import models
 from . import proxy
+
+
+class CrewActivityProblemUrlKwargMixin(GenericAPIView):
+    queryset = models.CrewProblemDAO
+    lookup_field = 'id'
+    lookup_url_kwarg = 'problem_id'
+
+    def get_object(self) -> models.CrewProblemDAO:
+        return super().get_object()
+
 
 
 class SubmissionUrlKwargMixin:

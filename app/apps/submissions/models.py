@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from apps.activities.models import CrewActivityProblemDAO
+from apps.crews.models import CrewProblemDAO
 from apps.crews.enums import ProgrammingLanguageChoices
 from users.models import User
 
@@ -9,7 +9,7 @@ from users.models import User
 class SubmissionDAO(models.Model):
     # TODO: 같은 문제에 여러 번 제출 하는 것을 막기 위한 로직 추가
     problem = models.ForeignKey(
-        CrewActivityProblemDAO,
+        CrewProblemDAO,
         on_delete=models.PROTECT,
         help_text='활동 문제를 입력해주세요.',
     )

@@ -61,6 +61,6 @@ class ProblemSearchListAPIView(generics.ListAPIView):
             models.ProblemDAO.field_name.CREATED_BY: self.request.user,
         })
 
-    def get_serializer(self, queryset, *args, **kwargs):
+    def get_serializer(self, queryset=models.ProblemDAO.objects.none(), *args, **kwargs):
         queryset = converters.ProblemConverter().queryset_to_dto(queryset)
         return super().get_serializer(queryset, *args, **kwargs)

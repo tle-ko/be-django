@@ -5,7 +5,7 @@ import typing
 from django.db.models import Manager
 from django.db.models import QuerySet
 
-from apps.activities.models import CrewActivityProblemDAO
+from apps.crews.models import CrewProblemDAO
 from users.dto import UserDTO
 from users.models import User
 
@@ -15,7 +15,7 @@ from . import dto
 
 class SubmissionQuerySet(QuerySet):
     def filter(self,
-               problem: CrewActivityProblemDAO = None,
+               problem: CrewProblemDAO = None,
                submitted_by: User = None,
                **kwargs) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
         return self._kwargs_filtering(
@@ -25,7 +25,7 @@ class SubmissionQuerySet(QuerySet):
             **kwargs,
         )
 
-    def problem(self, problem: CrewActivityProblemDAO) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
+    def problem(self, problem: CrewProblemDAO) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
         return self.filter(problem=problem)
 
     def submitted_by(self, submitted_by: User) -> typing.Union[SubmissionQuerySet, QuerySet[Submission]]:
@@ -33,11 +33,11 @@ class SubmissionQuerySet(QuerySet):
 
     def _kwargs_filtering(self,
                           filter_function,
-                          problem: CrewActivityProblemDAO = None,
+                          problem: CrewProblemDAO = None,
                           submitted_by: User = None,
                           **kwargs) -> SubmissionQuerySet:
         if problem is not None:
-            assert isinstance(problem, CrewActivityProblemDAO)
+            assert isinstance(problem, CrewProblemDAO)
             kwargs[Submission.field_name.PROBLEM] = problem
         if submitted_by is not None:
             assert isinstance(submitted_by, User)
