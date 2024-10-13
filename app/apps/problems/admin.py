@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.db.models import QuerySet
 
-from apps.boj.proxy import BOJTag
 from users.models import User
 
 from . import analyzer
@@ -75,7 +74,7 @@ class ProblemAnalysisModelAdmin(admin.ModelAdmin):
         }).select_related(
             models.ProblemAnalysisTagDAO.field_name.TAG,
         ).values_list(
-            models.ProblemAnalysisTagDAO.field_name.TAG+'__'+BOJTag.field_name.KEY,
+            models.ProblemAnalysisTagDAO.field_name.TAG+'__'+models.BOJTagDAO.field_name.KEY,
             flat=True,
         )
         return ', '.join(tag_keys)

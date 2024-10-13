@@ -50,11 +50,8 @@ INSTALLED_APPS = [
     'apps.background_task',
     "apps.boj",
     "apps.crews",
-    "apps.activities",
-    "apps.applications",
     "apps.llms",
     "apps.problems",
-    "apps.submissions",
 ]
 
 MIDDLEWARE = [

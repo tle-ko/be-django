@@ -5,22 +5,21 @@ from hashlib import sha256
 from random import randint
 from typing import Optional
 
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth import models as auth_models
 from django.db import models
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from . import dto
+from apps.boj.enums import BOJLevel
+from apps.boj.models import BOJUserDAO
 
 
 def get_profile_image_path(user: User, filename: str) -> str:
     return f'user/profile/{user.pk}/{filename}'
 
 
-class UserManager(BaseUserManager):
+class UserManager(auth_models.BaseUserManager):
     def create(self, email: str, username: str, password: str, **kwargs) -> User:
         if not email:
             raise ValueError('The Email field must be set')
@@ -34,12 +33,16 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_user(self, *args, **kwargs):
+        instance = self.create(*args, **kwargs)
+        return instance
+
     def create_superuser(self, *args, **kwargs):
-        user = self.create(*args, **kwargs)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        return user
+        instance = self.create(*args, **kwargs)
+        instance.is_staff = True
+        instance.is_superuser = True
+        instance.save()
+        return instance
 
     def filter(self,
                email: Optional[str] = None,
@@ -53,7 +56,7 @@ class UserManager(BaseUserManager):
         return super().filter(*args, **kwargs)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     username = models.CharField(
         verbose_name='username',
         max_length=30,
@@ -109,6 +112,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         CREATED_AT = 'created_at'
         LAST_LOGIN = 'last_login'
 
+    class method_name:
+        GET_BOJ_LEVEL = 'get_boj_level'
+
     @property
     def date_joined(self):
         return self.created_at
@@ -122,24 +128,24 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
+    def get_profile_image_url(self) -> Optional[str]:
+        return self.profile_image.url if self.profile_image else None
+
+    def get_boj_user(self) -> BOJUserDAO:
+        return BOJUserDAO.objects.get_or_create(**{
+            BOJUserDAO.field_name.USERNAME: self.boj_username,
+        })[0]
+
+    def get_boj_level(self) -> BOJLevel:
+        return BOJLevel(self.get_boj_user().level)
+
     def rotate_token(self):
         token: RefreshToken = RefreshToken.for_user(self)
         self.token = str(token.access_token)
         self.refresh_token = token.token
-        self.save()
-
-    def as_dto(self) -> dto.UserDTO:
-        return dto.UserDTO(
-            user_id=self.pk,
-            username=self.username,
-            profile_image=self.get_profile_image_url(),
-        )
-
-    def get_profile_image_url(self) -> Optional[str]:
-        return self.profile_image.url if self.profile_image else None
 
 
-class UserEmailVerificationManager(BaseUserManager):
+class UserEmailVerificationManager(auth_models.BaseUserManager):
     def get_or_create_by_email(self, email: str) -> UserEmailVerification:
         return super().get_or_create(**{UserEmailVerification.field_name.EMAIL: email})[0]
 

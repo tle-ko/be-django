@@ -65,6 +65,8 @@ class ProblemDAO(models.Model):
         UPDATED_AT = 'updated_at'
 
     class Meta:
+        verbose_name = 'Problem'
+        verbose_name_plural = 'Problems'
         ordering = ['-created_at']
 
     def __str__(self) -> str:
@@ -74,6 +76,13 @@ class ProblemDAO(models.Model):
         super().save(*args, **kwargs)
         from . import analyzer
         analyzer.schedule_analysis(self.pk)
+
+    def add_analysis(self, difficulty: enums.ProblemDifficulty, **kwargs) -> ProblemAnalysisDAO:
+        return ProblemAnalysisDAO.objects.create(**{
+            ProblemAnalysisDAO.field_name.PROBLEM: self,
+            ProblemAnalysisDAO.field_name.DIFFICULTY: difficulty,
+            **kwargs,
+        })
 
 
 class ProblemAnalysisDAO(models.Model):
@@ -119,7 +128,8 @@ class ProblemAnalysisDAO(models.Model):
         CREATED_AT = 'created_at'
 
     class Meta:
-        verbose_name_plural = 'Problem analyses'
+        verbose_name = 'Problem Analysis'
+        verbose_name_plural = 'Problem Analyses'
         ordering = ['-created_at']
         get_latest_by = ['created_at']
 
@@ -145,6 +155,10 @@ class ProblemAnalysisTagDAO(models.Model):
     class field_name:
         ANALYSIS = 'analysis'
         TAG = 'tag'
+
+    class Meta:
+        verbose_name = 'Problem Analysis Tag'
+        verbose_name_plural = 'Problem Analysis Tags'
 
     def __str__(self):
         return f'{self.analysis.problem} #{self.tag}'

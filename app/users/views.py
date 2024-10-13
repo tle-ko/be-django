@@ -1,27 +1,13 @@
-from typing import Optional
-
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import permissions
 from rest_framework import status
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
 
-from users.models import User
-from users.models import UserEmailVerification
-from users.serializers import EmailVerificationSerializer
-from users.serializers import UsabilitySerializerForQueryParameter
-from users.serializers import UsabilitySerializer
-from users.serializers import UserUpdateSerializer
-from users.serializers import SignInSerializer
-from users.serializers import SignUpSerializer
+from common import swagger
 
+from . import auth
+from . import models
 from . import serializers
 
 
@@ -32,16 +18,16 @@ class UsabilityAPIView(generics.RetrieveAPIView):
     둘 다 입력하지 않을 경우 400 BAD_REQUEST를 반환한다.
     """
 
-    permission_classes = [AllowAny]
-    serializer_class = UsabilitySerializer
-
-    @swagger_auto_schema(query_serializer=UsabilitySerializerForQueryParameter)
-    def get(self, *args, **kwargs):
-        return super().get(*args, **kwargs)
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.UsabilitySerializer
 
     def retrieve(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(request.query_params)
         return Response(serializer.data)
+
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], query_serializer=serializers.UsabilitySerializerForQueryParameter)
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
 
 class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
@@ -53,84 +39,71 @@ class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
     """
     authentication_classes = []
     throttle_classes = []
-    permission_classes = [AllowAny]
-    queryset = UserEmailVerification
-    serializer_class = EmailVerificationSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = models.UserEmailVerification
+    serializer_class = serializers.EmailVerificationSerializer
 
     def get_object(self):
         email = self.request.data['email']
-        return UserEmailVerification.objects.get_or_create_by_email(email=email)
+        return models.UserEmailVerification.objects.get_or_create_by_email(email=email)
 
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_200_OK: serializer_class})
     def post(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
 
 class SignInAPIView(generics.GenericAPIView):
-    """사용자 로그인 API.
-
-    .
-    """
+    """사용자 로그인 API.\n\n."""
     authentication_classes = []
-    permission_classes = [AllowAny]
-    serializer_class = SignInSerializer
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.UserDAOSignInSerializer
 
-    def post(self, request: Request, *args, **kwargs):
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_login(serializer)
+        auth.login(request, serializer)
         return Response(serializer.data)
-
-    def perform_login(self, serializer: SignInSerializer):
-        user: Optional[User]
-        if (user := authenticate(request=self.request, **serializer.validated_data)) is None:
-            raise AuthenticationFailed(f'Invalid email or password')
-        login(self.request, user)
-        user.rotate_token()  # TODO: 이 작업을 로그인 백엔드에서 수행하도록 변경
-        serializer.instance = user
 
 
 class SignUpAPIView(generics.CreateAPIView):
-    """사용자 등록(회원가입) API.
-
-    .
-    """
+    """사용자 등록(회원가입) API.\n\n."""
     authentication_classes = []
-    permission_classes = [AllowAny]
-    serializer_class = SignUpSerializer
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.UserDAOSignUpSerializer
+
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class SignOutAPIView(generics.GenericAPIView):
-    """사용자 로그아웃 API.
+    """사용자 로그아웃 API.\n\n."""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.Serializer
 
-    .
-    """
-    permission_classes = [IsAuthenticated]
-    serializer_class = Serializer
-
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_204_NO_CONTENT: None})
     def get(self, request, *args, **kwargs):
-        logout(request)
+        auth.logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserManageAPIView(generics.RetrieveUpdateAPIView):
-    """현재 로그인한 사용자 정보를 조회/수정하는 API.
+    """현재 로그인한 사용자 정보를 조회/수정하는 API.\n\n."""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.UserDAOSerializer
 
-    .
-    """
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserUpdateSerializer
-
-    def get_object(self) -> User:
+    def get_object(self) -> models.User:
         return self.request.user
 
-    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
