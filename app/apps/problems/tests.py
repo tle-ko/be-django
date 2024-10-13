@@ -34,22 +34,22 @@ class ProblemCreateAPIViewTest(TestCase):
         ]
 
     def test_201_문제_생성(self):
-        res = self.client.post("/api/v1/problem", self.fields)
+        res = self.client.post("/api/v1/problem_ref", self.fields)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_401_비로그인_사용_불가(self):
         self.client.logout()
-        res = self.client.post("/api/v1/problem", self.fields)
+        res = self.client.post("/api/v1/problem_ref", self.fields)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_201_링크가_누락_되어도_문제_생성_가능(self):
         del self.fields['link']
-        res = self.client.post("/api/v1/problem", self.fields)
+        res = self.client.post("/api/v1/problem_ref", self.fields)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_400_제목_누락(self):
         del self.fields['title']
-        res = self.client.post("/api/v1/problem", self.fields)
+        res = self.client.post("/api/v1/problem_ref", self.fields)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -68,14 +68,14 @@ class ProblemDetailRetrieveAPIViewTest(TestCase):
         problem = models.ProblemDAO.objects.get(pk=1)
         self.assertEqual(problem.created_by, self.user)
 
-        res = self.client.get(f"/api/v1/problem/{problem.pk}/detail")
+        res = self.client.get(f"/api/v1/problem_ref/{problem.pk}/detail")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_403_내가_만들지_않은_문제(self):
         problem = models.ProblemDAO.objects.get(pk=2)
         self.assertNotEqual(problem.created_by, self.user)
 
-        res = self.client.get(f"/api/v1/problem/{problem.pk}/detail")
+        res = self.client.get(f"/api/v1/problem_ref/{problem.pk}/detail")
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -90,7 +90,7 @@ class ProblemSearchListAPIViewTest(TestCase):
         self.client.force_login(self.user)
 
     def test_200_모든_문제_가져오기(self):
-        res = self.client.get("/api/v1/problems")
+        res = self.client.get("/api/v1/problem_refs")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('results', res.json())
 
