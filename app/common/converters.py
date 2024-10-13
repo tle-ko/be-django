@@ -1,8 +1,7 @@
 import typing
 
+from django.contrib.auth.models import AbstractUser
 from django.db.models import QuerySet
-
-from users.models import User
 
 
 ModelType = typing.TypeVar('ModelType')
@@ -19,9 +18,20 @@ class ModelConverter(typing.Generic[ModelType, DTOType]):
         raise NotImplementedError
 
 
-class UserRequiredModelConverter(ModelConverter[ModelType, DTOType]):
+class AnyUserRequiredModelConverter(ModelConverter[ModelType, DTOType]):
     user_required = True
 
-    def __init__(self, user: User) -> None:
-        assert isinstance(user, User)
+    def __init__(self, user: AbstractUser) -> None:
+        assert user.is_anonymous or user.is_authenticated
         self.user = user
+
+
+class AuthenticatedUserRequiredModelConverter(ModelConverter[ModelType, DTOType]):
+    user_required = True
+
+    def __init__(self, user: AbstractUser) -> None:
+        assert user.is_authenticated, 'The user must be authenticated'
+        self.user = user
+
+
+UserRequiredModelConverter = AnyUserRequiredModelConverter
