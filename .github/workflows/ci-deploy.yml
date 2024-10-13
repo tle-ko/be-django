@@ -1,15 +1,15 @@
-name: CI via SSH (Deploy)
+name: CD via SSH
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
 jobs:
   build:
     name: CI via SSH (Deploy)
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
+    - name: Apply update to actual server via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOSTNAME }}
