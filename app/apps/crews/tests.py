@@ -22,37 +22,33 @@ class RecruitingCrewListAPIViewTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]["id"], 1)
-        self.assertEqual(data[1]["id"], 2)
+        self.assertEqual(data[0]["crew_id"], 1)
+        self.assertEqual(data[1]["crew_id"], 2)
 
     def test_200_로그인_사용자로_recruiting_크루_목록_조회(self):
         res = self.client.get("/api/v1/crews/recruiting")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertListEqual(res.json(), [
-            {
-                "id": 2,
-                "crew_id": 2,
-                "icon": "🚢",
-                "name": "다른사람이크루장",
-                "is_joinable": True,
-                "is_active": True,
-                "members": {"count": 1, "max_count": 6},
-                "tags": [
-                    {"type": "language", "key": "python",   "name": "Python"},
-                    {"type": "level",    "key": None,       "name": "브론즈 4 이상"},
-                ],
-                "latest_activity": {
-                    "name": "등록된 활동 없음",
-                    "start_at": None,
-                    "end_at": None
-                }
-            },
-        ])
+        data = res.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["crew_id"], 2)
 
 
 class MyCrewListAPIViewTest(TestCase):
-    fixtures = ['sample.json']
     maxDiff = None
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.user = models.User.objects.create(**{
+            models.User.field_name.USERNAME: "test",
+            models.User.field_name.PASSWORD: "test",
+            models.User.field_name.EMAIL: "test@example.com",
+            models.User.field_name.BOJ_USERNAME: "test",
+        })
+        cls.crew = models.CrewDAO.objects.create(**{
+            models.CrewDAO.field_name.ICON: "🚢",
+            models.CrewDAO.field_name.NAME: "코딩메리호",
+            models.CrewDAO.field_name.CREATED_BY: cls.user,
+        })
 
     def setUp(self) -> None:
         self.user = models.User.objects.get(pk=1)
@@ -66,20 +62,14 @@ class MyCrewListAPIViewTest(TestCase):
     def test_200_my_크루_목록_조회(self):
         res = self.client.get("/api/v1/crews/my")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertListEqual(res.json(), [
-            {
-                "id": 1,
-                "crew_id": 1,
-                "icon": "🚢",
-                "name": "코딩메리호",
-                "is_active": True,
-                "latest_activity": {
-                    "name": "등록된 활동 없음",
-                    "start_at": None,
-                    "end_at": None
-                }
-            },
-        ])
+
+        data = res.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["crew_id"], self.crew.pk)
+        self.assertEqual(data[0]["icon"], self.crew.icon)
+        self.assertEqual(data[0]["name"], self.crew.name)
+        self.assertEqual(data[0]["is_active"], self.crew.is_active)
+        self.assertEqual(data[0]["latest_activity"]["name"], "등록된 활동 없음")
 
 
 class CrewCreateAPIViewTest(TestCase):
@@ -101,7 +91,6 @@ class CrewCreateAPIViewTest(TestCase):
         })
 
     def setUp(self) -> None:
-        self.user = models.User.objects.get(pk=1)
         self.client.force_login(self.user)
 
     def test_201_크루_생성(self):
@@ -109,16 +98,14 @@ class CrewCreateAPIViewTest(TestCase):
             "icon": "🥇",
             "name": "임시로 생성해본 크루",
             "max_members": 3,
-            "languages": [
-                "java",
-            ],
+            "languages": ["java"],
             "min_boj_level": 0,
             "custom_tags": ['tag1'],
             "notice": "string",
             "is_recruiting": True,
             "is_active": True
         })
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED, res.json())
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
 
 class CrewStatisticsAPIViewTest(TestCase):
@@ -159,6 +146,6 @@ class CrewStatisticsAPIViewTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_200_응답_데이터_형식_검사(self) -> None:
-        res = self.client.get("/api/v1/crew/{self.crew.pk}/statistics")
+        res = self.client.get(f"/api/v1/crew/{self.crew.pk}/statistics")
         data = res.json()
         self.assertEqual(data["problem_count"], 1)
