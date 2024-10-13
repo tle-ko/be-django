@@ -8,9 +8,6 @@ from . import dto
 from . import models
 
 
-PK = 'id'
-
-
 class ProblemDifficultyDTOSerializer(serializers.Serializer):
     value = serializers.IntegerField()
     name_ko = serializers.CharField()
@@ -83,14 +80,14 @@ class ProblemDAOSerializer(GenericModelToDTOSerializer[models.ProblemDAO, dto.Pr
             models.ProblemDAO.field_name.OUTPUT_DESCRIPTION,
             models.ProblemDAO.field_name.MEMORY_LIMIT,
             models.ProblemDAO.field_name.TIME_LIMIT,
-            models.ProblemDAO.field_name.CREATED_BY,
         ]
         extra_kwargs = {
-            models.ProblemDAO.field_name.CREATED_BY: {
-                'read_only': True,
-                'default': serializers.CurrentUserDefault(),
-            },
+            models.ProblemDAO.field_name.LINK: {'required': False},
         }
+
+    def create(self, validated_data):
+        validated_data[models.ProblemDAO.field_name.CREATED_BY] = self.get_authenticated_user()
+        return super().create(validated_data)
 
 
 class ProblemSearchQueryParamSerializer(serializers.Serializer):
