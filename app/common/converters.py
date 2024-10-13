@@ -10,6 +10,8 @@ DTOType = typing.TypeVar('DTOType')
 
 
 class ModelConverter(typing.Generic[ModelType, DTOType]):
+    user_required = False
+
     def queryset_to_dto(self, queryset: QuerySet[ModelType]) -> typing.List[DTOType]:
         return [self.instance_to_dto(instance) for instance in queryset]
 
@@ -18,6 +20,8 @@ class ModelConverter(typing.Generic[ModelType, DTOType]):
 
 
 class UserRequiredModelConverter(ModelConverter[ModelType, DTOType]):
+    user_required = True
+
     def __init__(self, user: User) -> None:
         assert isinstance(user, User)
         self.user = user
