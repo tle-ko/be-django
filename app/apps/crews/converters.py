@@ -61,6 +61,14 @@ class CrewConverter(converters.ModelConverter[models.CrewDAO, dto.CrewDTO]):
         return objects
 
 
+class RecruitingCrewConverter(converters.AnyUserRequiredModelConverter[models.CrewDAO, dto.RecruitingCrewDTO]):
+    def instance_to_dto(self, instance: models.CrewDAO) -> dto.RecruitingCrewDTO:
+        return dto.RecruitingCrewDTO(
+            **CrewConverter().instance_to_dto(instance).__dict__,
+            is_appliable=instance.is_appliable(self.user),
+        )
+
+
 class CrewDetailConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewDAO, dto.CrewDetailDTO]):
     def instance_to_dto(self, instance: models.CrewDAO) -> dto.CrewDetailDTO:
         return dto.CrewDetailDTO(

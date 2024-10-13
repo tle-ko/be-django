@@ -19,7 +19,7 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
         queryset = models.CrewDAO.objects.not_as_member(self.request.user) \
             .filter(**{models.CrewDAO.field_name.IS_RECRUITING: True}) \
             .order_by('-'+models.CrewDAO.field_name.IS_ACTIVE)
-        return converters.CrewConverter().queryset_to_dto(queryset)
+        return converters.RecruitingCrewConverter(self.request.user).queryset_to_dto(queryset)
 
     @swagger.auto_schema(tags=[swagger.Tags.CREW])
     def get(self, request, *args, **kwargs):
