@@ -11,14 +11,11 @@ app
 ├── common/                 # 특정 앱에 종속되지 않고, 공통적으로 사용되는 모듈
 ├── fixtures/               # 테스트를 위한 데이터베이스 fixture 모음
 ├── apps/                   # 각 앱이 보관되는 디렉토리
-│   ├── activities/
-│   ├── applications/
 │   ├── background_task/
 │   ├── boj/
 │   ├── crews/
 │   ├── llms/
 │   ├── problems/
-│   ├── submissions/
 │   └── __init__.py
 ├── users/                  # 서비스 전반적으로 공통으로 사용되는 사용자 로그인, 인증과 관련된 앱
 └── manage.py               # Django 프로젝트의 개발 시 entrypoint
@@ -59,7 +56,6 @@ app
 
 Django에서 `startapp` 명령을 이용할 시 자동으로 생성되는, Django에서 관리하는 모듈이 아닌 것들을 (`diff +`로) 하이라이트 하였습니다.
 
-
 ## 데이터베이스 구조
 
 [TLE]의 기능 요구사항을 충족하기 위해, 아래와 같은 데이터베이스 구조를 채택하고 있습니다.
@@ -73,20 +69,21 @@ EmailVerification
 User }o--|| BOJUser : ""
 User ||--o{ Problem : "adds"
 User ||--o{ CrewMember : ""
-User ||--o{ Submission : "submits"
-User ||--o{ SubmissionComment : ""
+User ||--o{ CrewSubmission : "submits"
+User ||--o{ CrewSubmissionComment : ""
 
 BOJUser ||--o{ BOJUserSnapshot : "backups"
-Problem ||--o{ ActivityProblem : "references"
+Problem ||--o{ CrewProblem : "references"
 Problem ||--|{ ProblemAnalysis : ""
+ProblemAnalysis ||--o{ ProblemAnalysisTag : ""
 
 CrewMember }|--|| Crew : "is a member of"
-Crew ||--o{ Activity : ""
-Activity ||--o{ ActivityProblem : ""
-ActivityProblem ||--o{ Submission : ""
-Submission ||--o{ SubmissionComment : ""
+Crew ||--o{ CrewSubmittableLanguage : ""
+Crew ||--o{ CrewActivity : ""
+CrewActivity ||--o{ CrewProblem : ""
+CrewProblem ||--o{ CrewSubmission : ""
+CrewSubmission ||--o{ CrewSubmissionComment : ""
 ```
-
 
 [TLE]: https://tle-kr.com
 [MSA]: https://cloud.google.com/learn/what-is-microservices-architecture
