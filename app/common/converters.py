@@ -32,6 +32,3 @@ class AuthenticatedUserRequiredModelConverter(ModelConverter[ModelType, DTOType]
     def __init__(self, user: AbstractUser) -> None:
         assert user.is_authenticated, 'The user must be authenticated'
         self.user = user
-
-
-UserRequiredModelConverter = AnyUserRequiredModelConverter

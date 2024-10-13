@@ -61,7 +61,7 @@ class CrewConverter(converters.ModelConverter[models.CrewDAO, dto.CrewDTO]):
         return objects
 
 
-class CrewDetailConverter(converters.UserRequiredModelConverter[models.CrewDAO, dto.CrewDetailDTO]):
+class CrewDetailConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewDAO, dto.CrewDetailDTO]):
     def instance_to_dto(self, instance: models.CrewDAO) -> dto.CrewDetailDTO:
         return dto.CrewDetailDTO(
             **CrewConverter().instance_to_dto(instance).__dict__,
@@ -134,7 +134,7 @@ class CrewApplicantConverter(converters.ModelConverter[models.User, dto.CrewAppl
         )
 
 
-class CrewApplicationConverter(converters.UserRequiredModelConverter[models.CrewApplicationDAO, dto.CrewApplicationDTO]):
+class CrewApplicationConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewApplicationDAO, dto.CrewApplicationDTO]):
     def instance_to_dto(self, instance: models.CrewApplicationDAO) -> dto.CrewApplicationDTO:
         return dto.CrewApplicationDTO(
             application_id=instance.pk,
@@ -175,7 +175,7 @@ class CrewActivityConverter(converters.ModelConverter[models.CrewActivityDAO, dt
         )
 
 
-class CrewActivityDetailConverter(converters.UserRequiredModelConverter[models.CrewActivityDAO, dto.CrewActivityDetailDTO]):
+class CrewActivityDetailConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewActivityDAO, dto.CrewActivityDetailDTO]):
     def instance_to_dto(self, instance: models.CrewActivityDAO) -> dto.CrewActivityDetailDTO:
         return dto.CrewActivityDetailDTO(
             **CrewActivityConverter().instance_to_dto(instance).__dict__,
@@ -184,7 +184,7 @@ class CrewActivityDetailConverter(converters.UserRequiredModelConverter[models.C
         )
 
 
-class CrewActivityProblemConverter(converters.UserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDTO]):
+class CrewActivityProblemConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDTO]):
     def instance_to_dto(self, instance: models.CrewProblemDAO) -> dto.CrewProblemDTO:
         return dto.CrewProblemDTO(
             **ProblemConverter().instance_to_dto(instance.problem).__dict__,
@@ -202,7 +202,7 @@ class CrewActivityProblemConverter(converters.UserRequiredModelConverter[models.
             return None
 
 
-class CrewActivityProblemDetailConverter(converters.UserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDetailDTO]):
+class CrewActivityProblemDetailConverter(converters.AuthenticatedUserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDetailDTO]):
     def instance_to_dto(self, instance: models.CrewProblemDAO) -> dto.CrewProblemDetailDTO:
         assert isinstance(instance, models.CrewProblemDAO)
         return dto.CrewProblemDetailDTO(
