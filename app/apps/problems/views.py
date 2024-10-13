@@ -1,8 +1,8 @@
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import status
 
+from common import swagger
 from common.pagination import LargeResultsSetPagination
 
 from . import converters
@@ -18,7 +18,7 @@ class ProblemCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.ProblemDAOSerializer
 
-    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF], responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -32,17 +32,21 @@ class ProblemDetailRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAP
     lookup_field = 'id'
     lookup_url_kwarg = 'problem_ref_id'
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
+
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF])
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
 
 
 class ProblemSearchListAPIView(generics.ListAPIView):
@@ -57,10 +61,12 @@ class ProblemSearchListAPIView(generics.ListAPIView):
     search_fields = [models.ProblemDAO.field_name.TITLE]
 
     def get_queryset(self):
-        return models.ProblemDAO.objects.filter(**{
-            models.ProblemDAO.field_name.CREATED_BY: self.request.user,
-        })
+        return models.ProblemDAO.objects.filter(**{models.ProblemDAO.field_name.CREATED_BY: self.request.user})
 
     def get_serializer(self, queryset=models.ProblemDAO.objects.none(), *args, **kwargs):
         queryset = converters.ProblemConverter().queryset_to_dto(queryset)
         return super().get_serializer(queryset, *args, **kwargs)
+
+    @swagger.auto_schema(tags=[swagger.Tags.PROBLEM_REF])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)

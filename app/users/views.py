@@ -1,9 +1,10 @@
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
+
+from common import swagger
 
 from . import auth
 from . import models
@@ -20,13 +21,13 @@ class UsabilityAPIView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UsabilitySerializer
 
-    @swagger_auto_schema(query_serializer=serializers.UsabilitySerializerForQueryParameter)
-    def get(self, *args, **kwargs):
-        return super().get(*args, **kwargs)
-
     def retrieve(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(request.query_params)
         return Response(serializer.data)
+
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], query_serializer=serializers.UsabilitySerializerForQueryParameter)
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
 
 class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
@@ -46,6 +47,7 @@ class EmailVerificationAPIView(generics.mixins.UpdateModelMixin,
         email = self.request.data['email']
         return models.UserEmailVerification.objects.get_or_create_by_email(email=email)
 
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_200_OK: serializer_class})
     def post(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
@@ -56,7 +58,7 @@ class SignInAPIView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UserDAOSignInSerializer
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.UserDAOSignInSerializer.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -70,12 +72,17 @@ class SignUpAPIView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UserDAOSignUpSerializer
 
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class SignOutAPIView(generics.GenericAPIView):
     """사용자 로그아웃 API.\n\n."""
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.Serializer
 
+    @swagger.auto_schema(tags=[swagger.Tags.AUTH], responses={status.HTTP_204_NO_CONTENT: None})
     def get(self, request, *args, **kwargs):
         auth.logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -89,14 +96,14 @@ class UserManageAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self) -> models.User:
         return self.request.user
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.UserDAOSerializer.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.UserDAOSerializer.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.UserDAOSerializer.dto_serializer_class})
+    @swagger.auto_schema(tags=[swagger.Tags.USER], responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
