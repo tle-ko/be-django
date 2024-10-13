@@ -8,7 +8,6 @@ from rest_framework import permissions
 
 import apps.crews.urls
 import apps.problems.urls
-import apps.submissions.urls
 import users.urls
 
 
@@ -29,7 +28,6 @@ urlpatterns = [
     path("api/v1/", include([
         *apps.crews.urls.urlpatterns,
         *apps.problems.urls.urlpatterns,
-        *apps.submissions.urls.urlpatterns,
         *users.urls.urlpatterns,
     ])),
     path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -1,9 +1,5 @@
-import typing
-
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework import status
-from rest_framework.response import Response
+from rest_framework import mixins
 
 from . import converters
 from . import models
@@ -17,18 +13,10 @@ class RecruitingCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.RecruitingCrewDTOSerializer
 
     def get_queryset(self):
-        queryset = models.CrewDAO.objects \
+        queryset = models.CrewDAO.objects.not_as_member(self.request.user) \
             .filter(**{models.CrewDAO.field_name.IS_RECRUITING: True}) \
-            .exclude(**{models.CrewDAO.field_name.PK+'__in': self.crew_ids_as_member(self.request.user)}) \
             .order_by('-'+models.CrewDAO.field_name.IS_ACTIVE)
         return converters.CrewConverter().queryset_to_dto(queryset)
-
-    def crew_ids_as_member(self, user: models.User) -> typing.List[int]:
-        if user.is_anonymous:
-            return []
-        return models.CrewMemberDAO.objects \
-            .filter(**{models.CrewMemberDAO.field_name.USER: user}) \
-            .values_list(models.CrewMemberDAO.field_name.CREW, flat=True)
 
 
 class MyCrewListAPIView(generics.ListAPIView):
@@ -37,16 +25,8 @@ class MyCrewListAPIView(generics.ListAPIView):
     serializer_class = serializers.CrewDTOSerializer
 
     def get_queryset(self):
-        queryset = models.CrewDAO.objects \
-            .filter(**{models.CrewDAO.field_name.PK+'__in': self.crew_ids_as_member(self.request.user)})
+        queryset = models.CrewDAO.objects.as_member(self.request.user)
         return converters.CrewConverter().queryset_to_dto(queryset)
-
-    def crew_ids_as_member(self, user: models.User) -> typing.List[int]:
-        if user.is_anonymous:
-            return []
-        return models.CrewMemberDAO.objects \
-            .filter(**{models.CrewMemberDAO.field_name.USER: user}) \
-            .values_list(models.CrewMemberDAO.field_name.CREW, flat=True)
 
 
 class CrewCreateAPIView(generics.CreateAPIView):
@@ -54,10 +34,6 @@ class CrewCreateAPIView(generics.CreateAPIView):
     queryset = models.CrewDAO
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.CrewDAOSerializer
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
 class CrewRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -68,18 +44,6 @@ class CrewRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.CrewDAOSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'crew_id'
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
-    def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializers.CrewDetailDTOSerializer})
-    def patch(self, request, *args, **kwargs):
-        return super().patch(request, *args, **kwargs)
 
 
 class CrewStatisticsAPIView(generics.RetrieveAPIView):
@@ -121,48 +85,44 @@ class CrewApplicationCreateAPIView(generics.CreateAPIView):
         return serializer.save(**{models.CrewApplicationDAO.field_name.CREW: self.get_object()})
 
 
-class CrewApplicantionAcceptAPIView(generics.GenericAPIView):
+class CrewApplicantionAcceptAPIView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     """크루 가입 수락 API.\n\n."""
     queryset = models.CrewApplicationDAO
     permission_classes = [permissions.IsCaptain]
-    serializer_class = serializers.CrewApplicationDAOSerializer
+    serializer_class = serializers.CrewApplicationDTOSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'application_id'
 
-    def get_object(self) -> models.CrewApplicationDAO:
+    def _get_object(self) -> models.CrewApplicationDAO:
         return super().get_object()
 
-    @swagger_auto_schema(
-        request_body=serializers.EmptySerializer,
-        responses={200: serializer_class.dto_serializer_class}
-    )
+    def get_object(self) -> models.CrewApplicationDAO:
+        instance = self._get_object()
+        instance.accept(self.request.user)
+        return converters.CrewApplicantConverter().instance_to_dto(instance)
+
     def post(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.reject(self.request.user)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return self.retrieve(request, *args, **kwargs)
 
 
-class CrewApplicantionRejectAPIView(generics.GenericAPIView):
+class CrewApplicantionRejectAPIView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     """크루 가입 거부 API.\n\n."""
     queryset = models.CrewApplicationDAO
     permission_classes = [permissions.IsCaptain]
-    serializer_class = serializers.CrewApplicationDAOSerializer
+    serializer_class = serializers.CrewApplicationDTOSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'application_id'
 
-    def get_object(self) -> models.CrewApplicationDAO:
+    def _get_object(self) -> models.CrewApplicationDAO:
         return super().get_object()
 
-    @swagger_auto_schema(
-        request_body=serializers.EmptySerializer,
-        responses={200: serializer_class.dto_serializer_class}
-    )
-    def post(self, request, *args, **kwargs):
-        instance = self.get_object()
+    def get_object(self) -> models.CrewApplicationDAO:
+        instance = self._get_object()
         instance.reject(self.request.user)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return converters.CrewApplicantConverter().instance_to_dto(instance)
+
+    def post(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class CrewActivityCreateAPIView(generics.CreateAPIView):
@@ -173,14 +133,8 @@ class CrewActivityCreateAPIView(generics.CreateAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'crew_id'
 
-    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
     def perform_create(self, serializer: serializers.CrewActivityDAOSerializer):
-        serializer.save(**{
-            models.CrewActivityDAO.field_name.CREW: self.get_object(),
-        })
+        return serializer.save(**{models.CrewActivityDAO.field_name.CREW: self.get_object()})
 
 
 class CrewActivityRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -192,18 +146,6 @@ class CrewActivityRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'activity_id'
 
-    @swagger_auto_schema(responses={status.HTTP_201_CREATED: serializer_class.dto_serializer_class})
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
-    def patch(self, request, *args, **kwargs):
-        return super().patch(request, *args, **kwargs)
-
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
-    def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
-
 
 class CrewActivityProblemRetrieveAPIView(generics.RetrieveAPIView):
     """크루 활동 문제 상세 조회 API.\n\n."""
@@ -213,6 +155,45 @@ class CrewActivityProblemRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'problem_id'
 
-    @swagger_auto_schema(responses={status.HTTP_200_OK: serializer_class.dto_serializer_class})
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+
+class CrewSubmissionCreateAPIView(generics.CreateAPIView):
+    """문제에 대한 코드를 제출하는 API.\n\n."""
+    queryset = models.CrewProblemDAO
+    permission_classes = [permissions.IsMember]
+    serializer_class = serializers.CrewSubmissionDAOSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'problem_id'
+
+    def perform_create(self, serializer: serializers.CrewSubmissionDAOSerializer):
+        return serializer.save(**{models.CrewSubmissionDAO.field_name.PROBLEM: self.get_object()})
+
+
+class CrewSubmissionRetrieveDestroyAPIView(generics.RetrieveDestroyAPIView):
+    """제출된 코드를 조회(댓글 포함)/삭제하는 API.\n\n."""
+    queryset = models.CrewSubmissionDAO
+    permission_classes = [permissions.IsMember &
+                          (permissions.IsAuthor | permissions.IsReadOnly)]
+    serializer_class = serializers.CrewSubmissionDAOSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'submission_id'
+
+
+class CrewSubmissionCommentCreateAPIView(generics.CreateAPIView):
+    """제출된 코드에 대한 리뷰 댓글을 작성하는 API.\n\n."""
+    queryset = models.CrewSubmissionDAO
+    permission_classes = [permissions.IsMember]
+    serializer_class = serializers.CrewSubmissionCommentDAOSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'submission_id'
+
+    def perform_create(self, serializer: serializers.CrewSubmissionCommentDAOSerializer):
+        return serializer.save(**{models.CrewSubmissionCommentDAO.field_name.SUBMISSION: self.get_object()})
+
+
+class CrewSubmissionCommentDestroyAPIView(generics.DestroyAPIView):
+    """제출된 코드에 대한 댓글을 삭제하는 API.\n\n."""
+    queryset = models.CrewSubmissionCommentDAO
+    permission_classes = [permissions.IsMember &
+                          (permissions.IsAuthor | permissions.IsReadOnly)]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'comment_id'

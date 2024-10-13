@@ -7,7 +7,6 @@ from apps.boj.serializers import BOJUserDTOSerializer
 from apps.problems.serializers import ProblemDTOSerializer
 from apps.problems.serializers import ProblemDetailDTOSerializer
 from apps.problems.serializers import ProblemStatisticDTOSerializer
-from apps.submissions.serializers import SubmissionDTOSerializer
 from common.serializers import GenericModelToDTOSerializer
 from users.serializers import UserDTOSerializer
 
@@ -20,12 +19,68 @@ class EmptySerializer(serializers.Serializer):
     pass
 
 
+class CrewSubmissionCommentDTOSerializer(serializers.Serializer):
+    comment_id = serializers.IntegerField()
+    content = serializers.CharField()
+    line_number_start = serializers.IntegerField()
+    line_number_end = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+    created_by = UserDTOSerializer()
+
+
+class CrewSubmissionDTOSerializer(serializers.Serializer):
+    submission_id = serializers.IntegerField()
+    is_correct = serializers.BooleanField()
+    submitted_at = serializers.DateTimeField()
+    submitted_by = UserDTOSerializer()
+    reviewers = UserDTOSerializer(many=True)
+
+
+class CrewSubmissionDetailDTOSerializer(CrewSubmissionDTOSerializer):
+    code = serializers.CharField()
+    comments = CrewSubmissionCommentDTOSerializer(many=True)
+
+
+class CrewSubmissionDAOSerializer(GenericModelToDTOSerializer):
+    model_converter_class = converters.CrewSubmissionConverter
+    dto_serializer_class = CrewSubmissionDetailDTOSerializer
+
+    class Meta:
+        model = models.CrewSubmissionDAO
+        fields = [
+            models.CrewSubmissionDAO.field_name.CODE,
+            models.CrewSubmissionDAO.field_name.LANGUAGE,
+            models.CrewSubmissionDAO.field_name.IS_CORRECT,
+        ]
+
+    def create(self, validated_data):
+        validated_data[models.CrewSubmissionDAO.field_name.USER] = self.get_authenticated_user()
+        return super().create(validated_data)
+
+
+class CrewSubmissionCommentDAOSerializer(GenericModelToDTOSerializer):
+    model_converter_class = converters.CrewSubmissionCommentConverter
+    dto_serializer_class = CrewSubmissionCommentDTOSerializer
+
+    class Meta:
+        model = models.CrewSubmissionCommentDAO
+        fields = [
+            models.CrewSubmissionCommentDAO.field_name.CONTENT,
+            models.CrewSubmissionCommentDAO.field_name.LINE_NUMBER_START,
+            models.CrewSubmissionCommentDAO.field_name.LINE_NUMBER_END,
+        ]
+
+    def create(self, validated_data):
+        validated_data[models.CrewSubmissionCommentDAO.field_name.CREATED_BY] = self.get_authenticated_user()
+        return super().create(validated_data)
+
+
 class CrewActivityProblemDTOSerializer(ProblemDTOSerializer):
     problem_id = serializers.IntegerField()
     order = serializers.IntegerField()
     submission_id = serializers.IntegerField()
     has_submitted = serializers.BooleanField()
-    submissions = SubmissionDTOSerializer(many=True)
+    submissions = CrewSubmissionDTOSerializer(many=True)
 
 
 class CrewActivityProblemDetailDTOSerializer(ProblemDetailDTOSerializer):
@@ -180,11 +235,6 @@ class CrewApplicationDTOSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField()
 
 
-class ReviewedCrewApplicationDTOSerializer(CrewApplicationDTOSerializer):
-    reviewed_at = serializers.DateTimeField()
-    reviewed_by = UserDTOSerializer()
-
-
 class CrewApplicationDAOSerializer(GenericModelToDTOSerializer):
     model_converter_class = converters.CrewApplicationConverter
     dto_serializer_class = CrewApplicationDTOSerializer
@@ -194,11 +244,7 @@ class CrewApplicationDAOSerializer(GenericModelToDTOSerializer):
         fields = [
             models.CrewApplicationDAO.field_name.CREW,
             models.CrewApplicationDAO.field_name.MESSAGE,
-            models.CrewApplicationDAO.field_name.APPLICANT,
         ]
-        extra_kwargs = {
-            models.CrewApplicationDAO.field_name.APPLICANT: {'read_only': True},
-        }
 
     def create(self, validated_data):
         validated_data[models.CrewApplicationDAO.field_name.APPLICANT] = self.get_authenticated_user()

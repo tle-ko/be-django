@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "apps.crews",
     "apps.llms",
     "apps.problems",
-    "apps.submissions",
 ]
 
 MIDDLEWARE = [

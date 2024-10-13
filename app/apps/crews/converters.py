@@ -4,8 +4,6 @@ import typing
 
 from apps.boj.converters import BOJUserConverter
 from apps.boj.enums import BOJLevel
-from apps.submissions.converters import SubmissionConverter
-from apps.submissions.models import SubmissionDAO
 from apps.problems.converters import ProblemStatisticConverter
 from apps.problems.converters import ProblemConverter
 from apps.problems.converters import ProblemDetailConverter
@@ -51,7 +49,8 @@ class CrewConverter(converters.ModelConverter[models.CrewDAO, dto.CrewDTO]):
         objects = []
         for submittable_language in models.CrewSubmittableLanguageDAO.objects \
                 .filter(**{models.CrewSubmittableLanguageDAO.field_name.CREW: instance}):
-            obj = CrewTagConverter().submittable_language_to_dto(enums.ProgrammingLanguageChoices(submittable_language.language))
+            obj = CrewTagConverter().submittable_language_to_dto(
+                enums.ProgrammingLanguageChoices(submittable_language.language))
             objects.append(obj)
         if instance.min_boj_level is not None:
             obj = CrewTagConverter().boj_level_to_dto(BOJLevel(instance.min_boj_level))
@@ -127,7 +126,7 @@ class CrewTagConverter:
         )
 
 
-class CrewApplicantConverter(converters.UserRequiredModelConverter[models.User, dto.CrewApplicantDTO]):
+class CrewApplicantConverter(converters.ModelConverter[models.User, dto.CrewApplicantDTO]):
     def instance_to_dto(self, instance: models.User) -> dto.CrewApplicantDTO:
         return dto.CrewApplicantDTO(
             **UserConverter().instance_to_dto(instance).__dict__,
@@ -139,8 +138,7 @@ class CrewApplicationConverter(converters.UserRequiredModelConverter[models.Crew
     def instance_to_dto(self, instance: models.CrewApplicationDAO) -> dto.CrewApplicationDTO:
         return dto.CrewApplicationDTO(
             application_id=instance.pk,
-            applicant=CrewApplicantConverter(
-                self.user).instance_to_dto(instance.applicant),
+            applicant=CrewApplicantConverter().instance_to_dto(instance.applicant),
             message=instance.message,
             is_pending=instance.is_pending,
             is_accepted=instance.is_accepted,
@@ -150,10 +148,7 @@ class CrewApplicationConverter(converters.UserRequiredModelConverter[models.Crew
 
 class CrewStatisticsConverter(converters.ModelConverter[models.CrewDAO, dto.CrewStatisticsDTO]):
     def instance_to_dto(self, instance: models.CrewDAO) -> dto.CrewStatisticsDTO:
-        problem_ref_ids = models.CrewProblemDAO.objects \
-            .filter(**{models.CrewProblemDAO.field_name.CREW: instance}) \
-            .values_list(models.CrewProblemDAO.field_name.PROBLEM, flat=True)
-        return ProblemStatisticConverter().problem_ref_ids_to_dto(problem_ref_ids)
+        return ProblemStatisticConverter().problem_ref_ids_to_dto(instance.get_problems().values_list(models.CrewProblemDAO.field_name.PROBLEM, flat=True))
 
 
 class CrewActivityConverter(converters.ModelConverter[models.CrewActivityDAO, dto.CrewActivityDTO]):
@@ -184,14 +179,9 @@ class CrewActivityDetailConverter(converters.UserRequiredModelConverter[models.C
     def instance_to_dto(self, instance: models.CrewActivityDAO) -> dto.CrewActivityDetailDTO:
         return dto.CrewActivityDetailDTO(
             **CrewActivityConverter().instance_to_dto(instance).__dict__,
-            problems=self._problems(instance),
+            problems=CrewActivityProblemConverter(
+                self.user).queryset_to_dto(instance.get_problems()),
         )
-
-    def _problems(self, instance: models.CrewActivityDAO) -> typing.List[dto.CrewProblemDTO]:
-        queryset = models.CrewProblemDAO.objects.filter(**{
-            models.CrewProblemDAO.field_name.ACTIVITY: instance,
-        })
-        return CrewActivityProblemConverter(self.user).queryset_to_dto(queryset)
 
 
 class CrewActivityProblemConverter(converters.UserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDTO]):
@@ -200,48 +190,64 @@ class CrewActivityProblemConverter(converters.UserRequiredModelConverter[models.
             **ProblemConverter().instance_to_dto(instance.problem).__dict__,
             problem_id=instance.pk,
             order=instance.order,
-            submissions=self._submissions(instance),
+            submissions=CrewSubmissionConverter().queryset_to_dto(instance.get_submissions()),
             submission_id=self._submission_id(instance),
-            has_submitted=self._has_submitted(instance),
+            has_submitted=instance.has_submitted(self.user),
         )
-
-    def _submissions(self, instance: models.CrewProblemDAO) -> typing.List[dto.SubmissionDTO]:
-        queryset = SubmissionDAO.objects \
-            .filter(**{SubmissionDAO.field_name.PROBLEM: instance})
-        return SubmissionConverter().queryset_to_dto(queryset)
 
     def _submission_id(self, instance: models.CrewProblemDAO) -> typing.Optional[int]:
         try:
-            return SubmissionDAO.objects \
-                .filter(**{SubmissionDAO.field_name.USER: self.user, SubmissionDAO.field_name.PROBLEM: instance}) \
-                .latest().pk
-        except SubmissionDAO.DoesNotExist:
+            return instance.get_submissions().filter(**{models.CrewSubmissionDAO.field_name.USER: self.user}).pk
+        except models.CrewSubmissionDAO.DoesNotExist:
             return None
-
-    def _has_submitted(self, instance: models.CrewProblemDAO) -> bool:
-        return self._submission_id(instance) is not None
 
 
 class CrewActivityProblemDetailConverter(converters.UserRequiredModelConverter[models.CrewProblemDAO, dto.CrewProblemDetailDTO]):
-    def __init__(self, user: models.User) -> None:
-        self.user = user
-
     def instance_to_dto(self, instance: models.CrewProblemDAO) -> dto.CrewProblemDetailDTO:
+        assert isinstance(instance, models.CrewProblemDAO)
         return dto.CrewProblemDetailDTO(
             **ProblemDetailConverter().instance_to_dto(instance.problem).__dict__,
             problem_id=instance.pk,
             order=instance.order,
             submission_id=self._submission_id(instance),
-            has_submitted=self._has_submitted(instance),
+            has_submitted=instance.has_submitted(self.user),
         )
 
     def _submission_id(self, instance: models.CrewProblemDAO) -> typing.Optional[int]:
         try:
-            return SubmissionDAO.objects \
-                .filter(**{SubmissionDAO.field_name.USER: self.user, SubmissionDAO.field_name.PROBLEM: instance}) \
-                .latest().pk
-        except SubmissionDAO.DoesNotExist:
+            return instance.get_submissions().filter(**{models.CrewSubmissionDAO.field_name.USER: self.user}).pk
+        except models.CrewSubmissionDAO.DoesNotExist:
             return None
 
-    def _has_submitted(self, instance: models.CrewProblemDAO) -> bool:
-        return self._submission_id(instance) is not None
+
+class CrewSubmissionCommentConverter(converters.ModelConverter[models.CrewSubmissionCommentDAO, dto.CrewSubmissionCommentDTO]):
+    def instance_to_dto(self, instance: models.CrewSubmissionCommentDAO) -> dto.CrewSubmissionCommentDTO:
+        return dto.CrewSubmissionCommentDTO(
+            comment_id=instance.pk,
+            content=instance.content,
+            line_number_start=instance.line_number_start,
+            line_number_end=instance.line_number_end,
+            created_at=instance.created_at,
+            created_by=UserConverter().instance_to_dto(instance.created_by),
+        )
+
+
+class CrewSubmissionConverter(converters.ModelConverter[models.CrewSubmissionDAO, dto.CrewSubmissionDTO]):
+    def instance_to_dto(self, instance: models.CrewSubmissionDAO) -> dto.CrewSubmissionDTO:
+        assert isinstance(instance, models.CrewSubmissionDAO)
+        return dto.CrewSubmissionDTO(
+            submission_id=instance.pk,
+            is_correct=instance.is_correct,
+            submitted_at=instance.created_at,
+            submitted_by=UserConverter().instance_to_dto(instance.user),
+            reviewers=UserConverter().queryset_to_dto(instance.get_reviewers()),
+        )
+
+
+class CrewSubmissionDetailConverter(converters.ModelConverter[models.CrewSubmissionDAO, dto.CrewSubmissionDetailDTO]):
+    def instance_to_dto(self, instance: models.CrewSubmissionDAO) -> dto.CrewSubmissionDetailDTO:
+        return dto.CrewSubmissionDetailDTO(
+            **CrewSubmissionConverter().instance_to_dto(instance).__dict__,
+            code=instance.code,
+            comments=CrewSubmissionCommentConverter().queryset_to_dto(instance.comments()),
+        )

@@ -8,10 +8,34 @@ from apps.boj.dto import BOJUserDTO
 from apps.problems.dto import ProblemDTO
 from apps.problems.dto import ProblemDetailDTO
 from apps.problems.dto import ProblemStatisticDTO
-from apps.submissions.dto import SubmissionDTO
 from users.dto import UserDTO
 
 from . import enums
+
+
+@dataclasses.dataclass
+class CrewSubmissionCommentDTO:
+    comment_id: int
+    content: str
+    line_number_start: int
+    line_number_end: int
+    created_at: datetime.datetime
+    created_by: UserDTO
+
+
+@dataclasses.dataclass
+class CrewSubmissionDTO:
+    submission_id: int
+    is_correct: bool
+    submitted_at: datetime.datetime
+    submitted_by: UserDTO
+    reviewers: typing.List[UserDTO]
+
+
+@dataclasses.dataclass
+class CrewSubmissionDetailDTO(CrewSubmissionDTO):
+    code: str
+    comments: typing.List[CrewSubmissionCommentDTO]
 
 
 @dataclasses.dataclass
@@ -20,7 +44,7 @@ class CrewProblemDTO(ProblemDTO):
     order: int  # 문제 번호
     submission_id: typing.Optional[int]  # 내가 제출한 submission ID
     has_submitted: bool
-    submissions: typing.List[SubmissionDTO]
+    submissions: typing.List[CrewSubmissionDTO]
 
 
 @dataclasses.dataclass

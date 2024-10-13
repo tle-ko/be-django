@@ -138,3 +138,23 @@ class CrewActivityProblemModelAdmin(admin.ModelAdmin):
         models.CrewProblemDAO.field_name.ACTIVITY+'__'+models.CrewActivityDAO.field_name.NAME,
         models.CrewProblemDAO.field_name.PROBLEM+'__'+models.ProblemDAO.field_name.TITLE,
     ]
+
+
+@admin.register(models.CrewSubmissionDAO)
+class CrewSubmissionModelAdmin(admin.ModelAdmin):
+    list_display = [
+        models.CrewSubmissionDAO.field_name.PROBLEM,
+        models.CrewSubmissionDAO.field_name.USER,
+        models.CrewSubmissionDAO.field_name.IS_CORRECT,
+        models.CrewSubmissionDAO.field_name.CREATED_AT,
+    ]
+
+
+@admin.register(models.CrewSubmissionCommentDAO)
+class CrewSubmissionCommentModelAdmin(admin.ModelAdmin):
+    list_display = [
+        models.CrewSubmissionCommentDAO.field_name.SUBMISSION,
+        models.CrewSubmissionCommentDAO.field_name.CONTENT,
+        models.CrewSubmissionCommentDAO.field_name.CREATED_BY,
+        models.CrewSubmissionCommentDAO.field_name.CREATED_AT,
+    ]

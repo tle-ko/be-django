@@ -39,6 +39,11 @@ class IsAppliable(IsAuthenticated):
         return _get_crew(obj).is_appliable(request.user)
 
 
+class IsAuthor(IsAuthenticated):
+    def has_object_permission(self, request: HttpRequest, view, obj) -> bool:
+        return _get_author(obj) == request.user
+
+
 def _get_crew(obj):
     if isinstance(obj, models.CrewDAO):
         return obj
@@ -46,4 +51,14 @@ def _get_crew(obj):
         return obj.crew
     if isinstance(obj, models.CrewProblemDAO):
         return obj.crew
+    if isinstance(obj, models.CrewSubmissionDAO):
+        return obj.problem.crew
     raise NotImplementedError
+
+
+def _get_author(obj):
+    if isinstance(obj, models.CrewSubmissionDAO):
+        return obj.user
+    if isinstance(obj, models.CrewSubmissionCommentDAO):
+        return obj.created_by
+    return obj.user
