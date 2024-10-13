@@ -13,9 +13,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 
+from django.conf import global_settings
+
+
+DEBUG = False
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -94,6 +99,14 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+# Fixtures for testing
+
+FIXTURE_DIRS = [
+    *global_settings.FIXTURE_DIRS,
+    BASE_DIR / "fixtures",
+]
 
 
 # Password validation
@@ -182,7 +195,71 @@ SWAGGER_SETTINGS = {
 }
 
 
-#Django Background Tasks
+# Django Background Tasks
 
 BACKGROUND_TASK_ASYNC_THREADS = 1
 BACKGROUND_TASK_AUTO_RUN = True
+
+
+# Email Settings
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "logs" / "emails"
+
+
+# LLMs Settings
+GEMINI_API_KEY = 'SECRET_KEY'
+
+
+# Logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+    },
+    "formatters": {
+        "standard": {
+            "()": "config.utils.ColorlessServerFormatter",
+            "format": "[{server_time}] [{name}] [{levelname}] {message}",
+            "style": "{",
+        },
+        "django.server": {
+            "()": "config.utils.ColorlessServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': BASE_DIR / 'logs/django/console.log',
+            'when': 'D',
+            "formatter": "standard",
+        },
+        "django.server": {
+            "level": "INFO",
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': BASE_DIR / 'logs/django/server.log',
+            'when': 'D',
+            "formatter": "django.server",
+        },
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.security.DisallowedHost": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
