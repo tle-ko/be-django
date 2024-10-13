@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.db.models import QuerySet
 from django.utils.html import format_html
 
 from . import models
@@ -20,6 +21,10 @@ class UserAdmin(BaseUserAdmin):
         models.User.field_name.IS_SUPERUSER,
         models.User.field_name.CREATED_AT,
     ]
+    actions = [
+        'action_boj_update',
+        'action_boj_update_async',
+    ]
 
     @admin.display(description='Image')
     def get_profile_image(self, obj: models.User):
@@ -28,6 +33,16 @@ class UserAdmin(BaseUserAdmin):
     @admin.display(description='BOJ Level')
     def get_boj_level(self, obj: models.User):
         return obj.get_boj_level().get_name()
+
+    @admin.action(description="Update selected Users' BOJ data. (via solved.ac API)")
+    def action_boj_update(self, request, queryset: QuerySet[models.User]):
+        for obj in queryset:
+            obj.get_boj_user().update()
+
+    @admin.action(description="Schedule an update for selected Users' BOJ data. (via solved.ac API)")
+    def action_boj_update_async(self, request, queryset: QuerySet[models.User]):
+        for obj in queryset:
+            obj.get_boj_user().update_async()
 
 
 @admin.register(models.UserEmailVerification)

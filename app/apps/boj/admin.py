@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.db.models import QuerySet
 
 from . import models
-from . import services
 
 
 @admin.register(models.BOJUserDAO)
@@ -14,19 +13,19 @@ class BOJUserModelAdmin(admin.ModelAdmin):
         models.BOJUserDAO.field_name.UPDATED_AT,
     ]
     actions = [
-        'update',
-        'schedule_update',
+        'action_update',
+        'action_update_async',
     ]
 
     @admin.action(description="Schedule update selected BOJ user data. (via solved.ac API)")
-    def schedule_update(self, request, queryset: QuerySet[models.BOJUserDAO]):
+    def action_update_async(self, request, queryset: QuerySet[models.BOJUserDAO]):
         for obj in queryset:
-            services.schedule_update_boj_user_data(obj.username)
+            obj.update_async()
 
     @admin.action(description="Update selected BOJ user data right now. (via solved.ac API)")
-    def update(self, request, queryset: QuerySet[models.BOJUserDAO]):
+    def action_update(self, request, queryset: QuerySet[models.BOJUserDAO]):
         for obj in queryset:
-            services.update_boj_user_data(obj.username)
+            obj.update()
 
 
 @admin.register(models.BOJUserSnapshotDAO)

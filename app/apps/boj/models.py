@@ -1,6 +1,18 @@
+from __future__ import annotations
+
+import json
+import logging
+
 from django.db import models
+from django.utils import timezone
+import requests
+
+from apps.background_task import background
 
 from . import enums
+
+
+logger = logging.getLogger(__name__)
 
 
 class BOJUserDAO(models.Model):
@@ -26,6 +38,12 @@ class BOJUserDAO(models.Model):
 
     def __str__(self) -> str:
         return f'{self.username}'
+
+    def update(self):
+        update_instance(self.username)
+
+    def update_async(self):
+        update_instance_async(self.username)
 
 
 class BOJUserSnapshotDAO(models.Model):
@@ -122,3 +140,28 @@ class BOJTagRelationDAO(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pk} : #{self.parent.key} <- #{self.child.key}'
+
+
+@background
+def update_instance_async(username: str):
+    update_instance(username)
+
+
+def update_instance(username: str):
+    url = f'https://solved.ac/api/v3/user/show?handle={username}'
+    res = requests.get(url)
+    try:
+        assert res.status_code == 200
+        data = res.json()
+        instance = BOJUserDAO.objects.get_or_create(**{
+            BOJUserDAO.field_name.USERNAME: data['handle'],
+        })[0]
+        instance.level = data['tier']
+        instance.rating = data['rating']
+        instance.updated_at = timezone.now()
+        instance.save()
+    except AssertionError:
+        logger.info(f'사용자 명이 "{instance.username}"인 사용자가 존재하지 않습니다.')
+    except json.JSONDecodeError:
+        logger.warning(f'"{url}"로 부터 데이터를 파싱해오는 것에 실패했습니다.')
+        logger.error(f'받은 데이터: "{res.content}"')

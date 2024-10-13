@@ -62,6 +62,8 @@ class UserDAOSerializer(GenericModelToDTOSerializer[models.User, dto.UserDetailD
             new_password = validated_data[models.User.field_name.PASSWORD]
             instance.set_password(new_password)
             instance.save()
+        if models.User.field_name.BOJ_USERNAME in validated_data:
+            instance.get_boj_user().update_async()
 
 
 class UserDAOSignInSerializer(GenericModelToDTOSerializer[models.User, dto.UserDTO]):
@@ -145,6 +147,8 @@ class UserDAOSignUpSerializer(GenericModelToDTOSerializer[models.User, dto.UserD
             new_password = validated_data[models.User.field_name.PASSWORD]
             instance.set_password(new_password)
             instance.save()
+        if models.User.field_name.BOJ_USERNAME in validated_data:
+            instance.get_boj_user().update_async()
 
     def update(self, instance, validated_data):
         raise NotImplementedError
