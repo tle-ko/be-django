@@ -1,16 +1,17 @@
 from django.contrib import admin
 from django.db.models import QuerySet
 
-from . import proxy
+from . import models
+from . import services
 
 
-@admin.register(proxy.BOJUser)
+@admin.register(models.BOJUserDAO)
 class BOJUserModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.BOJUser.field_name.USERNAME,
-        proxy.BOJUser.field_name.LEVEL,
-        proxy.BOJUser.field_name.RATING,
-        proxy.BOJUser.field_name.UPDATED_AT,
+        models.BOJUserDAO.field_name.USERNAME,
+        models.BOJUserDAO.field_name.LEVEL,
+        models.BOJUserDAO.field_name.RATING,
+        models.BOJUserDAO.field_name.UPDATED_AT,
     ]
     actions = [
         'update',
@@ -18,66 +19,66 @@ class BOJUserModelAdmin(admin.ModelAdmin):
     ]
 
     @admin.action(description="Schedule update selected BOJ user data. (via solved.ac API)")
-    def schedule_update(self, request, queryset: QuerySet[proxy.BOJUser]):
+    def schedule_update(self, request, queryset: QuerySet[models.BOJUserDAO]):
         for obj in queryset:
-            obj.schedule_update()
+            services.schedule_update_boj_user_data(obj.username)
 
     @admin.action(description="Update selected BOJ user data right now. (via solved.ac API)")
-    def update(self, request, queryset: QuerySet[proxy.BOJUser]):
+    def update(self, request, queryset: QuerySet[models.BOJUserDAO]):
         for obj in queryset:
-            obj.update()
+            services.update_boj_user_data(obj.username)
 
 
-@admin.register(proxy.BOJUserSnapshot)
+@admin.register(models.BOJUserSnapshotDAO)
 class BOJUserSnapshotModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.BOJUserSnapshot.field_name.USER,
-        proxy.BOJUserSnapshot.field_name.LEVEL,
-        proxy.BOJUserSnapshot.field_name.RATING,
-        proxy.BOJUserSnapshot.field_name.CREATED_AT,
+        models.BOJUserSnapshotDAO.field_name.USER,
+        models.BOJUserSnapshotDAO.field_name.LEVEL,
+        models.BOJUserSnapshotDAO.field_name.RATING,
+        models.BOJUserSnapshotDAO.field_name.CREATED_AT,
     ]
 
 
-@admin.register(proxy.BOJProblem)
+@admin.register(models.BOJProblemDAO)
 class BOJProblemModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.BOJProblem.field_name.PK,
-        proxy.BOJProblem.field_name.TITLE,
-        proxy.BOJProblem.field_name.LEVEL,
-        proxy.BOJProblem.field_name.TAGS,
-        proxy.BOJProblem.field_name.TIME_LIMIT,
-        proxy.BOJProblem.field_name.TIME_LIMIT_DESCRIPTION,
-        proxy.BOJProblem.field_name.MEMORY_LIMIT,
+        models.BOJProblemDAO.field_name.PK,
+        models.BOJProblemDAO.field_name.TITLE,
+        models.BOJProblemDAO.field_name.LEVEL,
+        models.BOJProblemDAO.field_name.TAGS,
+        models.BOJProblemDAO.field_name.TIME_LIMIT,
+        models.BOJProblemDAO.field_name.TIME_LIMIT_DESCRIPTION,
+        models.BOJProblemDAO.field_name.MEMORY_LIMIT,
     ]
     search_fields = [
-        proxy.BOJProblem.field_name.TITLE,
+        models.BOJProblemDAO.field_name.TITLE,
     ]
-    ordering = [proxy.BOJProblem.field_name.PK]
+    ordering = [models.BOJProblemDAO.field_name.PK]
 
 
-@admin.register(proxy.BOJTag)
+@admin.register(models.BOJTagDAO)
 class BOJTagModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.BOJTag.field_name.KEY,
-        proxy.BOJTag.field_name.NAME_KO,
-        proxy.BOJTag.field_name.NAME_EN,
+        models.BOJTagDAO.field_name.KEY,
+        models.BOJTagDAO.field_name.NAME_KO,
+        models.BOJTagDAO.field_name.NAME_EN,
     ]
     search_fields = [
-        proxy.BOJTag.field_name.KEY,
-        proxy.BOJTag.field_name.NAME_KO,
-        proxy.BOJTag.field_name.NAME_EN,
+        models.BOJTagDAO.field_name.KEY,
+        models.BOJTagDAO.field_name.NAME_KO,
+        models.BOJTagDAO.field_name.NAME_EN,
     ]
-    ordering = [proxy.BOJTag.field_name.KEY]
+    ordering = [models.BOJTagDAO.field_name.KEY]
 
 
-@admin.register(proxy.BOJTagRelation)
+@admin.register(models.BOJTagRelationDAO)
 class BOJTagRelationModelAdmin(admin.ModelAdmin):
     list_display = [
-        proxy.BOJTagRelation.field_name.PARENT,
-        proxy.BOJTagRelation.field_name.CHILD,
+        models.BOJTagRelationDAO.field_name.PARENT,
+        models.BOJTagRelationDAO.field_name.CHILD,
     ]
     search_fields = [
-        proxy.BOJTagRelation.field_name.PARENT,
-        proxy.BOJTagRelation.field_name.CHILD,
+        models.BOJTagRelationDAO.field_name.PARENT,
+        models.BOJTagRelationDAO.field_name.CHILD,
     ]
-    ordering = [proxy.BOJTagRelation.field_name.PARENT]
+    ordering = [models.BOJTagRelationDAO.field_name.PARENT]

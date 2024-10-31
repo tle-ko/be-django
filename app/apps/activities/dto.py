@@ -1,36 +1,37 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime
-from typing import List
-from typing import Optional
+import dataclasses
+import datetime
+import typing
 
 from apps.problems.dto import ProblemDTO
+from apps.problems.dto import ProblemDetailDTO
 from apps.submissions.dto import SubmissionDTO
 
 
-@dataclass
+@dataclasses.dataclass
 class CrewActivityProblemDTO(ProblemDTO):
-    problem_ref_id: int  # 원본 문제 ID
+    problem_id: int  # 원본 문제 ID
     order: int  # 문제 번호
+    submission_id: typing.Optional[int]  # 내가 제출한 submission ID
+    has_submitted: bool
+    submissions: typing.List[SubmissionDTO]
 
 
-@dataclass
-class CrewActivityProblemDetailDTO(CrewActivityProblemDTO):
-    submissions: List[SubmissionDTO]
+@dataclasses.dataclass
+class CrewActivityProblemDetailDTO(ProblemDetailDTO):
+    problem_id: int  # 원본 문제 ID
+    order: int  # 문제 번호
+    submission_id: typing.Optional[int]  # 내가 제출한 submission ID
+    has_submitted: bool
 
 
-@dataclass
-class CrewActivityProblemExtraDetailDTO(CrewActivityProblemDetailDTO):
-    my_submission: Optional[SubmissionDTO]
-
-
-@dataclass
+@dataclasses.dataclass
 class CrewActivityDTO:
     activity_id: int
     name: str
-    start_at: datetime
-    end_at: datetime
+    start_at: datetime.datetime
+    end_at: datetime.datetime
     is_in_progress: bool
     has_started: bool
     has_ended: bool
@@ -47,12 +48,6 @@ class CrewActivityDTO:
             has_ended=False,
         )
 
-
-@dataclass
+@dataclasses.dataclass
 class CrewActivityDetailDTO(CrewActivityDTO):
-    problems: List[CrewActivityProblemDTO]
-
-
-@dataclass
-class CrewActivityExtraDetailDTO(CrewActivityDTO):
-    problems: List[CrewActivityProblemExtraDetailDTO]
+    problems: typing.List[CrewActivityProblemDetailDTO]

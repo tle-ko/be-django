@@ -23,6 +23,7 @@ class SubmissionCommentDTOSerializer(serializers.Serializer):
 
 
 class SubmissionDetailDTOSerializer(SubmissionDTOSerializer):
+    code = serializers.CharField()
     comments = SubmissionCommentDTOSerializer(many=True)
 
 

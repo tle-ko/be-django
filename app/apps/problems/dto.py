@@ -16,40 +16,20 @@ class ProblemDifficultyDTO:
     name_ko: str
     name_en: str
 
-    @staticmethod
-    def none() -> ProblemDifficultyDTO:
-        return ProblemDifficultyDTO(enums.ProblemDifficulty.UNDER_ANALYSIS)
-
-    def __init__(self, difficulty: enums.ProblemDifficulty):
-        self.value = difficulty.value
-        self.name_ko = difficulty.get_name(lang='ko')
-        self.name_en = difficulty.get_name(lang='en')
-
 
 @dataclass
 class ProblemAnalysisDTO:
-    problem_id: int
+    problem_ref_id: int
     is_analyzed: bool
     time_complexity: str
     difficulty: ProblemDifficultyDTO
     hints: List[str] = field(default_factory=list)
     tags: List[BOJTagDTO] = field(default_factory=list)
 
-    @staticmethod
-    def none(problem_id: int) -> ProblemAnalysisDTO:
-        return ProblemAnalysisDTO(
-            problem_id=problem_id,
-            is_analyzed=False,
-            time_complexity='',
-            difficulty=ProblemDifficultyDTO.none(),
-            hints=[],
-            tags=[],
-        )
-
 
 @dataclass
 class ProblemDTO:
-    problem_id: int
+    problem_ref_id: int
     title: str
     analysis: ProblemAnalysisDTO
 

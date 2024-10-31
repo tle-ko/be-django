@@ -16,7 +16,6 @@ from apps.applications.proxy import CrewApplication
 from apps.boj.enums import BOJLevel
 from apps.boj.proxy import BOJUser
 from apps.problems.dto import ProblemStatisticDTO
-from apps.problems.statistics import create_statistics
 from users.models import User
 
 from . import dto
@@ -45,7 +44,10 @@ class CrewQuerySet(QuerySet):
         return self._kwargs_filtering(super().filter, as_captain, as_member, is_recruiting, *args, **kwargs)
 
     def is_recruiting(self, user: User) -> Union[CrewQuerySet, QuerySet[Crew]]:
-        return self.filter(is_recruiting=True).exclude(as_member=user)
+        queryset = self.filter(is_recruiting=True)
+        if user.is_authenticated:
+            queryset = queryset.exclude(as_member=user)
+        return queryset
 
     def as_dto(self) -> List[dto.CrewDTO]:
         return [obj.as_dto() for obj in self.all()]
@@ -105,9 +107,6 @@ class Crew(models.CrewDAO):
     def activities(self) -> List[dto.CrewActivityDTO]:
         return [obj.as_dto() for obj in CrewActivity.objects.filter(crew=self)]
 
-    def applications(self) -> List[CrewApplicantDTO]:
-        return [obj.as_dto() for obj in CrewApplication.objects.crew(self)]
-
     def apply(self, user: User, message: str) -> CrewApplication:
         self.is_appliable(user, raise_exception=True)
         return CrewApplication.objects.create(
@@ -150,6 +149,8 @@ class Crew(models.CrewDAO):
         return f'{self.icon} {self.name}'
 
     def is_appliable(self, user: User, raise_exception=False) -> bool:
+        if user.is_anonymous:
+            return False
         try:
             boj_user = BOJUser.objects.get(user.boj_username)
             assert self.is_recruiting, (
@@ -194,10 +195,6 @@ class Crew(models.CrewDAO):
 
     def members(self) -> List[dto.CrewMemberDTO]:
         return [obj.as_dto() for obj in CrewMember.objects.filter(crew=self)]
-
-    def statistics(self) -> ProblemStatisticDTO:
-        queryset = CrewActivityProblem.objects.filter(crew=self)
-        return create_statistics(obj.problem for obj in queryset)
 
     def tags(self) -> List[dto.CrewTagDTO]:
         return self.tags__language() + self.tags__level() + self.tags__custom()

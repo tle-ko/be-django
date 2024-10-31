@@ -22,6 +22,8 @@ from users.serializers import UserUpdateSerializer
 from users.serializers import SignInSerializer
 from users.serializers import SignUpSerializer
 
+from . import serializers
+
 
 class UsabilityAPIView(generics.RetrieveAPIView):
     """이메일/사용자명이 사용 가능한지 조회하는 API.
@@ -120,3 +122,15 @@ class UserManageAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self) -> User:
         return self.request.user
+
+    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+    @swagger_auto_schema(responses={200: serializers.UserManageDTOSerializer})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)

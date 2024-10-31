@@ -4,6 +4,8 @@ from rest_framework import status
 from apps.problems.models import Problem
 from users.models import User
 
+from . import urls
+
 
 class ProblemCreateAPIViewTest(TestCase):
     fixtures = ['sample.json']

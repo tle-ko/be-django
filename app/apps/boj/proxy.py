@@ -7,18 +7,13 @@ from typing import Union
 
 from django.db.models import Manager
 from django.db.models import QuerySet
-from django.dispatch import receiver
 from django.utils import timezone
 from rest_framework import status
 import requests
 
-from apps.background_task import background
-from users.models import User
-
 from . import dto
 from . import enums
 from . import models
-from . import signals
 
 
 logger = getLogger(__name__)
@@ -116,28 +111,6 @@ class BOJTagRelation(models.BOJTagRelationDAO):
         proxy = True
 
 
-@receiver(signals.post_save, sender=User)
-def auto_create_boj_user(sender, instance: User, created: bool, **kwargs):
-    if not BOJUser.objects.exists(instance.boj_username):
-        BOJUser.objects.get_or_create(instance.boj_username)
-
-
-@receiver(signals.post_save, sender=BOJUser)
-def on_boj_user_created(sender, instance: BOJUser, created: bool, **kwargs):
-    # 새로운 BOJUser가 등록되면 자동으로 정보를 불러온다.
-    if created:
-        schedule_update_boj_user_data(instance.username)
-
-
-@background
-def schedule_update_boj_user_data(username: str):
-    assert username.strip().isidentifier()
-    instance = BOJUser.objects.get(username)
-    # 마지막 갱신으로 부터 90초 이내에 시도한 갱신 요청은 무시 함.
-    if (timezone.now() - instance.updated_at) < timedelta(seconds=90):
-        logger.info(f'백준 사용자 "{username}"의 정보 갱신 요청이 무시됨. (사유: 너무 잦은 갱신 요청)')
-        return
-    instance.update()
 
 
 def fetch_boj_user_data(username: str) -> dict:

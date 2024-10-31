@@ -1,16 +1,15 @@
 from rest_framework.generics import GenericAPIView
 from django.shortcuts import get_object_or_404
 
-from . import dto
-from . import proxy
+from . import models
 
 
 class CrewUrlKwargMixin(GenericAPIView):
-    queryset = proxy.Crew
+    queryset = models.CrewDAO
     lookup_field = 'id'
     lookup_url_kwarg = 'crew_id'
 
-    def get_object(self) -> proxy.Crew:
+    def get_object(self) -> models.CrewDAO:
         queryset = self.filter_queryset(self.queryset)
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         assert lookup_url_kwarg in self.kwargs, (
@@ -23,8 +22,3 @@ class CrewUrlKwargMixin(GenericAPIView):
         obj = get_object_or_404(queryset, **filter_kwargs)
         self.check_object_permissions(self.request, obj)
         return obj
-
-
-class CrewDTOUrlKwargMixin(CrewUrlKwargMixin):
-    def get_object(self) -> dto.CrewDTO:
-        return super().get_object().as_dto()

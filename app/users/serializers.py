@@ -2,6 +2,9 @@ from django.core.validators import EmailValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from apps.boj.serializers import BOJUserDTOSerializer
+
+from . import converters
 from users.models import User
 from users.models import UserEmailVerification
 
@@ -13,6 +16,11 @@ class UserDTOSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     username = serializers.CharField()
     profile_image = serializers.CharField()
+
+
+class UserManageDTOSerializer(UserDTOSerializer):
+    email = serializers.EmailField()
+    boj = BOJUserDTOSerializer()
 
 
 class UsabilityEmailField(serializers.Serializer):
@@ -185,13 +193,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             User.field_name.BOJ_USERNAME,
         ]
         extra_kwargs = {
-            User.field_name.EMAIL: {'read_only': True},
-            User.field_name.PASSWORD: {
-                'write_only': True,
-                'style': {'input_type': 'password'},
-            },
-            User.field_name.BOJ_USERNAME: {'write_only': True}
+            User.field_name.PASSWORD: {'style': {'input_type': 'password'}},
         }
+
+    @property
+    def data(self):
+        obj = converters.UserConverter().instance_to_manage_dto(self.instance)
+        return UserManageDTOSerializer(obj).data
 
     def is_valid(self, *, raise_exception=False):
         try:
