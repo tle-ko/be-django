@@ -8,6 +8,7 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 Pillow
+psycopg2 # PostgreSQL. May require "apt install libpq-dev", "apt install postgresql"
 six # background tasks dependency
 
 # LLMs
