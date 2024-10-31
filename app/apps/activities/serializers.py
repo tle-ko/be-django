@@ -143,3 +143,6 @@ class CrewActivityProblemDAOSerializer(GenericModelToDTOSerializer):
     class Meta:
         model = models.CrewActivityProblemDAO
         fields = []
+
+    def get_model_converter(self, *args, **kwargs) -> converters.ModelConverter:
+        return super().get_model_converter(self.get_authenticated_user())

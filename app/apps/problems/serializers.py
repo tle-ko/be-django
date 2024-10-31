@@ -69,7 +69,8 @@ class ProblemStatisticDTOSerializer(serializers.Serializer):
 
 
 class ProblemDAOSerializer(GenericModelToDTOSerializer):
-    serializer_class = ProblemDetailDTOSerializer
+    model_converter_class = converters.ProblemDetailConverter
+    dto_serializer_class = ProblemDetailDTOSerializer
 
     class Meta:
         model = models.ProblemDAO
