@@ -1,6 +1,6 @@
 setuptools
 wheel
-uwsgi # might require "apt install python3-dev"
+uwsgi
 django
 # django-background-tasks # 폴더 채로 들고왔으므로 설치 불필요
 django-cors-headers

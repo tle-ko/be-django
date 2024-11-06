@@ -10,25 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from datetime import timedelta
-from pathlib import Path
+import datetime
+import os
+import pathlib
+
+from django.conf import global_settings
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+DEBUG = os.environ["DEBUG"] == 1
 
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ["SECRET_KEY"]
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 
-
-# CORS
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    os.environ["HOST"],
+]
 
 
 # Application definition
@@ -50,8 +55,11 @@ INSTALLED_APPS = [
     'apps.background_task',
     "apps.boj",
     "apps.crews",
+    "apps.activities",
+    "apps.applications",
     "apps.llms",
     "apps.problems",
+    "apps.submissions",
 ]
 
 MIDDLEWARE = [
@@ -88,12 +96,24 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ["POSTGRES_ENABLE"] == 1:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ["POSTGRES_DB"],
+            "USER": os.environ["POSTGRES_USER"],
+            "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+            "HOST": os.environ["POSTGRES_HOST"],
+            "PORT": 5432,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -121,10 +141,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=100),
-    'SLIDING_TOKEN_REFRESH_LIFETIME_GRACE_PERIOD': timedelta(days=100),
-    'SLIDING_TOKEN_REFRESH_MAX_LIFETIME': timedelta(days=200),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': datetime.timedelta(days=100),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_GRACE_PERIOD': datetime.timedelta(days=100),
+    'SLIDING_TOKEN_REFRESH_MAX_LIFETIME': datetime.timedelta(days=200),
 }
 
 REST_FRAMEWORK = {
@@ -169,7 +189,6 @@ MEDIA_ROOT = BASE_DIR / '.media'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 DEFAULT_EXCEPTION_REPORTER = "config.utils.NACLExceptionReporter"
 
 APPEND_SLASH = False
@@ -182,7 +201,43 @@ SWAGGER_SETTINGS = {
 }
 
 
-#Django Background Tasks
+# Django Background Tasks
 
 BACKGROUND_TASK_ASYNC_THREADS = 1
-BACKGROUND_TASK_AUTO_RUN = True
+
+if os.environ["BACKGROUND_TASK_ENABLE"] == 1:
+    BACKGROUND_TASK_AUTO_RUN = True
+else:
+    BACKGROUND_TASK_AUTO_RUN = False
+
+
+# CORS
+# https://pypi.org/project/django-cors-headers/
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+
+# Email Settings
+# https://docs.djangoproject.com/en/4.2/topics/email/
+
+if os.environ["GMAIL_ENABLE"] == 1:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = os.environ["GMAIL_USERNAME"]
+    EMAIL_HOST_PASSWORD = os.environ["GMAIL_PASSWORD"]
+    DEFAULT_FROM_EMAIL = os.environ["GMAIL_USERNAME"]+"@gmail.com"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = "/logs"
+
+
+# Fixtures
+# https://docs.djangoproject.com/en/4.2/howto/initial-data/
+if DEBUG:
+    FIXTURE_DIRS = [*global_settings.FIXTURE_DIRS, BASE_DIR / "fixtures"]
+
+
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
