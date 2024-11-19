@@ -1,0 +1,35 @@
+version: "3"
+services:
+  tle-postgres:
+    image: postgres:10-alpine
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tle
+      - POSTGRES_USER=tle-username
+      - POSTGRES_PASSWORD=tle-password
+
+  tle-backend:
+    image: tle-backend:latest
+    restart: always
+    depends_on:
+      - tle-postgres
+    volumes:
+      - ./data/backend:/data
+    environment:
+      - HOST="*"
+      - DEBUG=1
+      - SECRET_KEY="[REPLACE_THIS]"
+      - BACKGROUND_TASK_ENABLE=1
+      - POSTGRES_ENABLE=1
+      - POSTGRES_DB="tle"
+      - POSTGRES_HOST="tle-postgres"
+      - POSTGRES_USER="tle-username"
+      - POSTGRES_PASSWORD="tle-password"
+      - GMAIL_ENABLE=1
+      - GMAIL_USERNAME="[REPLACE_THIS]"
+      - GMAIL_PASSWORD="[REPLACE_THIS]"
+      - GEMINI_API_KEY="[REPLACE_THIS]"
+    ports:
+      - "0.0.0.0:8080:8000"

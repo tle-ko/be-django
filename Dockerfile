@@ -1,24 +1,27 @@
 FROM python:3.9-slim
 
-# Set up vitual environment and install requirements
-RUN python3 -m venv /venv
-ENV PATH="/venv/bin:$PATH"
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-RUN apt update && \
-    pip install --upgrade pip
-
-# Install dependencies
-COPY requirements.txt /requirements.txt
-
-RUN apt install -y gcc libpq-dev postgresql
-RUN pip install -r /requirements.txt
-
-# Copy the app
-COPY app /app
+# Set the working directory
 WORKDIR /app
 
-EXPOSE 8000
+# Install dependencies
+COPY requirements.txt /app/
+
+RUN apt-get update \
+    && apt-get install -y gcc postgresql-client \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copy the project files
+COPY . /app/
+
+# Entry script to wait for PostgreSQL to be ready
+COPY ./scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Run the server
 HEALTHCHECK --interval=5s CMD [ "./healthcheck.py" ]
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["uwsgi", "--http", ":8000", "--home", "/usr/local/", "--chdir", "/app/", "-w", "config.wsgi"]
