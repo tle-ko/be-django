@@ -7,15 +7,11 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt /app/
-
-RUN apt-get update \
-    && apt-get install -y gcc postgresql-client \
-    && pip install --no-cache-dir -r requirements.txt
+# Copy dependencies specification
+COPY requirements.txt /app
 
 # Copy the project files
-COPY . /app/
+COPY app /app/
 
 # Entry script to wait for PostgreSQL to be ready
 COPY ./scripts/entrypoint.sh /entrypoint.sh

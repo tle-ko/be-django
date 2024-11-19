@@ -1,5 +1,11 @@
 #!/bin/bash
 
+pip install --no-cache-dir -r requirements.txt
+
+./manage.py makemigrations
+./manage.py migrate
+./manage.py collectstatic --noinput
+
 if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for PostgreSQL..."
